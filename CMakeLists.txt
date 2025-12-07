@@ -10,7 +10,8 @@ endif()
 
 project(Ballistic LANGUAGES C VERSION 0.1.0)
 
-option(BALLISTIC_ENABLE_CPU_FEATURE_DETECTION "Makes Ballistic able to detect CPU features of the host" ON)
+
+# option(BALLISTIC_ENABLE_CPU_FEATURE_DETECTION "Makes Ballistic able to detect CPU features of the host" ON)
 option(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION "Enables LTO for Ballistic (improves performance)" ON)
 option(BALLISTIC_ENABLE_BUILD_TESTS "Enables Ballistic tests" OFF)
 
