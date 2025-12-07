@@ -11,30 +11,11 @@ env:
   BUILD_DIR: ${{github.workspace}}/build
 
 jobs:
-  get-info:
-    name: Info
-    runs-on: ubuntu-24.04
-    outputs:
-      shorthash: ${{steps.vars.outputs.shorthash}}
-      commit: ${{steps.vars.outputs.commit}}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - name: Commit Count and Git Hash
-        id: vars
-        run: |
-          echo "shorthash=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "commit=$(git rev-list --count HEAD)" >> $GITHUB_ENV
-          echo "shorthash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "commit=$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
-
   Linux:
     name: Linux
     runs-on: ubuntu-24.04
-    needs: get-info
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
@@ -58,18 +39,15 @@ jobs:
   Windows:
     name: Windows
     runs-on: windows-2025
-    needs: get-info
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
 
       - name: Configure CMake
         run:
-          cmake -G Ninja -B "${{env.BUILD_DIR}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} `
-          -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl `
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -G Ninja -B "${{env.BUILD_DIR}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
 
       - name: Build
         run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $env:NUMBER_OF_PROCESSORS
@@ -77,9 +55,8 @@ jobs:
   macOS-x86_64:
     name: macOS x86_64
     runs-on: macos-15-intel
-    needs: get-info
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
@@ -109,9 +86,8 @@ jobs:
   macOS-arm64:
     name: macOS ARM64
     runs-on: macos-14
-    needs: get-info
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
@@ -137,4 +113,3 @@ jobs:
 
       - name: Build (ARM64)
         run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $(sysctl -n hw.logicalcpu)
-
