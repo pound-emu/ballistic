@@ -1,4 +1,4 @@
-/* Generated 2808 instructions */
+/* Generated 2807 instructions */
 #include <stdint.h>
 
 typedef struct 
@@ -1579,7 +1579,6 @@ const bal_decoder_entry_t TABLE[] = {
     { "MLA", 0xFFA0FC00, 0x44200800 }, 
     { "NANDS", 0xFFF0C210, 0x25C04210 }, 
     { "ORNS", 0xFFF0C210, 0x25C04010 }, 
-    { "PRFM", 0xFFE04C03, 0xF8A04803 }, 
     { "FMAXNMP", 0xBFE0FC00, 0x2E400400 }, 
     { "FMAXP", 0xBFE0FC00, 0x2E403400 }, 
     { "FMINNMP", 0xBFE0FC00, 0x2EC00400 }, 
