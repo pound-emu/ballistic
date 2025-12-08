@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from typing import List, Tuple, Optional
 
 DEFAULT_XML_DIRECTORY_PATH = "../spec/arm64_xml"
-DEFAULT_GENERATED_TABLE_PATH = "../src/decoder_table_gen.c"
+DEFAULT_GENERATED_TABLE_C_PATH = "../src/decoder_table_gen.c"
+DEFAULT_GENERATED_TABLE_H_PATH = "../src/decoder_table_gen.h"
 
 
 @dataclass
@@ -146,7 +147,9 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
 
             try:
                 for box in encoding.findall("box"):
-                    (total_mask, total_value) = process_box(box, total_mask, total_value)
+                    (total_mask, total_value) = process_box(
+                        box, total_mask, total_value
+                    )
             except ValueError:
                 continue
 
@@ -167,7 +170,8 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate ARM64 Decoder Tables")
     parser.add_argument("--directory")
-    parser.add_argument("--output")
+    parser.add_argument("--output_header")
+    parser.add_argument("--output_source")
 
     args = parser.parse_args()
 
@@ -201,20 +205,29 @@ if __name__ == "__main__":
     # Sort by priority
     all_instructions.sort(key=lambda x: x.priority, reverse=True)
 
-    out_file_path = DEFAULT_GENERATED_TABLE_PATH
-    if args.output is not None:
-        out_file_path = args.output
+    out_file_header = DEFAULT_GENERATED_TABLE_H_PATH
+    if args.output_header is not None:
+        out_file_header = args.output_header
 
-    with open(out_file_path, "w") as f:
-        f.write(f"/* Generated {len(all_instructions)} instructions */\n")
+    with open(out_file_header, "w") as f:
+        f.write(f"/* Generated header file */\n")
         f.write("#include <stdint.h>\n\n")
         f.write(
-            "typedef struct \n{\n const char* mnemonic; \n uint32_t mask;\n uint32_t value;\n } bal_decoder_entry_t;\n"
+            "typedef struct \n{\n const char* mnemonic; \n uint32_t mask;\n uint32_t value;\n} bal_decoder_entry_t;\n"
         )
+    print(f"Generated ARM decoder table header file -> {out_file_header}")
+
+    out_file_source = DEFAULT_GENERATED_TABLE_C_PATH
+    if args.output_source is not None:
+        out_file_source = args.output_source
+
+    with open(out_file_source, "w") as f:
+        f.write(f"/* Generated {len(all_instructions)} instructions */\n")
+        f.write(f'#include "decoder_table_gen.h"\n\n')
         f.write("const bal_decoder_entry_t TABLE[] = {\n")
         for inst in all_instructions:
             f.write(
                 f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X} }}, \n'
             )
         f.write("};")
-    print(f"Generated ARM decoder table -> {out_file_path}")
+    print(f"Generated ARM decoder table source file -> {out_file_source}")

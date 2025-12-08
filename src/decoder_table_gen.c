@@ -1,12 +1,6 @@
 /* Generated 2807 instructions */
-#include <stdint.h>
+#include "decoder_table_gen.h"
 
-typedef struct 
-{
- const char* mnemonic; 
- uint32_t mask;
- uint32_t value;
- } bal_decoder_entry_t;
 const bal_decoder_entry_t TABLE[] = {
     { "AUTIAZ", 0xFFFFFFFF, 0xD503239F }, 
     { "AUTIBZ", 0xFFFFFFFF, 0xD50323DF }, 
