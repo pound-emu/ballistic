@@ -212,6 +212,7 @@ if __name__ == "__main__":
     with open(out_file_header, "w") as f:
         f.write(f"/* Generated header file */\n")
         f.write("#include <stdint.h>\n\n")
+        f.write(f"#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE {len(all_instructions)}\n\n")
         f.write(
             "typedef struct \n{\n const char* mnemonic; \n uint32_t mask;\n uint32_t value;\n} bal_decoder_entry_t;\n"
         )

@@ -1,6 +1,8 @@
 /* Generated header file */
 #include <stdint.h>
 
+#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 2807
+
 typedef struct 
 {
  const char* mnemonic; 
