@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>ZERO (ZT0)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">ZERO (ZT0)</h2><p>Zero ZT0</p>
+      <p class="aml">Zero all bytes of the ZT0 register.</p>
+      <p class="aml">This instruction does not require the PE to be in Streaming SVE mode, and it is expected that this instruction will not experience a significant slowdown due to contention with other PEs that are executing in Streaming SVE mode.</p>
+    
+    <h3 class="classheading"><a id="iclass_mortlach2"/>SME2<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td class="r">1</td><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="l">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="r">0</td><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="r">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">1</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="zero_zt_i_"/><p class="asm-code">ZERO    { ZT0 }</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;</p>
+  <div class="encoding-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSMEEnabled.0" title="function: CheckSMEEnabled()">CheckSMEEnabled</a>();
+<a href="shared_pseudocode.html#impl-aarch64.CheckSMEZT0Enabled.0" title="function: CheckSMEZT0Enabled()">CheckSMEZT0Enabled</a>();
+
+if <a href="shared_pseudocode.html#impl-shared.HaveTME.0" title="function: boolean HaveTME()">HaveTME</a>() &amp;&amp; TSTATE.depth &gt; 0 then
+    <a href="shared_pseudocode.html#impl-aarch64.FailTransaction.2" title="function: FailTransaction(TMFailure cause, boolean retry)">FailTransaction</a>(<a href="shared_pseudocode.html#TMFailure_ERR" title="enumeration TMFailure { TMFailure_CNCL, TMFailure_DBG, TMFailure_ERR, TMFailure_NEST, TMFailure_SIZE, TMFailure_MEM, TMFailure_TRIVIAL, TMFailure_IMP }">TMFailure_ERR</a>, FALSE);
+
+<a href="shared_pseudocode.html#impl-aarch64.ZT0.write.1" title="accessor: ZT0[integer width] = bits(width) value">ZT0</a>[512] = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(512);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

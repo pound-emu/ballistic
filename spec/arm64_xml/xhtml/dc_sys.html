@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>DC -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">DC</h2>
+      <p class="aml">Data Cache operation. For more information, see <a class="armarm-xref" title="Reference to Armv8 ARM section">op0==0b01, cache maintenance, TLB maintenance, and address translation instructions</a>.</p>
+    <p>
+        This is an alias of
+        <a href="sys.html">SYS</a>.
+        This means:
+      </p><ul><li>
+          The encodings in this description are named to match the encodings of
+          <a href="sys.html">SYS</a>.
+        </li><li>The description of <a href="sys.html">SYS</a> gives the operational pseudocode, any <span class="arm-defined-word">constrained unpredictable</span> behavior, and any operational information for this instruction.</li></ul>
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">0</td><td class="l">0</td><td class="r">1</td><td colspan="3" class="lr">op1</td><td class="l">0</td><td>1</td><td>1</td><td class="r">1</td><td colspan="4" class="lr">CRm</td><td colspan="3" class="lr">op2</td><td colspan="5" class="lr">Rt</td></tr><tr class="secondrow"><td colspan="10"/><td class="droppedname">L</td><td colspan="2"/><td colspan="3"/><td colspan="4" class="droppedname">CRn</td><td colspan="4"/><td colspan="3"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="DC_SYS_CR_systeminstrs"/><p class="asm-code">DC  <a href="#sa_dc_op" title="DC instruction name, as listed for DC system instruction group (field &quot;op1:CRm:op2&quot;) [CGDSW (FEAT_MTE2),CGDVAC (FEAT_MTE),CGDVADP (FEAT_MTE),CGDVAP (FEAT_MTE),CGSW (FEAT_MTE2),CGVAC (FEAT_MTE),CGVADP (FEAT_MTE),CGVAP (FEAT_MTE),CIGDPAE (FEAT_MEC),CIGDPAPA (FEAT_RME),CIGDSW (FEAT_MTE2),CIGDVAC (FEAT_MTE),CIGSW (FEAT_MTE2),CIGVAC (FEAT_MTE),CIPAE (FEAT_MEC),CIPAPA (FEAT_RME),CISW,CIVAC,CSW,CVAC,CVADP (FEAT_DPB2),CVAP (FEAT_DPB),CVAU,GVA (FEAT_MTE),GZVA (FEAT_MTE),IGDSW (FEAT_MTE2),IGDVAC (FEAT_MTE2),IGSW (FEAT_MTE2),IGVAC (FEAT_MTE2),ISW,IVAC,ZVA]">&lt;dc_op&gt;</a>, <a href="#sa_xt_1" title="64-bit general-purpose source register (field &quot;Rt&quot;)">&lt;Xt&gt;</a></p><p class="equivto">
+      is equivalent to
+    </p>
+          <p class="asm-code"><a href="sys.html#SYS_CR_systeminstrs">SYS</a> #<a href="#sa_op1" title="3-bit unsigned immediate [0-7] (field &quot;op1&quot;)">&lt;op1&gt;</a>, C7, <a href="#sa_cm" title="Name 'Cm', with 'm' [0-15] (field &quot;CRm&quot;)">&lt;Cm&gt;</a>, #<a href="#sa_op2" title="3-bit unsigned immediate [0-7] (field &quot;op2&quot;)">&lt;op2&gt;</a>, <a href="#sa_xt_1" title="64-bit general-purpose source register (field &quot;Rt&quot;)">&lt;Xt&gt;</a></p>
+          <p class="equivto">
+          and is the preferred disassembly when
+          <span class="pseudocode">SysOp(op1,'0111',CRm,op2) == Sys_DC</span>.
+        </p>
+        </div>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;dc_op&gt;</td><td><a id="sa_dc_op"/>
+        <p>Is a DC instruction name, as listed for the DC system instruction group, 
+      encoded in
+      <q>op1:CRm:op2</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">op1</th>
+                <th class="bitfield">CRm</th>
+                <th class="bitfield">op2</th>
+                <th class="symbol">&lt;dc_op&gt;</th>
+                <th class="symbol">Architectural Feature</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">0110</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">IVAC</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">0110</td>
+                <td class="bitfield">010</td>
+                <td class="symbol">ISW</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">0110</td>
+                <td class="bitfield">011</td>
+                <td class="symbol">IGVAC</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">0110</td>
+                <td class="bitfield">100</td>
+                <td class="symbol">IGSW</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">0110</td>
+                <td class="bitfield">101</td>
+                <td class="symbol">IGDVAC</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">0110</td>
+                <td class="bitfield">110</td>
+                <td class="symbol">IGDSW</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1010</td>
+                <td class="bitfield">010</td>
+                <td class="symbol">CSW</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1010</td>
+                <td class="bitfield">100</td>
+                <td class="symbol">CGSW</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1010</td>
+                <td class="bitfield">110</td>
+                <td class="symbol">CGDSW</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">010</td>
+                <td class="symbol">CISW</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">100</td>
+                <td class="symbol">CIGSW</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">110</td>
+                <td class="symbol">CIGDSW</td>
+                <td class="feature">
+                  FEAT_MTE2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">0100</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">ZVA</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">0100</td>
+                <td class="bitfield">011</td>
+                <td class="symbol">GVA</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">0100</td>
+                <td class="bitfield">100</td>
+                <td class="symbol">GZVA</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1010</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">CVAC</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1010</td>
+                <td class="bitfield">011</td>
+                <td class="symbol">CGVAC</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1010</td>
+                <td class="bitfield">101</td>
+                <td class="symbol">CGDVAC</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1011</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">CVAU</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1100</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">CVAP</td>
+                <td class="feature">
+                  FEAT_DPB
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1100</td>
+                <td class="bitfield">011</td>
+                <td class="symbol">CGVAP</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1100</td>
+                <td class="bitfield">101</td>
+                <td class="symbol">CGDVAP</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1101</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">CVADP</td>
+                <td class="feature">
+                  FEAT_DPB2
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1101</td>
+                <td class="bitfield">011</td>
+                <td class="symbol">CGVADP</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1101</td>
+                <td class="bitfield">101</td>
+                <td class="symbol">CGDVADP</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">CIVAC</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">011</td>
+                <td class="symbol">CIGVAC</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">101</td>
+                <td class="symbol">CIGDVAC</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">100</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">000</td>
+                <td class="symbol">CIPAE</td>
+                <td class="feature">
+                  FEAT_MEC
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">100</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">111</td>
+                <td class="symbol">CIGDPAE</td>
+                <td class="feature">
+                  FEAT_MEC
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">110</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">001</td>
+                <td class="symbol">CIPAPA</td>
+                <td class="feature">
+                  FEAT_RME
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">110</td>
+                <td class="bitfield">1110</td>
+                <td class="bitfield">101</td>
+                <td class="symbol">CIGDPAPA</td>
+                <td class="feature">
+                  FEAT_RME
+                </td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;op1&gt;</td><td><a id="sa_op1"/>
+        
+          <p class="aml">Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op1" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Cm&gt;</td><td><a id="sa_cm"/>
+        
+          <p class="aml">Is a name 'Cm', with 'm' in the range 0 to 15, encoded in the "CRm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;op2&gt;</td><td><a id="sa_op2"/>
+        
+          <p class="aml">Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op2" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xt&gt;</td><td><a id="sa_xt_1"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose source register, encoded in the "Rt" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/><div class="alias_ps_section"><h3 class="pseudocode">Operation</h3><p>The description of <a href="sys.html">SYS</a> gives the operational pseudocode for this instruction.</p></div><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

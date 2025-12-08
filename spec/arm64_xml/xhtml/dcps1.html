@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>DCPS1 -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">DCPS1</h2>
+      <p class="aml">Debug Change PE State to EL1, when executed in Debug state:</p>
+      <ul>
+        <li>If executed at EL0 changes the current Exception level and SP to EL1 using SP_EL1.</li>
+        <li>Otherwise, if executed at ELx, selects SP_ELx.</li>
+      </ul>
+      <p class="aml">The target exception level of a DCPS1 instruction is:</p>
+      <ul>
+        <li>EL1 if the instruction is executed at EL0.</li>
+        <li>Otherwise, the Exception level at which the instruction is executed.</li>
+      </ul>
+      <p class="aml">When the target Exception level of a DCPS1 instruction is ELx, on executing this instruction:</p>
+      <ul>
+        <li><a class="armarm-xref" title="Reference to Armv8 ARM section">ELR_ELx</a> becomes <span class="arm-defined-word">unknown</span>.</li>
+        <li><a class="armarm-xref" title="Reference to Armv8 ARM section">SPSR_ELx</a> becomes <span class="arm-defined-word">unknown</span>.</li>
+        <li><a class="armarm-xref" title="Reference to Armv8 ARM section">ESR_ELx</a> becomes <span class="arm-defined-word">unknown</span>.</li>
+        <li><a class="armarm-xref" title="Reference to Armv8 ARM section">DLR_EL0</a> and <a class="armarm-xref" title="Reference to Armv8 ARM section">DSPSR_EL0</a> become <span class="arm-defined-word">unknown</span>.</li>
+        <li>The endianness is set according to <a class="armarm-xref" title="Reference to Armv8 ARM section">SCTLR_ELx</a>.EE.</li>
+      </ul>
+      <p class="aml">This instruction is <span class="arm-defined-word">undefined</span> at EL0 in Non-secure state if EL2 is implemented and <a class="armarm-xref" title="Reference to Armv8 ARM section">HCR_EL2</a>.TGE == 1.</p>
+      <p class="aml">This instruction is always <span class="arm-defined-word">undefined</span> in Non-debug state.</p>
+      <p class="aml">For more information on the operation of the DCPS&lt;n&gt; instructions, see <a class="armarm-xref" title="Reference to Armv8 ARM section">DCPS</a>.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="l">1</td><td>0</td><td class="r">1</td><td colspan="16" class="lr">imm16</td><td class="l">0</td><td>0</td><td class="r">0</td><td class="l">0</td><td class="r">1</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="3"/><td colspan="16"/><td colspan="3"/><td colspan="2" class="droppedname">LL</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="DCPS1_DC_exception"/><p class="asm-code">DCPS1  {#<a href="#sa_imm" title="Optional 16-bit unsigned immediate [0-65535], default 0 (field &quot;imm16&quot;)">&lt;imm&gt;</a>}</p></div><p class="pseudocode">bits(2) target_level = LL;
+if LL == '00' then UNDEFINED;
+if !<a href="shared_pseudocode.html#impl-shared.Halted.0" title="function: boolean Halted()">Halted</a>() then UNDEFINED;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          <p class="aml">Is an optional 16-bit unsigned immediate, in the range 0 to 65535, defaulting to 0 and encoded in the "imm16" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-shared.DCPSInstruction.1" title="function: DCPSInstruction(bits(2) target_el)">DCPSInstruction</a>(target_level);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

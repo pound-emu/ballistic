@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link href="insn.css" rel="stylesheet" type="text/css"/><meta content="iform.xsl" name="generator"/><title>TSTART -- A64</title></head><body><div align="center" class="htmldiff_header"><table><tbody><tr><td class="old">(old) </td><td class="explain">htmldiff from-</td><td class="new">(new) </td></tr></tbody></table></div><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">TSTART</h2><p class="aml">This instruction starts a new transaction. If the transaction started successfully, the destination register is set to zero. If the transaction failed or was canceled, then all state modifications that were performed transactionally are discarded and the destination register is written with a non-zero value that encodes the cause of the failure.</p><h3 class="classheading"><a id="iclass_system"/>System<span style="font-size:smaller;"><br/>(FEAT_TME)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">1</td><td class="l">0</td><td class="r">0</td><td class="l">0</td><td>1</td><td class="r">1</td><td class="l">0</td><td>0</td><td>1</td><td class="r">1</td><td class="l">0</td><td>0</td><td>0</td><td class="r">0</td><td class="l">0</td><td>1</td><td class="r">1</td><td class="lr" colspan="5">Rt</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="TSTART_BR_systemresult"/><p class="asm-code">TSTART  <a href="#sa_xt" title="64-bit general-purpose destination register (field &quot;Rt&quot;)">&lt;Xt></a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-shared.HaveTME.0" title="function: boolean HaveTME()">HaveTME</a>() then UNDEFINED;
+integer t = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rt);</p><div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xt></td><td><a id="sa_xt"/><p class="aml">Is the 64-bit name of the general-purpose destination register, encoded in the "Rt" field.</p></td></tr></table></div><div class="syntax-notes"/><div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3><p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckTMEEnabled.0" title="function: CheckTMEEnabled()"><del>CheckTMEEnabled</del></a><ins>if !</ins><a href="shared_pseudocode.html#impl-aarch64.IsTMEEnabled.0" title="function: boolean IsTMEEnabled()"><ins>IsTMEEnabled</ins></a><ins>() then UNDEFINED;
+</ins><del>();
+</del>
+boolean IsEL1Regime;
+bit tme;
+bit tmt;
+case PSTATE.EL of
+    when <a href="shared_pseudocode.html#EL0" title="constant bits(2) EL0 = '00'">EL0</a>
+        IsEL1Regime = <a href="shared_pseudocode.html#impl-shared.S1TranslationRegime.0" title="function: bits(2) S1TranslationRegime()">S1TranslationRegime</a>() == <a href="shared_pseudocode.html#EL1" title="constant bits(2) EL1 = '01'">EL1</a>;
+        if IsEL1Regime then
+            tme = SCTLR_EL1.TME0;
+            tmt = SCTLR_EL1.TMT0;
+        else
+            tme = SCTLR_EL2.TME0;
+            tmt = SCTLR_EL2.TMT0;
+    when <a href="shared_pseudocode.html#EL1" title="constant bits(2) EL1 = '01'">EL1</a>
+        tme = SCTLR_EL1.TME;
+        tmt = SCTLR_EL1.TMT;
+    when <a href="shared_pseudocode.html#EL2" title="constant bits(2) EL2 = '10'">EL2</a>
+        tme = SCTLR_EL2.TME;
+        tmt = SCTLR_EL2.TMT;
+    when <a href="shared_pseudocode.html#EL3" title="constant bits(2) EL3 = '11'">EL3</a>
+        tme = SCTLR_EL3.TME;
+        tmt = SCTLR_EL3.TMT;
+    otherwise
+        <a href="shared_pseudocode.html#impl-shared.Unreachable.0" title="function: Unreachable()">Unreachable</a>();
+
+enable  = tme == '1';
+trivial = tmt == '1';
+
+if !enable then
+    <a href="shared_pseudocode.html#impl-aarch64.TransactionStartTrap.1" title="function: TransactionStartTrap(integer dreg)">TransactionStartTrap</a>(t);
+elsif trivial then
+    TSTATE.nPC = <a href="shared_pseudocode.html#impl-shared.NextInstrAddr.1" title="function: bits(N) NextInstrAddr(integer N)">NextInstrAddr</a>(64);
+    TSTATE.Rt = t;
+    <a href="shared_pseudocode.html#impl-aarch64.FailTransaction.2" title="function: FailTransaction(TMFailure cause, boolean retry)">FailTransaction</a>(<a href="shared_pseudocode.html#TMFailure_TRIVIAL" title="enumeration TMFailure { TMFailure_CNCL, TMFailure_DBG, TMFailure_ERR, TMFailure_NEST, TMFailure_SIZE, TMFailure_MEM, TMFailure_TRIVIAL, TMFailure_IMP }">TMFailure_TRIVIAL</a>, FALSE);
+elsif <a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() &amp;&amp; PSTATE.SM == '1' then
+    <a href="shared_pseudocode.html#impl-aarch64.FailTransaction.2" title="function: FailTransaction(TMFailure cause, boolean retry)">FailTransaction</a>(<a href="shared_pseudocode.html#TMFailure_ERR" title="enumeration TMFailure { TMFailure_CNCL, TMFailure_DBG, TMFailure_ERR, TMFailure_NEST, TMFailure_SIZE, TMFailure_MEM, TMFailure_TRIVIAL, TMFailure_IMP }">TMFailure_ERR</a>, FALSE);
+elsif TSTATE.depth == 255 then
+    <a href="shared_pseudocode.html#impl-aarch64.FailTransaction.2" title="function: FailTransaction(TMFailure cause, boolean retry)">FailTransaction</a>(<a href="shared_pseudocode.html#TMFailure_NEST" title="enumeration TMFailure { TMFailure_CNCL, TMFailure_DBG, TMFailure_ERR, TMFailure_NEST, TMFailure_SIZE, TMFailure_MEM, TMFailure_TRIVIAL, TMFailure_IMP }">TMFailure_NEST</a>, FALSE);
+elsif TSTATE.depth == 0 then
+    TSTATE.nPC = <a href="shared_pseudocode.html#impl-shared.NextInstrAddr.1" title="function: bits(N) NextInstrAddr(integer N)">NextInstrAddr</a>(64);
+    TSTATE.Rt = t;
+    <a href="shared_pseudocode.html#impl-shared.ClearExclusiveLocal.1" title="function: ClearExclusiveLocal(integer processorid)">ClearExclusiveLocal</a>(<a href="shared_pseudocode.html#impl-shared.ProcessorID.0" title="function: integer ProcessorID()">ProcessorID</a>());
+    <a href="shared_pseudocode.html#impl-aarch64.TakeTransactionCheckpoint.0" title="function: TakeTransactionCheckpoint()">TakeTransactionCheckpoint</a>();
+    <a href="shared_pseudocode.html#impl-aarch64.StartTrackingTransactionalReadsWrites.0" title="function: StartTrackingTransactionalReadsWrites()">StartTrackingTransactionalReadsWrites</a>();
+
+TSTATE.depth = TSTATE.depth + 1;
+<a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[t, 64] = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(64);</p></div><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa <ins>v33.59</ins><del>v33.53</del>, AdvSIMD <ins>v29.12</ins><del>v29.11</del>, pseudocode <ins>v2022-12_rel</ins><del>no_diffs_2022_12_RC1_0</del>, sve <ins>v2022-12_relb</ins><del>shoji_no_diff_2022_12_rc1</del>
+      ; Build timestamp: <ins>2022-12-14T22</ins><del>2022-11-21T13</del>:<ins>29</ins><del>57</del>
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p><div align="center" class="htmldiff_header"><table><tbody><tr><td class="old">(old) </td><td class="explain">htmldiff from-</td><td class="new">(new) </td></tr></tbody></table></div></body></html>

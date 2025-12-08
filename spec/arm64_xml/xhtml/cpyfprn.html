@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>CPYFPRN, CPYFMRN, CPYFERN -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">CPYFPRN, CPYFMRN, CPYFERN</h2>
+      <p class="aml">Memory Copy Forward-only, reads non-temporal. These instructions perform a memory copy. The prologue, main, and epilogue instructions are expected to be run in succession and to appear consecutively in memory: CPYFPRN, then CPYFMRN, and then CPYFERN.</p>
+      <p class="aml">CPYFPRN performs some preconditioning of the arguments suitable for using the CPYFMRN instruction, and performs an <span class="arm-defined-word">implementation defined</span> amount of the memory copy. CPYFMRN performs an <span class="arm-defined-word">implementation defined</span> amount of the memory copy. CPYFERN performs the last part of the memory copy.</p>
+      <div class="note"><hr class="note"/><h4>Note</h4>
+        <p class="aml">The inclusion of <span class="arm-defined-word">implementation defined</span> amounts of memory copy allows some optimization of the size that can be performed.</p>
+      <hr class="note"/></div>
+      <p class="aml">The memory copy performed by these instructions is in the forward direction only, so the instructions are suitable for a memory copy only where there is no overlap between the source and destination locations, or where the source address is greater than the destination address.</p>
+      <p class="aml">The architecture supports two algorithms for the memory copy: option A and option B. Which algorithm is used is <span class="arm-defined-word">implementation defined</span>.</p>
+      <div class="note"><hr class="note"/><h4>Note</h4>
+        <p class="aml">Portable software should not assume that the choice of algorithm is constant.</p>
+      <hr class="note"/></div>
+      <p class="aml">After execution of CPYFPRN, option A (which results in encoding PSTATE.C = 0):</p>
+      <ul>
+        <li>If Xn&lt;63&gt; == 1, the copy size is saturated to 0x7FFFFFFFFFFFFFFF.</li>
+        <li>Xs holds the original Xs + saturated Xn.</li>
+        <li>Xd holds the original Xd + saturated Xn.</li>
+        <li>Xn holds -1* saturated Xn + an <span class="arm-defined-word">implementation defined</span> number of bytes copied.</li>
+        <li>PSTATE.{N,Z,V} are set to {0,0,0}.</li>
+      </ul>
+      <p class="aml">After execution of CPYFPRN, option B (which results in encoding PSTATE.C = 1):</p>
+      <ul>
+        <li>If Xn&lt;63&gt; == 1, the copy size is saturated to 0x7FFFFFFFFFFFFFFF.</li>
+        <li>Xs holds the original Xs + an <span class="arm-defined-word">implementation defined</span> number of bytes copied.</li>
+        <li>Xd holds the original Xd + an <span class="arm-defined-word">implementation defined</span> number of bytes copied.</li>
+        <li>Xn holds the saturated Xn - an <span class="arm-defined-word">implementation defined</span> number of bytes copied.</li>
+        <li>PSTATE.{N,Z,V} are set to {0,0,0}.</li>
+      </ul>
+      <p class="aml">For CPYFMRN, option A (encoded by PSTATE.C = 0), the format of the arguments is:</p>
+      <ul>
+        <li>Xn is treated as a signed 64-bit number and holds -1* the number of bytes remaining to be copied in the memory copy in total.</li>
+        <li>Xs holds the lowest address that the copy is copied from -Xn.</li>
+        <li>Xd holds the lowest address that the copy is made to -Xn.</li>
+        <li>At the end of the instruction, the value of Xn is written back with -1* the number of bytes remaining to be copied in the memory copy in total.</li>
+      </ul>
+      <p class="aml">For CPYFMRN, option B (encoded by PSTATE.C = 1), the format of the arguments is:</p>
+      <ul>
+        <li>Xn holds the number of bytes remaining to be copied in the memory copy in total.</li>
+        <li>Xs holds the lowest address that the copy is copied from.</li>
+        <li>Xd holds the lowest address that the copy is copied to.</li>
+        <li>At the end of the instruction:<ul><li>the value of Xn is written back with the number of bytes remaining to be copied in the memory copy in total.</li><li>the value of Xs is written back with the lowest address that has not been copied from.</li><li>the value of Xd is written back with the lowest address that has not been copied to.</li></ul></li>
+      </ul>
+      <p class="aml">For CPYFERN, option A (encoded by PSTATE.C = 0), the format of the arguments is:</p>
+      <ul>
+        <li>Xn is treated as a signed 64-bit number and holds -1* the number of bytes remaining to be copied in the memory copy in total.</li>
+        <li>Xs holds the lowest address that the copy is copied from -Xn.</li>
+        <li>Xd holds the lowest address that the copy is made to -Xn.</li>
+        <li>At the end of the instruction, the value of Xn is written back with 0.</li>
+      </ul>
+      <p class="aml">For CPYFERN, option B (encoded by PSTATE.C = 1), the format of the arguments is:</p>
+      <ul>
+        <li>Xn holds the number of bytes remaining to be copied in the memory copy in total.</li>
+        <li>Xs holds the lowest address that the copy is copied from.</li>
+        <li>Xd holds the lowest address that the copy is copied to.</li>
+        <li>At the end of the instruction:<ul><li>the value of Xn is written back with 0.</li><li>the value of Xs is written back with the lowest address that has not been copied from.</li><li>the value of Xd is written back with the lowest address that has not been copied to.</li></ul></li>
+      </ul>
+    
+    <h3 class="classheading"><a id="iclass_general"/>Integer<span style="font-size:smaller;"><br/>(FEAT_MOPS)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td colspan="2" class="lr">sz</td><td class="l">0</td><td>1</td><td class="r">1</td><td class="lr">0</td><td class="l">0</td><td class="r">1</td><td colspan="2" class="lr">op1</td><td class="lr">0</td><td colspan="5" class="lr">Rs</td><td class="l">1</td><td>0</td><td>0</td><td class="r">0</td><td class="l">0</td><td class="r">1</td><td colspan="5" class="lr">Rn</td><td colspan="5" class="lr">Rd</td></tr><tr class="secondrow"><td colspan="2"/><td colspan="3"/><td/><td colspan="2"/><td colspan="2"/><td/><td colspan="5"/><td colspan="4" class="droppedname">op2</td><td colspan="2"/><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding">Epilogue<span class="bitdiff"> (op1 == 10)</span></h4><a id="CPYFERN_CPY_memcms"/><p class="asm-code">CPYFERN  [<a href="#sa_xd_1" title="64-bit general-purpose register that holds an encoding of destination address (field &quot;Rd&quot;)">&lt;Xd&gt;</a>]!, [<a href="#sa_xs_1" title="64-bit general-purpose register that holds an encoding of source address (field &quot;Rs&quot;)">&lt;Xs&gt;</a>]!, <a href="#sa_xn_2" title="64-bit general-purpose register that holds an encoding of number of bytes to be transferred and is set to zero at the end of the instruction (field &quot;Rn&quot;)">&lt;Xn&gt;</a>!</p></div><div class="encoding"><h4 class="encoding">Main<span class="bitdiff"> (op1 == 01)</span></h4><a id="CPYFMRN_CPY_memcms"/><p class="asm-code">CPYFMRN  [<a href="#sa_xd_1" title="64-bit general-purpose register that holds an encoding of destination address (field &quot;Rd&quot;)">&lt;Xd&gt;</a>]!, [<a href="#sa_xs_1" title="64-bit general-purpose register that holds an encoding of source address (field &quot;Rs&quot;)">&lt;Xs&gt;</a>]!, <a href="#sa_xn_1" title="64-bit general-purpose register that holds an encoding of number of bytes to be transferred (field &quot;Rn&quot;)">&lt;Xn&gt;</a>!</p></div><div class="encoding"><h4 class="encoding">Prologue<span class="bitdiff"> (op1 == 00)</span></h4><a id="CPYFPRN_CPY_memcms"/><p class="asm-code">CPYFPRN  [<a href="#sa_xd" title="64-bit general-purpose register that holds the destination address and is updated by the instruction (field &quot;Rd&quot;)">&lt;Xd&gt;</a>]!, [<a href="#sa_xs" title="64-bit general-purpose register that holds the source address and is updated by the instruction (field &quot;Rs&quot;)">&lt;Xs&gt;</a>]!, <a href="#sa_xn" title="64-bit general-purpose register that holds the number of bytes to be transferred and is updated by the instruction to encode the remaining size and destination (field &quot;Rn&quot;)">&lt;Xn&gt;</a>!</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-shared.HaveFeatMOPS.0" title="function: boolean HaveFeatMOPS()">HaveFeatMOPS</a>() then UNDEFINED;
+if sz != '00' then UNDEFINED;
+
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer s = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rs);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+bits(4) options = op2;
+
+<a href="shared_pseudocode.html#MOPSStage" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage</a> stage;
+case op1 of
+    when '00' stage = <a href="shared_pseudocode.html#MOPSStage_Prologue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Prologue</a>;
+    when '01' stage = <a href="shared_pseudocode.html#MOPSStage_Main" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Main</a>;
+    when '10' stage = <a href="shared_pseudocode.html#MOPSStage_Epilogue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Epilogue</a>;
+    otherwise SEE "Memory Copy and Memory Set";
+
+<a href="shared_pseudocode.html#impl-aarch64.CheckMOPSEnabled.0" title="function: CheckMOPSEnabled()">CheckMOPSEnabled</a>();
+
+if s == n || s == d || n == d || d == 31 || s == 31 || n == 31 then
+    c = <a href="shared_pseudocode.html#impl-shared.ConstrainUnpredictable.1" title="function: Constraint ConstrainUnpredictable(Unpredictable which)">ConstrainUnpredictable</a>(<a href="shared_pseudocode.html#Unpredictable_MOPSOVERLAP31" title="enumeration Unpredictable {  Unpredictable_VMSR,  Unpredictable_WBOVERLAPLD,  Unpredictable_WBOVERLAPST,  Unpredictable_LDPOVERLAP,  Unpredictable_BASEOVERLAP,  Unpredictable_DATAOVERLAP,  Unpredictable_DEVPAGE2,  Unpredictable_INSTRDEVICE,  Unpredictable_RESCPACR,  Unpredictable_RESMAIR,  Unpredictable_S1CTAGGED,  Unpredictable_S2RESMEMATTR,  Unpredictable_RESTEXCB,  Unpredictable_RESPRRR,  Unpredictable_RESDACR,  Unpredictable_RESVTCRS,  Unpredictable_RESTnSZ,  Unpredictable_RESTCF,  Unpredictable_DEVICETAGSTORE,  Unpredictable_OORTnSZ,  Unpredictable_LARGEIPA,  Unpredictable_ESRCONDPASS,  Unpredictable_ILZEROIT,  Unpredictable_ILZEROT,  Unpredictable_BPVECTORCATCHPRI,  Unpredictable_VCMATCHHALF,   Unpredictable_VCMATCHDAPA,  Unpredictable_WPMASKANDBAS,  Unpredictable_WPBASCONTIGUOUS,  Unpredictable_RESWPMASK,  Unpredictable_WPMASKEDBITS,  Unpredictable_RESBPWPCTRL,  Unpredictable_BPNOTIMPL,  Unpredictable_RESBPTYPE,  Unpredictable_BPNOTCTXCMP,  Unpredictable_BPMATCHHALF,  Unpredictable_BPMISMATCHHALF,  Unpredictable_RESTARTALIGNPC,  Unpredictable_RESTARTZEROUPPERPC,  Unpredictable_ZEROUPPER,   Unpredictable_ERETZEROUPPERPC,   Unpredictable_A32FORCEALIGNPC,  Unpredictable_SMD,  Unpredictable_NONFAULT,  Unpredictable_SVEZEROUPPER,  Unpredictable_SVELDNFDATA,  Unpredictable_SVELDNFZERO,  Unpredictable_CHECKSPNONEACTIVE,  Unpredictable_SMEZEROUPPER,  Unpredictable_NVNV1,  Unpredictable_Shareability,  Unpredictable_AFUPDATE,  Unpredictable_DBUPDATE,  Unpredictable_IESBinDebug,  Unpredictable_BADPMSFCR,  Unpredictable_ZEROBTYPE,  Unpredictable_EL2TIMESTAMP, Unpredictable_EL1TIMESTAMP,  Unpredictable_RESERVEDNSxB,  Unpredictable_WFxTDEBUG,  Unpredictable_LS64UNSUPPORTED,   Unpredictable_MISALIGNEDATOMIC,  Unpredictable_CLEARERRITEZERO,   Unpredictable_ALUEXCEPTIONRETURN,  Unpredictable_IGNORETRAPINDEBUG,  Unpredictable_DBGxVR_RESS,  Unpredictable_PMUEVENTCOUNTER,  Unpredictable_PMSCR_PCT,   Unpredictable_CounterReservedForEL2,  Unpredictable_BRBFILTRATE,   Unpredictable_MOPSOVERLAP31,  Unpredictable_STOREONLYTAGCHECKEDCAS,  Unpredictable_RESTC }">Unpredictable_MOPSOVERLAP31</a>);
+    assert c IN {<a href="shared_pseudocode.html#Constraint_UNDEF" title="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNDEF</a>, <a href="shared_pseudocode.html#Constraint_NOP" title="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NOP</a>};
+    case c of
+        when <a href="shared_pseudocode.html#Constraint_UNDEF" title="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNDEF</a>      UNDEFINED;
+        when <a href="shared_pseudocode.html#Constraint_NOP" title="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NOP</a>        <a href="shared_pseudocode.html#impl-shared.EndOfInstruction.0" title="function: EndOfInstruction()">EndOfInstruction</a>();</p>
+  <div class="encoding-notes">
+      <p class="aml">For information about the <span class="arm-defined-word">constrained unpredictable</span> behavior of this instruction, see <a class="armarm-xref" title="Reference to Armv8 ARM section">Architectural Constraints on UNPREDICTABLE behaviors</a>, and particularly <a class="armarm-xref" title="Reference to Armv8 ARM section">Memory Copy and Memory Set CPY*</a>.</p>
+    </div><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xd&gt;</td><td><a id="sa_xd_1"/>
+        
+          <p class="aml">For the epilogue and main variant: is the 64-bit name of the general-purpose register that holds an encoding of the destination address, encoded in the "Rd" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_xd"/>
+        
+          
+          
+        
+        
+          <p class="aml">For the prologue variant: is the 64-bit name of the general-purpose register that holds the destination address and is updated by the instruction, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xs&gt;</td><td><a id="sa_xs_1"/>
+        
+          <p class="aml">For the epilogue and main variant: is the 64-bit name of the general-purpose register that holds an encoding of the source address, encoded in the "Rs" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_xs"/>
+        
+          
+          
+        
+        
+          <p class="aml">For the prologue variant: is the 64-bit name of the general-purpose register that holds the source address and is updated by the instruction, encoded in the "Rs" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xn&gt;</td><td><a id="sa_xn_2"/>
+        
+          
+          
+        
+        
+          <p class="aml">For the epilogue variant: is the 64-bit name of the general-purpose register that holds an encoding of the number of bytes to be transferred and is set to zero at the end of the instruction, encoded in the "Rn" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_xn_1"/>
+        
+          
+          
+        
+        
+          <p class="aml">For the main variant: is the 64-bit name of the general-purpose register that holds an encoding of the number of bytes to be transferred, encoded in the "Rn" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_xn"/>
+        
+          
+          
+        
+        
+          <p class="aml">For the prologue variant: is the 64-bit name of the general-purpose register that holds the number of bytes to be transferred and is updated by the instruction to encode the remaining size and destination, encoded in the "Rn" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">integer N = <a href="shared_pseudocode.html#impl-aarch64.MaxBlockSizeCopiedBytes.0" title="function: integer MaxBlockSizeCopiedBytes()">MaxBlockSizeCopiedBytes</a>();
+bits(64) toaddress   = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[d, 64];
+bits(64) fromaddress = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[s, 64];
+bits(64) cpysize     = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[n, 64];
+bits(4) nzcv = PSTATE.&lt;N,Z,C,V&gt;;
+bits(64) stagecpysize;
+bits(8*N) readdata;
+integer B;
+
+boolean supports_option_a = <a href="shared_pseudocode.html#impl-aarch64.CPYFOptionA.0" title="function: boolean CPYFOptionA()">CPYFOptionA</a>();
+boolean rprivileged;
+boolean wprivileged;
+
+case PSTATE.EL of
+    when <a href="shared_pseudocode.html#EL0" title="constant bits(2) EL0 = '00'">EL0</a>
+        rprivileged = FALSE;
+        wprivileged = FALSE;
+    when <a href="shared_pseudocode.html#EL1" title="constant bits(2) EL1 = '01'">EL1</a>
+        if <a href="shared_pseudocode.html#impl-shared.EL2Enabled.0" title="function: boolean EL2Enabled()">EL2Enabled</a>() &amp;&amp; <a href="shared_pseudocode.html#impl-shared.HaveNVExt.0" title="function: boolean HaveNVExt()">HaveNVExt</a>() &amp;&amp; HCR_EL2.&lt;NV,NV1&gt; == '11' then
+            rprivileged = TRUE;
+            wprivileged = TRUE;
+        else
+            rprivileged = options&lt;1&gt; == '0';
+            wprivileged = options&lt;0&gt; == '0';
+    when <a href="shared_pseudocode.html#EL2" title="constant bits(2) EL2 = '10'">EL2</a>
+        if <a href="shared_pseudocode.html#impl-shared.HaveVirtHostExt.0" title="function: boolean HaveVirtHostExt()">HaveVirtHostExt</a>() &amp;&amp; HCR_EL2.&lt;E2H,TGE&gt; == '11' then
+            rprivileged = options&lt;1&gt; == '0';
+            wprivileged = options&lt;0&gt; == '0';
+        else
+            rprivileged = TRUE;
+            wprivileged = TRUE;
+    when <a href="shared_pseudocode.html#EL3" title="constant bits(2) EL3 = '11'">EL3</a>
+        rprivileged = TRUE;
+        wprivileged = TRUE;
+
+if <a href="shared_pseudocode.html#impl-shared.HaveUAOExt.0" title="function: boolean HaveUAOExt()">HaveUAOExt</a>() &amp;&amp; PSTATE.UAO == '1' then
+    rprivileged = PSTATE.EL != <a href="shared_pseudocode.html#EL0" title="constant bits(2) EL0 = '00'">EL0</a>;
+    wprivileged = PSTATE.EL != <a href="shared_pseudocode.html#EL0" title="constant bits(2) EL0 = '00'">EL0</a>;
+
+boolean rnontemporal = options&lt;3&gt; == '1';
+boolean wnontemporal = options&lt;2&gt; == '1';
+<a href="shared_pseudocode.html#AccessDescriptor" title="type AccessDescriptor is ( AccessType acctype, bits(2) el, SecurityState ss, boolean acqsc, boolean acqpc, boolean relsc, boolean limitedordered, boolean exclusive, boolean atomicop, MemAtomicOp modop, boolean nontemporal, boolean read, boolean write, CacheOp cacheop, CacheOpScope opscope, CacheType cachetype, boolean pan, boolean transactional, boolean nonfault, boolean firstfault, boolean first, boolean contiguous, boolean streamingsve, boolean ls64, boolean mops, boolean rcw, boolean rcws, boolean toplevel, VARange varange, boolean a32lsmd, boolean tagchecked, boolean tagaccess, MPAMinfo mpam )">AccessDescriptor</a> raccdesc = <a href="shared_pseudocode.html#impl-shared.CreateAccDescMOPS.3" title="function: AccessDescriptor CreateAccDescMOPS(MemOp memop, boolean privileged, boolean nontemporal)">CreateAccDescMOPS</a>(<a href="shared_pseudocode.html#MemOp_LOAD" title="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a>, rprivileged, rnontemporal);
+<a href="shared_pseudocode.html#AccessDescriptor" title="type AccessDescriptor is ( AccessType acctype, bits(2) el, SecurityState ss, boolean acqsc, boolean acqpc, boolean relsc, boolean limitedordered, boolean exclusive, boolean atomicop, MemAtomicOp modop, boolean nontemporal, boolean read, boolean write, CacheOp cacheop, CacheOpScope opscope, CacheType cachetype, boolean pan, boolean transactional, boolean nonfault, boolean firstfault, boolean first, boolean contiguous, boolean streamingsve, boolean ls64, boolean mops, boolean rcw, boolean rcws, boolean toplevel, VARange varange, boolean a32lsmd, boolean tagchecked, boolean tagaccess, MPAMinfo mpam )">AccessDescriptor</a> waccdesc = <a href="shared_pseudocode.html#impl-shared.CreateAccDescMOPS.3" title="function: AccessDescriptor CreateAccDescMOPS(MemOp memop, boolean privileged, boolean nontemporal)">CreateAccDescMOPS</a>(<a href="shared_pseudocode.html#MemOp_STORE" title="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_STORE</a>, wprivileged, wnontemporal);
+
+if stage == <a href="shared_pseudocode.html#MOPSStage_Prologue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Prologue</a> then
+    if cpysize&lt;63&gt; == '1' then cpysize = 0x7FFFFFFFFFFFFFFF&lt;63:0&gt;;
+
+    if supports_option_a then
+        nzcv = '0000';
+        // Copy in the forward direction offsets the arguments.
+        toaddress   = toaddress + cpysize;
+        fromaddress = fromaddress + cpysize;
+        cpysize     = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(64) - cpysize;
+    else
+        nzcv = '0010';
+
+    // IMP DEF selection of the amount covered by pre-processing.
+    stagecpysize = <a href="shared_pseudocode.html#impl-aarch64.CPYPreSizeChoice.3" title="function: bits(64) CPYPreSizeChoice(bits(64) toaddress, bits(64) fromaddress, bits(64) cpysize)">CPYPreSizeChoice</a>(toaddress, fromaddress, cpysize);
+    assert stagecpysize&lt;63&gt; == cpysize&lt;63&gt; || stagecpysize == <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(64);
+
+    if <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(cpysize) &gt; 0 then
+        assert <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(stagecpysize) &lt;= <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(cpysize);
+    else
+        assert <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(stagecpysize) &gt;= <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(cpysize);
+else
+    boolean zero_size_exceptions = <a href="shared_pseudocode.html#impl-aarch64.MemCpyZeroSizeCheck.0" title="function: boolean MemCpyZeroSizeCheck()">MemCpyZeroSizeCheck</a>();
+
+    // Check if this version is consistent with the state of the call.
+    if zero_size_exceptions || <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(cpysize) != 0 then
+        if supports_option_a then
+            if nzcv&lt;1&gt; == '1' then   // PSTATE.C
+                boolean wrong_option  = TRUE;
+                boolean from_epilogue = stage == <a href="shared_pseudocode.html#MOPSStage_Epilogue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Epilogue</a>;
+                <a href="shared_pseudocode.html#impl-aarch64.MismatchedMemCpyException.7" title="function: MismatchedMemCpyException(boolean option_a, integer destreg, integer srcreg, integer sizereg, boolean wrong_option, boolean from_epilogue, bits(4) options)">MismatchedMemCpyException</a>(supports_option_a, d, s, n, wrong_option,
+                from_epilogue, options);
+        else
+            if nzcv&lt;1&gt; == '0' then   // PSTATE.C
+                boolean wrong_option  = TRUE;
+                boolean from_epilogue = stage == <a href="shared_pseudocode.html#MOPSStage_Epilogue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Epilogue</a>;
+                <a href="shared_pseudocode.html#impl-aarch64.MismatchedMemCpyException.7" title="function: MismatchedMemCpyException(boolean option_a, integer destreg, integer srcreg, integer sizereg, boolean wrong_option, boolean from_epilogue, bits(4) options)">MismatchedMemCpyException</a>(supports_option_a, d, s, n, wrong_option,
+                from_epilogue, options);
+
+    bits(64) postsize = <a href="shared_pseudocode.html#impl-aarch64.CPYPostSizeChoice.3" title="function: bits(64) CPYPostSizeChoice(bits(64) toaddress, bits(64) fromaddress, bits(64) cpysize)">CPYPostSizeChoice</a>(toaddress, fromaddress, cpysize);
+    assert postsize&lt;63&gt; == cpysize&lt;63&gt; || <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(postsize) == 0;
+
+    if stage == <a href="shared_pseudocode.html#MOPSStage_Main" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Main</a> then
+        stagecpysize = cpysize - postsize;
+
+        // Check if the parameters to this instruction are valid.
+        if <a href="shared_pseudocode.html#impl-aarch64.MemCpyParametersIllformedM.3" title="function: boolean MemCpyParametersIllformedM(bits(64) toaddress, bits(64) fromaddress, bits(64) cpysize)">MemCpyParametersIllformedM</a>(toaddress, fromaddress, cpysize) then
+            boolean wrong_option  = FALSE;
+            boolean from_epilogue = FALSE;
+            <a href="shared_pseudocode.html#impl-aarch64.MismatchedMemCpyException.7" title="function: MismatchedMemCpyException(boolean option_a, integer destreg, integer srcreg, integer sizereg, boolean wrong_option, boolean from_epilogue, bits(4) options)">MismatchedMemCpyException</a>(supports_option_a, d, s, n, wrong_option,
+            from_epilogue, options);
+    else
+        stagecpysize = postsize;
+
+        // Check if the parameters to this instruction are valid for the epilogue.
+        if (cpysize != postsize || <a href="shared_pseudocode.html#impl-aarch64.MemCpyParametersIllformedE.3" title="function: boolean MemCpyParametersIllformedE(bits(64) toaddress, bits(64) fromaddress, bits(64) cpysize)">MemCpyParametersIllformedE</a>(toaddress, fromaddress, cpysize)) then
+            boolean wrong_option  = FALSE;
+            boolean from_epilogue = TRUE;
+            <a href="shared_pseudocode.html#impl-aarch64.MismatchedMemCpyException.7" title="function: MismatchedMemCpyException(boolean option_a, integer destreg, integer srcreg, integer sizereg, boolean wrong_option, boolean from_epilogue, bits(4) options)">MismatchedMemCpyException</a>(supports_option_a, d, s, n, wrong_option,
+            from_epilogue, options);
+
+if supports_option_a then
+    while <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(stagecpysize) != 0 do
+        // IMP DEF selection of the block size that is worked on. While many
+        // implementations might make this constant, that is not assumed.
+        B = <a href="shared_pseudocode.html#impl-aarch64.CPYSizeChoice.3" title="function: integer CPYSizeChoice(bits(64) toaddress, bits(64) fromaddress, bits(64) cpysize)">CPYSizeChoice</a>(toaddress, fromaddress, cpysize);
+        assert B &lt;= -1*<a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(stagecpysize);
+
+        readdata&lt;B*8-1:0&gt; = <a href="shared_pseudocode.html#impl-aarch64.Mem.read.3" title="accessor: bits(size*8) Mem[bits(64) address, integer size, AccessDescriptor accdesc]">Mem</a>[fromaddress + cpysize, B, raccdesc];
+        Mem[toaddress + cpysize, B, waccdesc] = readdata&lt;B*8-1:0&gt;;
+        cpysize = cpysize + B;
+        stagecpysize = stagecpysize + B;
+
+        if stage != <a href="shared_pseudocode.html#MOPSStage_Prologue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Prologue</a> then
+            <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[n, 64] = cpysize;
+else
+    while <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(stagecpysize) &gt; 0 do
+        // IMP DEF selection of the block size that is worked on. While many
+        // implementations might make this constant, that is not assumed.
+        B = <a href="shared_pseudocode.html#impl-aarch64.CPYSizeChoice.3" title="function: integer CPYSizeChoice(bits(64) toaddress, bits(64) fromaddress, bits(64) cpysize)">CPYSizeChoice</a>(toaddress, fromaddress, cpysize);
+        assert B &lt;= <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(stagecpysize);
+
+        readdata&lt;B*8-1:0&gt; = <a href="shared_pseudocode.html#impl-aarch64.Mem.read.3" title="accessor: bits(size*8) Mem[bits(64) address, integer size, AccessDescriptor accdesc]">Mem</a>[fromaddress, B, raccdesc];
+        Mem[toaddress, B, waccdesc] = readdata&lt;B*8-1:0&gt;;
+        fromaddress = fromaddress + B;
+        toaddress   = toaddress + B;
+
+        cpysize = cpysize - B;
+        stagecpysize = stagecpysize - B;
+
+        if stage != <a href="shared_pseudocode.html#MOPSStage_Prologue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Prologue</a> then
+            <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[n, 64] = cpysize;
+            <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, 64] = toaddress;
+            <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[s, 64] = fromaddress;
+
+if stage == <a href="shared_pseudocode.html#MOPSStage_Prologue" title="enumeration MOPSStage { MOPSStage_Prologue, MOPSStage_Main, MOPSStage_Epilogue }">MOPSStage_Prologue</a> then
+    <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[n, 64] = cpysize;
+    <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, 64] = toaddress;
+    <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[s, 64] = fromaddress;
+    PSTATE.&lt;N,Z,C,V&gt; = nzcv;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

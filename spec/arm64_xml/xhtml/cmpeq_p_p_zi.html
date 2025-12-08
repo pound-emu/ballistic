@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>CMP&lt;cc&gt; (immediate)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">CMP&lt;cc&gt; (immediate)</h2><p>Compare vector to immediate</p>
+      <p class="aml">Compare active integer elements in the source vector with an immediate, and place the boolean results of the specified comparison in the corresponding elements of the destination predicate. Inactive elements in the destination predicate register are set to zero. Sets the <span class="arm-defined-word">First</span> (N), <span class="arm-defined-word">None</span> (Z), <span class="arm-defined-word">!Last</span> (C) condition flags based on the predicate result, and the V flag to zero.</p>
+      <p class="aml"/>
+      <table class="valuetable">
+        
+          <thead>
+            <tr>
+              <th class="">&lt;cc&gt;</th>
+              <th class="">Comparison</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="">EQ</td>
+              <td class="">equal</td>
+            </tr>
+            <tr>
+              <td class="">GE</td>
+              <td class="">signed greater than or equal</td>
+            </tr>
+            <tr>
+              <td class="">GT</td>
+              <td class="">signed greater than</td>
+            </tr>
+            <tr>
+              <td class="">HI</td>
+              <td class="">unsigned higher than</td>
+            </tr>
+            <tr>
+              <td class="">HS</td>
+              <td class="">unsigned higher than or same</td>
+            </tr>
+            <tr>
+              <td class="">LE</td>
+              <td class="">signed less than or equal</td>
+            </tr>
+            <tr>
+              <td class="">LO</td>
+              <td class="">unsigned lower than</td>
+            </tr>
+            <tr>
+              <td class="">LS</td>
+              <td class="">unsigned lower than or same</td>
+            </tr>
+            <tr>
+              <td class="">LT</td>
+              <td class="">signed less than</td>
+            </tr>
+            <tr>
+              <td class="">NE</td>
+              <td class="">not equal</td>
+            </tr>
+          </tbody>
+        
+      </table>
+    
+    <p class="desc">
+      It has encodings from 10 classes:
+      <a href="#iclass_eq">Equal</a>
+      , 
+      <a href="#iclass_gt">Greater than</a>
+      , 
+      <a href="#iclass_ge">Greater than or equal</a>
+      , 
+      <a href="#iclass_hi">Higher</a>
+      , 
+      <a href="#iclass_hs">Higher or same</a>
+      , 
+      <a href="#iclass_lt">Less than</a>
+      , 
+      <a href="#iclass_le">Less than or equal</a>
+      , 
+      <a href="#iclass_lo">Lower</a>
+      , 
+      <a href="#iclass_ls">Lower or same</a>
+       and 
+      <a href="#iclass_ne">Not equal</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_eq"/>Equal</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">0</td><td colspan="5" class="lr">imm5</td><td class="lr">1</td><td class="lr">0</td><td class="lr">0</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">0</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="5"/><td/><td/><td/><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmpeq_p_p_zi_"/><p class="asm-code">CMPEQ   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm" title="Signed immediate operand [-16-15] (field &quot;imm5&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_EQ" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_EQ</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(imm5);
+boolean unsigned = FALSE;</p>
+    <h3 class="classheading"><a id="iclass_gt"/>Greater than</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">0</td><td colspan="5" class="lr">imm5</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">1</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="5"/><td/><td/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmpgt_p_p_zi_"/><p class="asm-code">CMPGT   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm" title="Signed immediate operand [-16-15] (field &quot;imm5&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_GT" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_GT</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(imm5);
+boolean unsigned = FALSE;</p>
+    <h3 class="classheading"><a id="iclass_ge"/>Greater than or equal</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">0</td><td colspan="5" class="lr">imm5</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">0</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="5"/><td/><td/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmpge_p_p_zi_"/><p class="asm-code">CMPGE   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm" title="Signed immediate operand [-16-15] (field &quot;imm5&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_GE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_GE</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(imm5);
+boolean unsigned = FALSE;</p>
+    <h3 class="classheading"><a id="iclass_hi"/>Higher</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td colspan="2" class="lr">size</td><td class="lr">1</td><td colspan="7" class="lr">imm7</td><td class="lr">0</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">1</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="7"/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmphi_p_p_zi_"/><p class="asm-code">CMPHI   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm_1" title="Unsigned immediate operand [0-127] (field &quot;imm7&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_GT" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_GT</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm7);
+boolean unsigned = TRUE;</p>
+    <h3 class="classheading"><a id="iclass_hs"/>Higher or same</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td colspan="2" class="lr">size</td><td class="lr">1</td><td colspan="7" class="lr">imm7</td><td class="lr">0</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">0</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="7"/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmphs_p_p_zi_"/><p class="asm-code">CMPHS   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm_1" title="Unsigned immediate operand [0-127] (field &quot;imm7&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_GE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_GE</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm7);
+boolean unsigned = TRUE;</p>
+    <h3 class="classheading"><a id="iclass_lt"/>Less than</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">0</td><td colspan="5" class="lr">imm5</td><td class="lr">0</td><td class="lr">0</td><td class="lr">1</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">0</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="5"/><td/><td/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmplt_p_p_zi_"/><p class="asm-code">CMPLT   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm" title="Signed immediate operand [-16-15] (field &quot;imm5&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_LT" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_LT</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(imm5);
+boolean unsigned = FALSE;</p>
+    <h3 class="classheading"><a id="iclass_le"/>Less than or equal</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">0</td><td colspan="5" class="lr">imm5</td><td class="lr">0</td><td class="lr">0</td><td class="lr">1</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">1</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="5"/><td/><td/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmple_p_p_zi_"/><p class="asm-code">CMPLE   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm" title="Signed immediate operand [-16-15] (field &quot;imm5&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_LE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_LE</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(imm5);
+boolean unsigned = FALSE;</p>
+    <h3 class="classheading"><a id="iclass_lo"/>Lower</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td colspan="2" class="lr">size</td><td class="lr">1</td><td colspan="7" class="lr">imm7</td><td class="lr">1</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">0</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="7"/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmplo_p_p_zi_"/><p class="asm-code">CMPLO   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm_1" title="Unsigned immediate operand [0-127] (field &quot;imm7&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_LT" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_LT</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm7);
+boolean unsigned = TRUE;</p>
+    <h3 class="classheading"><a id="iclass_ls"/>Lower or same</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td colspan="2" class="lr">size</td><td class="lr">1</td><td colspan="7" class="lr">imm7</td><td class="lr">1</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">1</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="7"/><td class="droppedname">lt</td><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmpls_p_p_zi_"/><p class="asm-code">CMPLS   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm_1" title="Unsigned immediate operand [0-127] (field &quot;imm7&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_LE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_LE</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm7);
+boolean unsigned = TRUE;</p>
+    <h3 class="classheading"><a id="iclass_ne"/>Not equal</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">0</td><td colspan="5" class="lr">imm5</td><td class="lr">1</td><td class="lr">0</td><td class="lr">0</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td class="lr">1</td><td colspan="4" class="lr">Pd</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="5"/><td/><td/><td/><td colspan="3"/><td colspan="5"/><td class="droppedname">ne</td><td colspan="4"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="cmpne_p_p_zi_"/><p class="asm-code">CMPNE   <a href="#sa_pd" title="Destination scalable predicate register (field &quot;Pd&quot;)">&lt;Pd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/Z, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_imm" title="Signed immediate operand [-16-15] (field &quot;imm5&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pd);
+<a href="shared_pseudocode.html#SVECmp" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">SVECmp</a> op = <a href="shared_pseudocode.html#Cmp_NE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_NE</a>;
+integer imm = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(imm5);
+boolean unsigned = FALSE;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Pd&gt;</td><td><a id="sa_pd"/>
+        
+          <p class="aml">Is the name of the destination scalable predicate register, encoded in the "Pd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;T&gt;</td><td><a id="sa_t"/>
+        <p>Is the size specifier, 
+      encoded in
+      <q>size</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">size</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="symbol">H</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10</td>
+                <td class="symbol">S</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11</td>
+                <td class="symbol">D</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Pg&gt;</td><td><a id="sa_pg"/>
+        
+          <p class="aml">Is the name of the governing scalable predicate register P0-P7, encoded in the "Pg" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn&gt;</td><td><a id="sa_zn"/>
+        
+          <p class="aml">Is the name of the source scalable vector register, encoded in the "Zn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          <p class="aml">For the equal, greater than, greater than or equal, less than, less than or equal and not equal variant: is the signed immediate operand, in the range -16 to 15, encoded in the "imm5" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_imm_1"/>
+        
+          <p class="aml">For the higher, higher or same, lower and lower or same variant: is the unsigned immediate operand, in the range 0 to 127, encoded in the "imm7" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSVEEnabled.0" title="function: CheckSVEEnabled()">CheckSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer PL = VL DIV 8;
+constant integer elements = VL DIV esize;
+bits(PL) mask = <a href="shared_pseudocode.html#impl-aarch64.P.read.2" title="accessor: bits(width) P[integer n, integer width]">P</a>[g, PL];
+bits(VL) operand1 = if <a href="shared_pseudocode.html#impl-aarch64.AnyActiveElement.2" title="function: boolean AnyActiveElement(bits(N) mask, integer esize)">AnyActiveElement</a>(mask, esize) then <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[n, VL] else <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(VL);
+bits(PL) result;
+constant integer psize = esize DIV 8;
+
+for e = 0 to elements-1
+    integer element1 = <a href="shared_pseudocode.html#impl-shared.Int.2" title="function: integer Int(bits(N) x, boolean unsigned)">Int</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, e, esize], unsigned);
+    if <a href="shared_pseudocode.html#impl-aarch64.ActivePredicateElement.3" title="function: boolean ActivePredicateElement(bits(N) pred, integer e, integer esize)">ActivePredicateElement</a>(mask, e, esize) then
+        boolean cond;
+        case op of
+            when <a href="shared_pseudocode.html#Cmp_EQ" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_EQ</a> cond = element1 == imm;
+            when <a href="shared_pseudocode.html#Cmp_NE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_NE</a> cond = element1 != imm;
+            when <a href="shared_pseudocode.html#Cmp_GE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_GE</a> cond = element1 &gt;= imm;
+            when <a href="shared_pseudocode.html#Cmp_LT" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_LT</a> cond = element1 &lt;  imm;
+            when <a href="shared_pseudocode.html#Cmp_GT" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_GT</a> cond = element1 &gt;  imm;
+            when <a href="shared_pseudocode.html#Cmp_LE" title="enumeration SVECmp { Cmp_EQ, Cmp_NE, Cmp_GE, Cmp_GT, Cmp_LT, Cmp_LE, Cmp_UN }">Cmp_LE</a> cond = element1 &lt;= imm;
+        bit pbit = if cond then '1' else '0';
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, psize] = <a href="shared_pseudocode.html#impl-shared.ZeroExtend.2" title="function: bits(N) ZeroExtend(bits(M) x, integer N)">ZeroExtend</a>(pbit, psize);
+    else
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, psize] = <a href="shared_pseudocode.html#impl-shared.ZeroExtend.2" title="function: bits(N) ZeroExtend(bits(M) x, integer N)">ZeroExtend</a>('0', psize);
+
+PSTATE.&lt;N,Z,C,V&gt; = <a href="shared_pseudocode.html#impl-aarch64.PredTest.3" title="function: bits(4) PredTest(bits(N) mask, bits(N) result, integer esize)">PredTest</a>(mask, result, esize);
+<a href="shared_pseudocode.html#impl-aarch64.P.write.2" title="accessor: P[integer n, integer width] = bits(width) value">P</a>[d, PL] = result;</p>
+    </div>
+  <h3>Operational information</h3><p class="aml">If FEAT_SVE2 is implemented or FEAT_SME is implemented, then if PSTATE.DIT is 1:</p><ul><li>The execution time of this instruction is independent of:
+            <ul><li>The values of the data supplied in any of its operand registers when its governing predicate register contains the same value for each execution.</li><li>The values of the NZCV flags.</li></ul></li><li>The response of this instruction to asynchronous exceptions does not vary based on:
+            <ul><li>The values of the data supplied in any of its operand registers when its governing predicate register contains the same value for each execution.</li><li>The values of the NZCV flags.</li></ul></li></ul><p class="aml">If FEAT_SME is implemented and the PE is in Streaming SVE mode, then any subsequent instruction which is dependent on the predicate register or NZCV condition flags written by this instruction might be significantly delayed.</p><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

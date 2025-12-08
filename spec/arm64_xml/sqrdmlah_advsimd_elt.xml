@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="SQRDMLAH_advsimd_elt" title="SQRDMLAH (by element) -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="SQRDMLAH" />
+  </docvars>
+  <heading>SQRDMLAH (by element)</heading>
+  <desc>
+    <brief>
+      <para>Signed Saturating Rounding Doubling Multiply Accumulate returning High Half (by element)</para>
+    </brief>
+    <authored>
+      <para>Signed Saturating Rounding Doubling Multiply Accumulate returning High Half (by element). This instruction multiplies the vector elements of the first source SIMD&amp;FP register with the value of a vector element of the second source SIMD&amp;FP register without saturating the multiply results, doubles the results, and accumulates the most significant half of the final results with the vector elements of the destination SIMD&amp;FP register. The results are rounded.</para>
+      <para>If any of the results overflow, they are saturated. The cumulative saturation bit, <xref linkend="AArch64.fpsr">FPSR</xref>.QC, is set if saturation occurs.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_2reg_scalar">Scalar</a>
+      <txt> and </txt>
+      <a href="#iclass_2reg_element">Vector</a>
+    </classesintro>
+    <iclass name="Scalar" oneof="2" id="iclass_2reg_scalar" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-reguse" value="2reg-scalar" />
+        <docvar key="advsimd-type" value="sisd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SQRDMLAH" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.1" feature="FEAT_RDM" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/high/sisd" tworows="1">
+        <box hibit="31" width="2" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="23" width="2" name="size" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="21" name="L" usename="1">
+          <c></c>
+        </box>
+        <box hibit="20" name="M" usename="1">
+          <c></c>
+        </box>
+        <box hibit="19" width="4" name="Rm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="15" width="2" name="opcode[3:2]" settings="2">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="13" name="S" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="12" name="opcode[0]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="11" name="H" usename="1">
+          <c></c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="SQRDMLAH_asisdelem_R" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-reguse" value="2reg-scalar" />
+          <docvar key="advsimd-type" value="sisd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SQRDMLAH" />
+        </docvars>
+        <asmtemplate><text>SQRDMLAH  </text><a link="sa_v" hover="Width specifier (field &quot;size&quot;) [H,S]">&lt;V&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_v" hover="Width specifier (field &quot;size&quot;) [H,S]">&lt;V&gt;</a><a link="sa_n" hover="First SIMD&amp;FP source register number (field &quot;Rn&quot;)">&lt;n&gt;</a><text>, </text><a link="sa_vm" hover="Second SIMD&amp;FP source register (field &quot;size:M:Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_ts" hover="Element size specifier (field &quot;size&quot;) [H,S]">&lt;Ts&gt;</a><text>[</text><a link="sa_index" hover="Element index (field &quot;size:L:H:M&quot;) [H:L,H:L:M]">&lt;index&gt;</a><text>]</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/high/sisd" mylink="aarch64.instrs.vector.arithmetic.binary.element.mul-acc.high.sisd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveQRDMLAHExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveQRDMLAHExt()">HaveQRDMLAHExt</a>() then UNDEFINED;
+
+integer idxdsize = if H == '1' then 128 else 64;
+integer index;
+bit Rmhi;
+case size of
+    when '01' index = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(H:L:M); Rmhi = '0';
+    when '10' index = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(H:L);   Rmhi = M;
+    otherwise UNDEFINED;
+
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rmhi:Rm);
+
+integer esize = 8 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer datasize = esize;
+integer elements = 1;
+
+boolean rounding = TRUE;
+boolean sub_op = (S  == '1');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Vector" oneof="2" id="iclass_2reg_element" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-reguse" value="2reg-element" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SQRDMLAH" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.1" feature="FEAT_RDM" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/high/simd" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="23" width="2" name="size" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="21" name="L" usename="1">
+          <c></c>
+        </box>
+        <box hibit="20" name="M" usename="1">
+          <c></c>
+        </box>
+        <box hibit="19" width="4" name="Rm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="15" width="2" name="opcode[3:2]" settings="2">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="13" name="S" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="12" name="opcode[0]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="11" name="H" usename="1">
+          <c></c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="SQRDMLAH_asimdelem_R" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-reguse" value="2reg-element" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SQRDMLAH" />
+        </docvars>
+        <asmtemplate><text>SQRDMLAH  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_t" hover="Arrangement specifier (field &quot;size:Q&quot;) [2S,4H,4S,8H]">&lt;T&gt;</a><text>, </text><a link="sa_vn" hover="First SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_t" hover="Arrangement specifier (field &quot;size:Q&quot;) [2S,4H,4S,8H]">&lt;T&gt;</a><text>, </text><a link="sa_vm" hover="Second SIMD&amp;FP source register (field &quot;size:M:Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_ts" hover="Element size specifier (field &quot;size&quot;) [H,S]">&lt;Ts&gt;</a><text>[</text><a link="sa_index" hover="Element index (field &quot;size:L:H:M&quot;) [H:L,H:L:M]">&lt;index&gt;</a><text>]</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/high/simd" mylink="aarch64.instrs.vector.arithmetic.binary.element.mul-acc.high.simd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveQRDMLAHExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveQRDMLAHExt()">HaveQRDMLAHExt</a>() then UNDEFINED;
+
+integer idxdsize = if H == '1' then 128 else 64;
+integer index;
+bit Rmhi;
+case size of
+    when '01' index = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(H:L:M); Rmhi = '0';
+    when '10' index = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(H:L);   Rmhi = M;
+    otherwise UNDEFINED;
+
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rmhi:Rm);
+
+integer esize = 8 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV esize;
+
+boolean rounding = TRUE;
+boolean sub_op = (S  == '1');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="SQRDMLAH_asisdelem_R" symboldefcount="1">
+      <symbol link="sa_v">&lt;V&gt;</symbol>
+      <definition encodedin="size">
+        <intro>Is a width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;V&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asisdelem_R" symboldefcount="1">
+      <symbol link="sa_d">&lt;d&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asisdelem_R" symboldefcount="1">
+      <symbol link="sa_n">&lt;n&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the number of the first SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asimdelem_R" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asimdelem_R" symboldefcount="1">
+      <symbol link="sa_t">&lt;T&gt;</symbol>
+      <definition encodedin="size:Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;T&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="bitfield">x</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="bitfield">x</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asimdelem_R" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the first SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asimdelem_R, SQRDMLAH_asisdelem_R" symboldefcount="1">
+      <symbol link="sa_vm">&lt;Vm&gt;</symbol>
+      <definition encodedin="size:M:Rm">
+        <intro>Is the name of the second SIMD&amp;FP source register, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;Vm&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">0:Rm</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">M:Rm</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+        <after> Restricted to V0-V15 when element size &lt;Ts&gt; is H.</after>
+      </definition>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asimdelem_R, SQRDMLAH_asisdelem_R" symboldefcount="1">
+      <symbol link="sa_ts">&lt;Ts&gt;</symbol>
+      <definition encodedin="size">
+        <intro>Is an element size specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;Ts&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQRDMLAH_asimdelem_R, SQRDMLAH_asisdelem_R" symboldefcount="1">
+      <symbol link="sa_index">&lt;index&gt;</symbol>
+      <definition encodedin="size:L:H:M">
+        <intro>Is the element index, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;index&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">H:L:M</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">H:L</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/high/sisd" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) operand1 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, datasize];
+bits(idxdsize) operand2 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[m, idxdsize];
+bits(datasize) operand3 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[d, datasize];
+bits(datasize) result;
+integer rounding_const = if rounding then 1 &lt;&lt; (esize - 1) else 0;
+integer element1;
+integer element2;
+integer element3;
+integer product;
+integer accum;
+boolean sat;
+
+element2 = <a link="impl-shared.SInt.1" file="shared_pseudocode.xml" hover="function: integer SInt(bits(N) x)">SInt</a>(<a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, index, esize]);
+for e = 0 to elements-1
+    element1 = <a link="impl-shared.SInt.1" file="shared_pseudocode.xml" hover="function: integer SInt(bits(N) x)">SInt</a>(<a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, e, esize]);
+    element3 = <a link="impl-shared.SInt.1" file="shared_pseudocode.xml" hover="function: integer SInt(bits(N) x)">SInt</a>(<a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand3, e, esize]);
+    if sub_op then
+        accum = ((element3 &lt;&lt; esize) - 2 * (element1 * element2) + rounding_const);
+    else
+        accum = ((element3 &lt;&lt; esize) + 2 * (element1 * element2) + rounding_const);
+    (<a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize], sat) = <a link="impl-shared.SignedSatQ.2" file="shared_pseudocode.xml" hover="function: (bits(N), boolean) SignedSatQ(integer i, integer N)">SignedSatQ</a>(accum &gt;&gt; esize, esize);
+    if sat then FPSR.QC = '1';
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, datasize] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

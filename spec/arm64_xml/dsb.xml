@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="DSB" title="DSB -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="DSB" />
+  </docvars>
+  <heading>DSB</heading>
+  <desc>
+    <brief>
+      <para>Data Synchronization Barrier</para>
+    </brief>
+    <authored>
+      <para>Data Synchronization Barrier is a memory barrier that ensures the completion of memory accesses, see <xref linkend="BEICEFJH">Data Synchronization Barrier</xref>.</para>
+      <para>A DSB instruction with the nXS qualifier is complete when the subset of these memory accesses with the XS attribute set to 0 are complete. It does not require that memory accesses with the XS attribute set to 1 are complete.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="2">
+    <alias_list_intro>This instruction is used by the aliases </alias_list_intro>
+    <aliasref aliaspageid="PSSBB_DSB" aliasfile="pssbb_dsb.xml" hover="Physical Speculative Store Bypass Barrier" punct=" and ">
+      <text>PSSBB</text>
+      <aliaspref>CRm == '0100'</aliaspref>
+    </aliasref>
+    <aliasref aliaspageid="SSBB_DSB" aliasfile="ssbb_dsb.xml" hover="Speculative Store Bypass Barrier" punct=".">
+      <text>SSBB</text>
+      <aliaspref>CRm == '0000'</aliaspref>
+    </aliasref>
+    <alias_list_outro>
+      <text>  See </text>
+      <aliastablelink />
+      <text> below for details of when each alias is preferred.</text>
+    </alias_list_outro>
+  </alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_dsb_memory">Memory barrier</a>
+      <txt> and </txt>
+      <a href="#iclass_dsb_nxs">Memory nXS barrier</a>
+    </classesintro>
+    <iclass name="Memory barrier" oneof="2" id="iclass_dsb_memory" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="dsb-variants" value="dsb-memory" />
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="DSB" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/system/barriers/dsb" tworows="1">
+        <box hibit="31" width="10" settings="10">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" name="L" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="2" name="op0" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" width="3" name="op1" settings="3">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="15" width="4" name="CRn" settings="4">
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" width="4" name="CRm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="7" name="op2[2]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="6" width="2" name="opc" usename="1" settings="2" psbits="xx">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="4" width="5" name="Rt" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="DSB_BO_barriers" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="dsb-variants" value="dsb-memory" />
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="DSB" />
+        </docvars>
+        <asmtemplate><text>DSB  </text><a link="sa_option" hover="Specifies the limitation on the barrier operation">&lt;option&gt;</a><text>|#</text><a link="sa_imm" hover="4-bit unsigned immediate [0-15] (field &quot;CRm&quot;)">&lt;imm&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/barriers/dsb" mylink="aarch64.instrs.system.barriers.dsb" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">boolean nXS = FALSE;
+
+<a link="DSBAlias" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias</a> alias;
+case CRm of
+    when '0000' alias = <a link="DSBAlias_SSBB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_SSBB</a>;
+    when '0100' alias = <a link="DSBAlias_PSSBB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_PSSBB</a>;
+    otherwise   alias = <a link="DSBAlias_DSB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_DSB</a>;
+
+<a link="MBReqDomain" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain</a> domain;
+case CRm&lt;3:2&gt; of
+    when '00' domain = <a link="MBReqDomain_OuterShareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_OuterShareable</a>;
+    when '01' domain = <a link="MBReqDomain_Nonshareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_Nonshareable</a>;
+    when '10' domain = <a link="MBReqDomain_InnerShareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_InnerShareable</a>;
+    when '11' domain = <a link="MBReqDomain_FullSystem" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_FullSystem</a>;
+
+<a link="MBReqTypes" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes</a> types;
+case CRm&lt;1:0&gt; of
+    when '00' types = <a link="MBReqTypes_All" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_All</a>; domain = <a link="MBReqDomain_FullSystem" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_FullSystem</a>;
+    when '01' types = <a link="MBReqTypes_Reads" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_Reads</a>;
+    when '10' types = <a link="MBReqTypes_Writes" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_Writes</a>;
+    when '11' types = <a link="MBReqTypes_All" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_All</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Memory nXS barrier" oneof="2" id="iclass_dsb_nxs" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="dsb-variants" value="dsb-nxs" />
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="DSB" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.7" feature="FEAT_XS" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/system/barriers/dsb/nxs">
+        <box hibit="31" width="20" settings="20">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" width="2" name="imm2" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="9" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="7" name="op2&lt;2&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="6" width="2" name="op2&lt;1:0&gt;" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="4" width="5" name="Rt" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="DSB_BOn_barriers" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="dsb-variants" value="dsb-nxs" />
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="DSB" />
+        </docvars>
+        <asmtemplate><text>DSB  </text><a link="sa_option_1" hover="Specifies the limitation on the barrier operation">&lt;option&gt;</a><text>nXS</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/barriers/dsb/nxs" mylink="aarch64.instrs.system.barriers.dsb.nxs" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveFeatXS.0" file="shared_pseudocode.xml" hover="function: boolean HaveFeatXS()">HaveFeatXS</a>() then UNDEFINED;
+<a link="MBReqTypes" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes</a> types = <a link="MBReqTypes_All" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_All</a>;
+boolean nXS = TRUE;
+<a link="DSBAlias" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias</a> alias = <a link="DSBAlias_DSB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_DSB</a>;
+<a link="MBReqDomain" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain</a> domain;
+
+case imm2 of
+    when '00' domain = <a link="MBReqDomain_OuterShareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_OuterShareable</a>;
+    when '01' domain = <a link="MBReqDomain_Nonshareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_Nonshareable</a>;
+    when '10' domain = <a link="MBReqDomain_InnerShareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_InnerShareable</a>;
+    when '11' domain = <a link="MBReqDomain_FullSystem" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_FullSystem</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="DSB_BO_barriers" symboldefcount="1">
+      <symbol link="sa_option">&lt;option&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="dsb-variants" value="dsb-memory" />
+        </docvars>
+        <intro>
+          <para>For the memory barrier variant: specifies the limitation on the barrier operation. Values are:</para>
+          <list type="param">
+            <listitem>
+              <param>SY</param><content>Full system is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. This option is referred to as the full system barrier. Encoded as CRm = <binarynumber>0b1111</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ST</param><content>Full system is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b1110</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>LD</param><content>Full system is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b1101</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISH</param><content>Inner Shareable is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b1011</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISHST</param><content>Inner Shareable is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b1010</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISHLD</param><content>Inner Shareable is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b1001</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSH</param><content>Non-shareable is the required shareability domain, reads and writes are the required access, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0111</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSHST</param><content>Non-shareable is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0110</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSHLD</param><content>Non-shareable is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b0101</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSH</param><content>Outer Shareable is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0011</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSHST</param><content>Outer Shareable is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0010</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSHLD</param><content>Outer Shareable is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b0001</binarynumber>.</content>
+            </listitem>
+          </list>
+          <para>All other encodings of <field>CRm</field>, other than the values <binarynumber>0b0000</binarynumber> and <binarynumber>0b0100</binarynumber>, that are not listed above are reserved, and can be encoded using the <syntax>#&lt;imm&gt;</syntax> syntax. All unsupported and reserved options must execute as a full system barrier operation, but software must not rely on this behavior. For more information on whether an access is before or after a barrier instruction, see <xref linkend="BEIIECBH">Data Memory Barrier (DMB)</xref> or see <xref linkend="BEICEFJH">Data Synchronization Barrier (DSB)</xref>.</para>
+          <note>
+            <para>The value <binarynumber>0b0000</binarynumber> is used to encode SSBB and the value <binarynumber>0b0100</binarynumber> is used to encode PSSBB.</para>
+          </note>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="DSB_BOn_barriers" symboldefcount="2">
+      <symbol link="sa_option_1">&lt;option&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="dsb-variants" value="dsb-nxs" />
+        </docvars>
+        <intro>
+          <para>For the memory nXS barrier variant: specifies the limitation on the barrier operation. Values are:</para>
+          <list type="param">
+            <listitem>
+              <param>SY</param><content>Full system is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. This option is referred to as the full system barrier. Encoded as imm2 = <binarynumber>0b11</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISH</param><content>Inner Shareable is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. Encoded as imm2 = <binarynumber>0b10</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSH</param><content>Non-shareable is the required shareability domain, reads and writes are the required access, both before and after the barrier instruction. Encoded as imm2 = <binarynumber>0b01</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSH</param><content>Outer Shareable is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. Encoded as imm2 = <binarynumber>0b00</binarynumber>.</content>
+            </listitem>
+          </list>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="DSB_BO_barriers" symboldefcount="1">
+      <symbol link="sa_imm">&lt;imm&gt;</symbol>
+      <account encodedin="CRm">
+        <intro>
+          <para>Is a 4-bit unsigned immediate, in the range 0 to 15, encoded in the "CRm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <aliastablehook anchor="aliasconditions">Alias Conditions</aliastablehook>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/system/barriers/dsb" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">case alias of
+    when <a link="DSBAlias_SSBB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_SSBB</a>
+        <a link="impl-shared.SpeculativeStoreBypassBarrierToVA.0" file="shared_pseudocode.xml" hover="function: SpeculativeStoreBypassBarrierToVA()">SpeculativeStoreBypassBarrierToVA</a>();
+    when <a link="DSBAlias_PSSBB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_PSSBB</a>
+        <a link="impl-shared.SpeculativeStoreBypassBarrierToPA.0" file="shared_pseudocode.xml" hover="function: SpeculativeStoreBypassBarrierToPA()">SpeculativeStoreBypassBarrierToPA</a>();
+    when <a link="DSBAlias_DSB" file="shared_pseudocode.xml" hover="enumeration DSBAlias {DSBAlias_SSBB, DSBAlias_PSSBB, DSBAlias_DSB}">DSBAlias_DSB</a>
+        if <a link="impl-shared.HaveTME.0" file="shared_pseudocode.xml" hover="function: boolean HaveTME()">HaveTME</a>() &amp;&amp; TSTATE.depth &gt; 0 then
+            <a link="impl-aarch64.FailTransaction.2" file="shared_pseudocode.xml" hover="function: FailTransaction(TMFailure cause, boolean retry)">FailTransaction</a>(<a link="TMFailure_ERR" file="shared_pseudocode.xml" hover="enumeration TMFailure { TMFailure_CNCL, TMFailure_DBG, TMFailure_ERR, TMFailure_NEST, TMFailure_SIZE, TMFailure_MEM, TMFailure_TRIVIAL, TMFailure_IMP }">TMFailure_ERR</a>, FALSE);
+        if !nXS &amp;&amp; <a link="impl-shared.HaveFeatXS.0" file="shared_pseudocode.xml" hover="function: boolean HaveFeatXS()">HaveFeatXS</a>() then
+            nXS = PSTATE.EL IN {<a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a>, <a link="EL1" file="shared_pseudocode.xml" hover="constant bits(2) EL1 = '01'">EL1</a>} &amp;&amp; <a link="impl-aarch64.IsHCRXEL2Enabled.0" file="shared_pseudocode.xml" hover="function: boolean IsHCRXEL2Enabled()">IsHCRXEL2Enabled</a>() &amp;&amp; HCRX_EL2.FnXS == '1';
+        <a link="impl-shared.DataSynchronizationBarrier.3" file="shared_pseudocode.xml" hover="function: DataSynchronizationBarrier(MBReqDomain domain, MBReqTypes types, boolean nXS)">DataSynchronizationBarrier</a>(domain, types, nXS);
+    otherwise
+        <a link="impl-shared.Unreachable.0" file="shared_pseudocode.xml" hover="function: Unreachable()">Unreachable</a>();</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

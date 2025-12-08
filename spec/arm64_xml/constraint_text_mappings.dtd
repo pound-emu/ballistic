@@ -1,0 +1,16 @@
+<!--
+
+XML language accounts for constraint_text_mappings.xml
+Copyright (c) 2016-2022 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+--> 
+<!ENTITY % formatted_words "instruction|literal|xref|b|arm-defined-word|parameter|sup|sub|binarynumber|hexnumber|syntax|field|value|function|enum|enumvalue|url">
+
+<!ELEMENT constraint_text_mappings (constraint_text_mapping*)>
+<!ELEMENT constraint_text_mapping (constraint_id, constraint_text)>
+<!ELEMENT constraint_id (#PCDATA)>
+<!ELEMENT constraint_text (#PCDATA|%formatted_words;)*>
+
+<!ELEMENT arm-defined-word (#PCDATA)*>
+<!ELEMENT instruction (#PCDATA)*>

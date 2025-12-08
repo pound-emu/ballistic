@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>ORR (immediate) -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">ORR (immediate)</h2>
+      <p class="aml">Bitwise OR (immediate) performs a bitwise (inclusive) OR of a register value and an immediate register value, and writes the result to the destination register.</p>
+    <p class="desc">This instruction is used by the alias <a href="mov_orr_log_imm.html" title="Move bitmask immediate to register">MOV (bitmask immediate)</a>.</p>
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">sf</td><td class="l">0</td><td class="r">1</td><td class="l">1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">N</td><td colspan="6" class="lr">immr</td><td colspan="6" class="lr">imms</td><td colspan="5" class="lr">Rn</td><td colspan="5" class="lr">Rd</td></tr><tr class="secondrow"><td/><td colspan="2" class="droppedname">opc</td><td colspan="6"/><td/><td colspan="6"/><td colspan="6"/><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding">32-bit<span class="bitdiff"> (sf == 0 &amp;&amp; N == 0)</span></h4><a id="ORR_32_log_imm"/><p class="asm-code">ORR  <a href="#sa_wd_wsp" title="32-bit destination general-purpose register or WSP (field &quot;Rd&quot;)">&lt;Wd|WSP&gt;</a>, <a href="#sa_wn" title="32-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, #<a href="#sa_imm" title="Bitmask immediate (field &quot;imms:immr&quot;)">&lt;imm&gt;</a></p></div><div class="encoding"><h4 class="encoding">64-bit<span class="bitdiff"> (sf == 1)</span></h4><a id="ORR_64_log_imm"/><p class="asm-code">ORR  <a href="#sa_xd_sp" title="64-bit destination general-purpose register or SP (field &quot;Rd&quot;)">&lt;Xd|SP&gt;</a>, <a href="#sa_xn" title="64-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Xn&gt;</a>, #<a href="#sa_imm_1" title="Bitmask immediate (field &quot;N:imms:immr&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer datasize = if sf == '1' then 64 else 32;
+boolean setflags;
+<a href="shared_pseudocode.html#LogicalOp" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp</a> op;
+case opc of
+    when '00' op = <a href="shared_pseudocode.html#LogicalOp_AND" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_AND</a>; setflags = FALSE;
+    when '01' op = <a href="shared_pseudocode.html#LogicalOp_ORR" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_ORR</a>; setflags = FALSE;
+    when '10' op = <a href="shared_pseudocode.html#LogicalOp_EOR" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_EOR</a>; setflags = FALSE;
+    when '11' op = <a href="shared_pseudocode.html#LogicalOp_AND" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_AND</a>; setflags = TRUE;
+
+bits(datasize) imm;
+if sf == '0' &amp;&amp; N != '0' then UNDEFINED;
+(imm, -) = <a href="shared_pseudocode.html#impl-aarch64.DecodeBitMasks.5" title="function: (bits(M), bits(M)) DecodeBitMasks(bit immN, bits(6) imms, bits(6) immr, boolean immediate, integer M)">DecodeBitMasks</a>(N, imms, immr, TRUE, datasize);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wd|WSP&gt;</td><td><a id="sa_wd_wsp"/>
+        
+          <p class="aml">Is the 32-bit name of the destination general-purpose register or stack pointer, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wn&gt;</td><td><a id="sa_wn"/>
+        
+          <p class="aml">Is the 32-bit name of the general-purpose source register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xd|SP&gt;</td><td><a id="sa_xd_sp"/>
+        
+          <p class="aml">Is the 64-bit name of the destination general-purpose register or stack pointer, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xn&gt;</td><td><a id="sa_xn"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose source register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          
+        
+        
+          <p class="aml">For the 32-bit variant: is the bitmask immediate, encoded in "imms:immr".</p>
+        
+      </td></tr><tr><td/><td><a id="sa_imm_1"/>
+        
+          
+        
+        
+          <p class="aml">For the 64-bit variant: is the bitmask immediate, encoded in "N:imms:immr".</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/><h3 class="aliastable" id="">Alias Conditions</h3><table class="aliastable"><thead><tr><th>Alias</th><th>Is preferred when</th></tr></thead><tbody><tr><td><a href="mov_orr_log_imm.html" title="Move bitmask immediate to register">MOV (bitmask immediate)</a></td><td class="notfirst"><span class="pseudocode">Rn == '11111' &amp;&amp; ! <a href="shared_pseudocode.html#impl-aarch64.MoveWidePreferred.4" title="function: boolean MoveWidePreferred(bit sf, bit immN, bits(6) imms, bits(6) immr)">MoveWidePreferred</a>(sf, N, imms, immr)</span></td></tr></tbody></table>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">bits(datasize) result;
+bits(datasize) operand1 = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[n, datasize];
+bits(datasize) operand2 = imm;
+
+case op of
+    when <a href="shared_pseudocode.html#LogicalOp_AND" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_AND</a> result = operand1 AND operand2;
+    when <a href="shared_pseudocode.html#LogicalOp_ORR" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_ORR</a> result = operand1 OR  operand2;
+    when <a href="shared_pseudocode.html#LogicalOp_EOR" title="enumeration LogicalOp   {LogicalOp_AND, LogicalOp_EOR, LogicalOp_ORR}">LogicalOp_EOR</a> result = operand1 EOR operand2;
+
+if setflags then
+    PSTATE.&lt;N,Z,C,V&gt; = result&lt;datasize-1&gt;:<a href="shared_pseudocode.html#impl-shared.IsZeroBit.1" title="function: bit IsZeroBit(bits(N) x)">IsZeroBit</a>(result):'00';
+
+if d == 31 &amp;&amp; !setflags then
+    <a href="shared_pseudocode.html#impl-aarch64.SP.write.0" title="accessor: SP[] = bits(64) value">SP</a>[] = <a href="shared_pseudocode.html#impl-shared.ZeroExtend.2" title="function: bits(N) ZeroExtend(bits(M) x, integer N)">ZeroExtend</a>(result, 64);
+else
+    <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, datasize] = result;</p>
+    </div>
+  <h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

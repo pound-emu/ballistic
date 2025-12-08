@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>SDOT (2-way, multiple and indexed vector)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">SDOT (2-way, multiple and indexed vector)</h2><p>Multi-vector signed integer dot-product by indexed element</p>
+      <p class="aml">The instruction operates on two or four ZA single-vector groups.</p>
+      <p class="aml">The signed integer dot product instruction computes the dot product of two signed 16-bit integer values held in each 32-bit element of the two or four first source vectors and two signed 16-bit integer values in the corresponding indexed 32-bit element of the second source vector. The widened dot product result is destructively added to the corresponding 32-bit element of the two or four ZA single-vector groups.</p>
+      <p class="aml">The groups within the second source vector are specified using an immediate element index which selects the same group position within each 128-bit vector segment. The index range is from 0 to 3, encoded in 2 bits. The vector numbers forming the single-vector group within each half or each quarter of the ZA array are selected by the sum of the vector select register and immediate offset, modulo half or quarter the number of ZA array vectors.</p>
+      <p class="aml">The <span class="arm-defined-word">vector group</span> symbol, VGx2 or VGx4, indicates that the ZA operand consists of two or four ZA single-vector groups respectively. The <span class="arm-defined-word">vector group</span> symbol is preferred for disassembly, but optional in assembler source code.</p>
+      <p class="aml">This instruction is unpredicated.</p>
+    
+    <p class="desc">
+      It has encodings from 2 classes:
+      <a href="#iclass_sme_vgx2_single">Two ZA single-vectors</a>
+       and 
+      <a href="#iclass_sme_vgx4_single">Four ZA single-vectors</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_sme_vgx2_single"/>Two ZA single-vectors<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="4" class="lr">Zm</td><td class="lr">0</td><td colspan="2" class="lr">Rv</td><td class="lr">1</td><td colspan="2" class="lr">i2</td><td colspan="4" class="lr">Zn</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td colspan="3" class="lr">off3</td></tr><tr class="secondrow"><td colspan="12"/><td colspan="4"/><td/><td colspan="2"/><td/><td colspan="2"/><td colspan="4"/><td/><td class="droppedname">U</td><td/><td colspan="3"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="sdot_za32_zzi_2xi"/><p class="asm-code">SDOT    ZA.S[<a href="#sa_wv" title="32-bit vector select register W8-W11 (field &quot;Rv&quot;)">&lt;Wv&gt;</a>, <a href="#sa_offs" title="Vector select offset [0-7] (field &quot;off3&quot;)">&lt;offs&gt;</a>{, VGx2}], { <a href="#sa_zn1" title="First scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn1&gt;</a>.H-<a href="#sa_zn2" title="Second scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn2&gt;</a>.H }, <a href="#sa_zm" title="Second source scalable vector register Z0-Z15 (field &quot;Zm&quot;)">&lt;Zm&gt;</a>.H[<a href="#sa_index" title="Element index [0-3] (field &quot;i2&quot;)">&lt;index&gt;</a>]</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+integer v = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>('010':Rv);
+constant integer esize = 32;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn:'0');
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>('0':Zm);
+integer offset = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(off3);
+integer index = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i2);
+constant integer nreg = 2;</p>
+    <h3 class="classheading"><a id="iclass_sme_vgx4_single"/>Four ZA single-vectors<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="4" class="lr">Zm</td><td class="lr">1</td><td colspan="2" class="lr">Rv</td><td class="lr">1</td><td colspan="2" class="lr">i2</td><td colspan="3" class="lr">Zn</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td colspan="3" class="lr">off3</td></tr><tr class="secondrow"><td colspan="12"/><td colspan="4"/><td/><td colspan="2"/><td/><td colspan="2"/><td colspan="3"/><td/><td/><td class="droppedname">U</td><td/><td colspan="3"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="sdot_za32_zzi_4xi"/><p class="asm-code">SDOT    ZA.S[<a href="#sa_wv" title="32-bit vector select register W8-W11 (field &quot;Rv&quot;)">&lt;Wv&gt;</a>, <a href="#sa_offs" title="Vector select offset [0-7] (field &quot;off3&quot;)">&lt;offs&gt;</a>{, VGx4}], { <a href="#sa_zn1_1" title="First scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn1&gt;</a>.H-<a href="#sa_zn4" title="Fourth scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn4&gt;</a>.H }, <a href="#sa_zm" title="Second source scalable vector register Z0-Z15 (field &quot;Zm&quot;)">&lt;Zm&gt;</a>.H[<a href="#sa_index" title="Element index [0-3] (field &quot;i2&quot;)">&lt;index&gt;</a>]</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+integer v = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>('010':Rv);
+constant integer esize = 32;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn:'00');
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>('0':Zm);
+integer offset = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(off3);
+integer index = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i2);
+constant integer nreg = 4;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wv&gt;</td><td><a id="sa_wv"/>
+        
+          <p class="aml">Is the 32-bit name of the vector select register W8-W11, encoded in the "Rv" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;offs&gt;</td><td><a id="sa_offs"/>
+        
+          <p class="aml">Is the vector select offset, in the range 0 to 7, encoded in the "off3" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn1&gt;</td><td><a id="sa_zn1"/>
+        
+          
+        
+        
+          <p class="aml">For the two ZA single-vectors variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zn" times 2.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zn1_1"/>
+        
+          
+        
+        
+          <p class="aml">For the four ZA single-vectors variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zn" times 4.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn4&gt;</td><td><a id="sa_zn4"/>
+        
+          <p class="aml">Is the name of the fourth scalable vector register of a multi-vector sequence, encoded as "Zn" times 4 plus 3.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn2&gt;</td><td><a id="sa_zn2"/>
+        
+          <p class="aml">Is the name of the second scalable vector register of a multi-vector sequence, encoded as "Zn" times 2 plus 1.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zm&gt;</td><td><a id="sa_zm"/>
+        
+          <p class="aml">Is the name of the second source scalable vector register Z0-Z15, encoded in the "Zm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;index&gt;</td><td><a id="sa_index"/>
+        
+          <p class="aml">Is the element index, in the range 0 to 3, encoded in the "i2" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckStreamingSVEAndZAEnabled.0" title="function: CheckStreamingSVEAndZAEnabled()">CheckStreamingSVEAndZAEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer elements = VL DIV esize;
+integer vectors = VL DIV 8;
+integer vstride = vectors DIV nreg;
+integer eltspersegment = 128 DIV esize;
+bits(32) vbase = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[v, 32];
+integer vec = (<a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(vbase) + offset) MOD vstride;
+bits(VL) result;
+
+for r = 0 to nreg-1
+    bits(VL) operand1 = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[n+r, VL];
+    bits(VL) operand2 = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[m, VL];
+    bits(VL) operand3 = <a href="shared_pseudocode.html#impl-aarch64.ZAvector.read.2" title="accessor: bits(width) ZAvector[integer index, integer width]">ZAvector</a>[vec, VL];
+    for e = 0 to elements-1
+        bits(esize) sum = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand3, e, esize];
+        integer segmentbase = e - (e MOD eltspersegment);
+        integer s = segmentbase + index;
+        for i = 0 to 1
+            integer element1 = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, 2 * e + i, esize DIV 2]);
+            integer element2 = <a href="shared_pseudocode.html#impl-shared.SInt.1" title="function: integer SInt(bits(N) x)">SInt</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, 2 * s + i, esize DIV 2]);
+            sum = sum + element1 * element2;
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize] = sum;
+    <a href="shared_pseudocode.html#impl-aarch64.ZAvector.write.2" title="accessor: ZAvector[integer index, integer width] = bits(width) value">ZAvector</a>[vec, VL] = result;
+    vec = vec + vstride;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

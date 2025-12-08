@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>SUBG -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">SUBG</h2>
+      <p class="aml">Subtract with Tag subtracts an immediate value scaled by the Tag granule from the address in the source register, modifies the Logical Address Tag of the address using an immediate value, and writes the result to the destination register. Tags specified in GCR_EL1.Exclude are excluded from the possible outputs when modifying the Logical Address Tag.</p>
+    
+    <h3 class="classheading"><a id="iclass_general"/>Integer<span style="font-size:smaller;"><br/>(FEAT_MTE)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">1</td><td class="lr">1</td><td class="lr">0</td><td class="l">1</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="r">1</td><td class="lr">0</td><td colspan="6" class="lr">uimm6</td><td class="l">(0)</td><td class="r">(0)</td><td colspan="4" class="lr">uimm4</td><td colspan="5" class="lr">Xn</td><td colspan="5" class="lr">Xd</td></tr><tr class="secondrow"><td/><td/><td/><td colspan="6"/><td/><td colspan="6"/><td colspan="2" class="droppedname">op3</td><td colspan="4"/><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="SUBG_64_addsub_immtags"/><p class="asm-code">SUBG  <a href="#sa_xd_sp" title="64-bit destination general-purpose register or SP (field &quot;Xd&quot;)">&lt;Xd|SP&gt;</a>, <a href="#sa_xn_sp" title="64-bit source general-purpose register or SP (field &quot;Xn&quot;)">&lt;Xn|SP&gt;</a>, #<a href="#sa_uimm6" title="Unsigned immediate, multiple of 16 [0-1008] (field &quot;uimm6&quot;)">&lt;uimm6&gt;</a>, #<a href="#sa_uimm4" title="Unsigned immediate [0-15] (field &quot;uimm4&quot;)">&lt;uimm4&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-shared.HaveMTEExt.0" title="function: boolean HaveMTEExt()">HaveMTEExt</a>() then UNDEFINED;
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Xd);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Xn);
+bits(4) tag_offset = uimm4;
+bits(64) offset = <a href="shared_pseudocode.html#impl-shared.LSL.2" title="function: bits(N) LSL(bits(N) x, integer shift)">LSL</a>(<a href="shared_pseudocode.html#impl-shared.ZeroExtend.2" title="function: bits(N) ZeroExtend(bits(M) x, integer N)">ZeroExtend</a>(uimm6, 64), <a href="shared_pseudocode.html#LOG2_TAG_GRANULE" title="constant integer LOG2_TAG_GRANULE = 4">LOG2_TAG_GRANULE</a>);
+boolean ADD = FALSE;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xd|SP&gt;</td><td><a id="sa_xd_sp"/>
+        
+          <p class="aml">Is the 64-bit name of the destination general-purpose register or stack pointer, encoded in the "Xd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xn|SP&gt;</td><td><a id="sa_xn_sp"/>
+        
+          <p class="aml">Is the 64-bit name of the source general-purpose register or stack pointer, encoded in the "Xn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;uimm6&gt;</td><td><a id="sa_uimm6"/>
+        
+          <p class="aml">Is an unsigned immediate, a multiple of 16 in the range 0 to 1008, encoded in the "uimm6" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;uimm4&gt;</td><td><a id="sa_uimm4"/>
+        
+          <p class="aml">Is an unsigned immediate, in the range 0 to 15, encoded in the "uimm4" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">bits(64) operand1 = if n == 31 then <a href="shared_pseudocode.html#impl-aarch64.SP.read.0" title="accessor: bits(64) SP[]">SP</a>[] else <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[n, 64];
+bits(4) start_tag = <a href="shared_pseudocode.html#AArch64.AllocationTagFromAddress.1" title="function: bits(4) AArch64.AllocationTagFromAddress(bits(64) tagged_address)">AArch64.AllocationTagFromAddress</a>(operand1);
+bits(16) exclude = GCR_EL1.Exclude;
+bits(64) result;
+bits(4) rtag;
+
+if <a href="shared_pseudocode.html#AArch64.AllocationTagAccessIsEnabled.1" title="function: boolean AArch64.AllocationTagAccessIsEnabled(bits(2) el)">AArch64.AllocationTagAccessIsEnabled</a>(PSTATE.EL) then
+    rtag = <a href="shared_pseudocode.html#AArch64.ChooseNonExcludedTag.3" title="function: bits(4) AArch64.ChooseNonExcludedTag(bits(4) tag_in, bits(4) offset_in, bits(16) exclude)">AArch64.ChooseNonExcludedTag</a>(start_tag, tag_offset, exclude);
+else
+    rtag = '0000';
+
+if ADD then
+    (result, -) = <a href="shared_pseudocode.html#impl-shared.AddWithCarry.3" title="function: (bits(N), bits(4)) AddWithCarry(bits(N) x, bits(N) y, bit carry_in)">AddWithCarry</a>(operand1, offset, '0');
+else
+    (result, -) = <a href="shared_pseudocode.html#impl-shared.AddWithCarry.3" title="function: (bits(N), bits(4)) AddWithCarry(bits(N) x, bits(N) y, bit carry_in)">AddWithCarry</a>(operand1, NOT(offset), '1');
+
+result = <a href="shared_pseudocode.html#AArch64.AddressWithAllocationTag.2" title="function: bits(64) AArch64.AddressWithAllocationTag(bits(64) address, bits(4) allocation_tag)">AArch64.AddressWithAllocationTag</a>(result, rtag);
+
+if d == 31 then
+    <a href="shared_pseudocode.html#impl-aarch64.SP.write.0" title="accessor: SP[] = bits(64) value">SP</a>[] = result;
+else
+    <a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, 64] = result;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

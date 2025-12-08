@@ -1,0 +1,293 @@
+<!--
+
+XML language allinstrs for one big file
+Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+--> 
+
+<!ENTITY % TEXT "(#PCDATA|a)*">
+<!ENTITY % formatted_words "asm-code|instruction|literal|xref|b|arm-defined-word|parameter|sup|sub|binarynumber|hexnumber|syntax|field|value|function|enum|enumvalue|url">
+<!ENTITY % formatted_text "(#PCDATA|para|note|list|%formatted_words;)*">
+<!ENTITY % inline "#PCDATA | a | anchor | txt">
+
+<!ELEMENT arm-defined-word (#PCDATA)*>
+<!ELEMENT asm-code (#PCDATA)*>
+<!ELEMENT binarynumber (#PCDATA)*>
+<!ELEMENT enumvalue (#PCDATA)*>
+<!ELEMENT field (#PCDATA)*>
+<!ELEMENT function (#PCDATA)*>
+<!ELEMENT hexnumber (#PCDATA)*>
+<!ELEMENT instruction (#PCDATA)*>
+<!ELEMENT sup (#PCDATA)*>
+<!ELEMENT sub (#PCDATA)*>
+<!ELEMENT syntax (#PCDATA)*>
+<!ELEMENT value (#PCDATA)*>
+<!ELEMENT xref (#PCDATA)*>
+<!ATTLIST xref linkend CDATA #REQUIRED>
+
+<!ELEMENT a (#PCDATA)>
+<!ELEMENT account (docvars?, intro)>
+<!ATTLIST account encodedin CDATA #IMPLIED>
+<!ELEMENT intro %formatted_text;>
+<!ATTLIST a href CDATA #IMPLIED class CDATA #IMPLIED link CDATA #IMPLIED
+          file CDATA #IMPLIED hover CDATA #IMPLIED classid CDATA #IMPLIED>
+
+<!ELEMENT allinstrs (title, (para | file | sect1)+)>
+<!ELEMENT file (alphaindex | encodingindex | instructionsection | constraint_text_mappings)>
+<!ATTLIST file type CDATA #REQUIRED file CDATA #REQUIRED>
+<!ATTLIST allinstrs id CDATA #REQUIRED xreflabel CDATA #REQUIRED>
+<!ELEMENT alphaindex (toptitle, iforms)>
+<!-- text: wrap PCDATA to avoid mixed mode.  Deprecated -->      
+<!ELEMENT text (#PCDATA)>
+<!ELEMENT asmtemplate (#PCDATA | text | a)*>
+<!ATTLIST asmtemplate class CDATA #IMPLIED
+                      role (alias_prototype | alias_equivalent_to) #IMPLIED>
+<!ELEMENT box (c*)>
+<!ATTLIST box hibit CDATA #IMPLIED name CDATA #IMPLIED
+              usename CDATA #IMPLIED width CDATA #IMPLIED
+              constraint CDATA #IMPLIED
+              settings CDATA #IMPLIED
+              psbits CDATA #IMPLIED>
+<!ELEMENT c (#PCDATA)>
+<!ATTLIST c colspan CDATA #IMPLIED href CDATA #IMPLIED>
+<!ELEMENT desc (brief, authored?, description?, encodingnotes?, syntaxnotes?, alg*, (longer, alg*)?, status?, predicated?, uses_dit?, takes_movprfx?, is_wide_zm?)>
+<!ELEMENT description (#PCDATA|list|para|%formatted_words;)*>
+<!ELEMENT status (#PCDATA)>
+<!ELEMENT syntaxnotes %formatted_text;>
+<!ELEMENT encodingnotes %formatted_text;>
+<!ELEMENT predicated (#PCDATA)>
+<!ELEMENT uses_dit (#PCDATA)>
+<!ELEMENT takes_movprfx (#PCDATA)>
+<!ELEMENT is_wide_zm (#PCDATA)>
+
+<!ELEMENT brief %formatted_text;>
+<!ATTLIST brief enclist CDATA #IMPLIED
+                checked (yes) #IMPLIED
+                synth (single|multiple) #IMPLIED>
+<!ELEMENT authored %formatted_text;>
+<!ELEMENT alg %TEXT;>
+<!ATTLIST alg howmany CDATA #IMPLIED>
+<!ELEMENT longer %TEXT;>
+
+<!ELEMENT encoding (docvars?, arch_variants?, box*, asmtemplate+, equivalent_to?)>
+<!ATTLIST encoding name CDATA #REQUIRED oneofinclass CDATA #REQUIRED
+                   oneof CDATA #REQUIRED label CDATA #REQUIRED
+                   bitdiffs CDATA #IMPLIED
+                   tags CDATA #IMPLIED>
+<!ELEMENT equivalent_to (asmtemplate, aliascond)>
+<!ELEMENT aliascond (%inline;)*>
+
+<!ELEMENT encodingindex (hierarchy, groups?, maintable,
+                         (funcgroupheader?, iclass_sect+)+)>
+<!ATTLIST encodingindex instructionset CDATA #REQUIRED>
+
+<!ELEMENT hierarchy (regdiagram, node+)>
+<!ELEMENT node (header, decode, regdiagram?, node*)>
+<!ATTLIST node groupname CDATA #IMPLIED iclass CDATA #IMPLIED unallocated CDATA #IMPLIED>
+<!ELEMENT header (#PCDATA)>
+
+<!ELEMENT groups (maintable)>
+<!ATTLIST groups heading CDATA #REQUIRED>
+
+<!ELEMENT funcgroupheader (#PCDATA)>
+<!ATTLIST funcgroupheader id CDATA #REQUIRED>
+
+<!ELEMENT entry (%inline; | arch_variants)*>
+<!ATTLIST entry class CDATA #REQUIRED iclasslink CDATA #IMPLIED
+                iclasslinkfile CDATA #IMPLIED>
+<!ELEMENT row (entry+)>
+<!ELEMENT tbody (row+ | tr+)>
+<!ELEMENT thead (row+ | tr+)>
+<!ATTLIST thead class CDATA #IMPLIED>
+<!ELEMENT tgroup (thead, tbody)>
+<!ATTLIST tgroup cols CDATA #REQUIRED>
+
+<!ELEMENT list (listitem+)>
+<!ATTLIST list
+          type (ordered|unordered|var|param) #REQUIRED 
+          role (standard|compressed|break|wide) #IMPLIED 
+          language CDATA #IMPLIED>
+<!ELEMENT listitem ((term*|param*), content)>
+<!ELEMENT term (#PCDATA|%formatted_words;)*>
+<!ELEMENT param (#PCDATA|%formatted_words;)*>
+<!ELEMENT content (#PCDATA|list|para|%formatted_words;)*>
+
+<!ELEMENT table (tgroup+)>
+<!ATTLIST table class CDATA #REQUIRED>
+
+<!ELEMENT after (#PCDATA)>
+<!ELEMENT definition (intro, table, after?)>
+<!ATTLIST definition encodedin CDATA #REQUIRED tabulatedwith CDATA #IMPLIED>
+
+<!ELEMENT explanation_intro (#PCDATA | a)*>
+<!ATTLIST explanation_intro headingsabove CDATA #REQUIRED>
+
+<!ELEMENT explanations (explanation_intro?, explanation*)>
+<!ATTLIST explanations scope CDATA #REQUIRED>
+<!ELEMENT explanation (symbol, (account | definition), arch_variants?)>
+<!ATTLIST explanation enclist CDATA #REQUIRED
+                      tags CDATA #IMPLIED
+                      symboldefcount CDATA #REQUIRED>
+
+<!ELEMENT aliasmnem (desc?, (alias+ | aliases+))>
+<!ATTLIST aliasmnem mnemonic CDATA #REQUIRED id CDATA #REQUIRED heading CDATA #IMPLIED>
+
+<!ELEMENT aliases (alias+)>
+<!ATTLIST aliases conditions CDATA #IMPLIED>
+
+<!ELEMENT alias (#PCDATA | asmtemplate)*>
+<!ATTLIST alias enctag CDATA #IMPLIED encname CDATA #REQUIRED
+                equivalent_to CDATA #REQUIRED
+                assembler_prototype CDATA #REQUIRED
+                conditions CDATA #IMPLIED
+                description CDATA #IMPLIED>
+
+<!ELEMENT heading %TEXT;>
+<!ELEMENT instructiontable (col+, thead, tbody)>
+<!ATTLIST instructiontable cols CDATA #REQUIRED iclass CDATA #REQUIRED>
+
+<!ELEMENT iclass_sect (regdiagram, decode_constraints?, instructiontable)>
+<!ATTLIST iclass_sect id CDATA #REQUIRED title CDATA #REQUIRED>
+
+<!ELEMENT decode_constraints (decode_constraint+)>
+<!ELEMENT decode_constraint EMPTY>
+<!ATTLIST decode_constraint name CDATA #REQUIRED op CDATA #REQUIRED val CDATA #REQUIRED>
+
+<!ELEMENT iclass (docvars?, iclassintro?, arch_variants?, regdiagram, encoding+, ps_section?, constrained_unpredictables?)>
+<!ATTLIST iclass name CDATA #REQUIRED 
+          id CDATA #REQUIRED
+          oneof CDATA #REQUIRED      
+          no_encodings CDATA #REQUIRED
+          isa CDATA #REQUIRED>
+<!ELEMENT iclassintro (txt|a)*>
+<!ATTLIST iclassintro count CDATA #REQUIRED>
+
+<!ELEMENT arch_variants (arch_variant*)>
+<!ELEMENT arch_variant EMPTY>
+<!ATTLIST arch_variant name CDATA #IMPLIED
+                       feature CDATA #IMPLIED>
+<!ELEMENT txt (#PCDATA)>
+
+<!ELEMENT iform (#PCDATA)>
+<!ATTLIST iform id CDATA #REQUIRED iformfile CDATA #REQUIRED heading CDATA #REQUIRED>
+<!ELEMENT iforms (iform+)>
+<!ATTLIST iforms title CDATA #REQUIRED>
+
+<!ELEMENT docvars (docvar+)>
+<!ELEMENT docvar EMPTY>
+<!ATTLIST docvar key CDATA #REQUIRED value CDATA #REQUIRED>
+
+<!ELEMENT instructionsection (docvars?, heading, desc, operationalnotes?,
+                              (alias_list | aliasto)?, 
+                              classes?, aliasmnem*, explanations?,
+                              aliastablehook?,
+                              ps_section*, exceptions?)>
+<!ATTLIST instructionsection id CDATA #REQUIRED
+                             title CDATA #REQUIRED
+                             tags CDATA #IMPLIED
+                             type (instruction|alias|pseudocode) #REQUIRED>
+
+
+<!--
+  <operationalnotes>: 
+-->      
+<!ELEMENT operationalnotes %formatted_text;>
+
+<!ELEMENT constraint_text_mappings (constraint_text_mapping*)>
+<!ELEMENT constraint_text_mapping (constraint_id, constraint_text)>
+<!ELEMENT constraint_id (#PCDATA)>
+<!ELEMENT constraint_text (#PCDATA|%formatted_words;)*>
+
+<!ELEMENT classes (classesintro?, iclass+)>
+<!ELEMENT classesintro (txt | a)*>
+<!ATTLIST classesintro count CDATA #REQUIRED>
+
+<!ELEMENT alias_list (alias_list_intro?, aliasref*, alias_list_outro?)>
+<!ATTLIST alias_list howmany CDATA #REQUIRED>
+<!ELEMENT alias_list_intro (#PCDATA)>
+<!ELEMENT aliasref (text, aliaspref+)>
+<!ATTLIST aliasref aliaspageid CDATA #REQUIRED
+                   aliasfile CDATA #REQUIRED
+                   hover CDATA #IMPLIED
+                   punct CDATA #REQUIRED>
+<!ELEMENT aliaspref (%inline;)*>
+<!ATTLIST aliaspref labels CDATA #IMPLIED>
+<!ELEMENT alias_list_outro (#PCDATA | text | aliastablelink)*>
+<!ELEMENT aliastablelink EMPTY>
+<!ELEMENT aliasto (#PCDATA)>
+<!ATTLIST aliasto refiform CDATA #REQUIRED
+                  iformid CDATA #REQUIRED>
+<!ELEMENT aliastablehook (#PCDATA)>
+<!ATTLIST aliastablehook anchor CDATA #REQUIRED>
+
+<!ELEMENT col EMPTY>
+<!ATTLIST col bitno CDATA #IMPLIED colno CDATA #REQUIRED printwidth CDATA #IMPLIED>
+<!ELEMENT maintable (col*, tableheader, tablebody)>
+<!ATTLIST maintable size (16x2 | 32) #IMPLIED
+                    howmanybits CDATA #IMPLIED
+                    class (grouptable|allclasses) #IMPLIED>
+<!ELEMENT maintablesect EMPTY>
+<!ATTLIST maintablesect sect CDATA #REQUIRED
+                        linkref CDATA #IMPLIED>
+                        
+<!ELEMENT para (#PCDATA|%formatted_words;|image)*>
+<!ELEMENT image EMPTY>
+<!ATTLIST image file CDATA #REQUIRED label CDATA #REQUIRED>
+
+<!ELEMENT note (para|list|%formatted_words;)*>
+
+<!ELEMENT decode (box*)>
+<!ELEMENT regdiagram (box*)>
+<!ATTLIST regdiagram form (16x2 | 32) #REQUIRED tworows CDATA #IMPLIED
+                     encname CDATA #IMPLIED psname CDATA #IMPLIED>
+<!ELEMENT sect1 (file | (title, para, file+))>
+<!ATTLIST sect1 id ID #REQUIRED>
+<!ELEMENT symbol (#PCDATA | a)*>
+<!ATTLIST symbol link CDATA #IMPLIED>
+<!ELEMENT tablebody (maintablesect*, tr+)*>
+<!ELEMENT tableheader (tr+)>
+<!ELEMENT td %TEXT;>
+<!ATTLIST td colspan CDATA #IMPLIED rowspan CDATA #IMPLIED
+             class CDATA #IMPLIED iformid CDATA #IMPLIED
+             bitwidth CDATA #IMPLIED note CDATA #IMPLIED
+             ingroup (1) #IMPLIED
+             bg CDATA #IMPLIED>
+<!ELEMENT th (#PCDATA)>
+<!ATTLIST th colno CDATA #IMPLIED colspan CDATA #IMPLIED rowspan CDATA #IMPLIED
+             class CDATA #IMPLIED bitwidth CDATA #IMPLIED>
+<!ELEMENT title %TEXT;>
+<!ELEMENT toptitle EMPTY>
+<!ATTLIST toptitle instructionset CDATA #REQUIRED>
+<!ELEMENT tr (th+ | td+)>
+<!ATTLIST tr class CDATA #IMPLIED iclass CDATA #IMPLIED id CDATA #IMPLIED
+             encname CDATA #IMPLIED first CDATA #IMPLIED last CDATA #IMPLIED
+             iformfile CDATA #IMPLIED oneofthismnem CDATA #IMPLIED
+             label CDATA #IMPLIED size CDATA #IMPLIED
+             undef (1) #IMPLIED arch_version CDATA #IMPLIED
+             groupid CDATA #IMPLIED groupname CDATA #IMPLIED>
+
+<!ELEMENT anchor (#PCDATA)>
+<!ATTLIST anchor link CDATA #REQUIRED file CDATA #IMPLIED
+                 hover CDATA #IMPLIED>
+
+<!ELEMENT pstext (line*)>
+<!ATTLIST pstext section CDATA #REQUIRED
+                 rep_section CDATA #IMPLIED
+                 mayhavelinks (1) #IMPLIED>
+
+<!ELEMENT line (#PCDATA | a | anchor)*>
+<!ATTLIST line indent CDATA #IMPLIED link CDATA #IMPLIED
+               file CDATA #IMPLIED hover CDATA #IMPLIED
+               conts CDATA #IMPLIED>
+
+<!ELEMENT ps (pstext)>
+<!ATTLIST ps name CDATA #REQUIRED
+          mylink CDATA #IMPLIED
+          enclabels CDATA #IMPLIED
+          sections CDATA #REQUIRED
+          secttype CDATA #IMPLIED>
+
+<!ELEMENT ps_section (ps+)>
+<!ATTLIST ps_section howmany CDATA #REQUIRED>
+

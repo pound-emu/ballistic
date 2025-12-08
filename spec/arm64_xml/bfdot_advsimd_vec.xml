@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="BFDOT_advsimd_vec" title="BFDOT (vector) -- A64" type="instruction">
+  <docvars>
+    <docvar key="advsimd-type" value="simd" />
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="BFDOT" />
+  </docvars>
+  <heading>BFDOT (vector)</heading>
+  <desc>
+    <brief>
+      <para>BFloat16 floating-point dot product (vector)</para>
+    </brief>
+    <authored>
+      <para>BFloat16 floating-point dot product (vector). This instruction delimits the source vectors into pairs of BFloat16 elements.</para>
+      <para>If FEAT_EBF16 is not implemented or <xref linkend="AArch64.fpcr">FPCR</xref>.EBF is 0, this instruction:</para>
+      <list type="unordered">
+        <listitem><content>Performs an unfused sum-of-products of each pair of adjacent BFloat16 elements in the source vectors. The intermediate single-precision products are rounded before they are summed, and the intermediate sum is rounded before accumulation into the single-precision destination element that overlaps with the corresponding pair of BFloat16 elements in the source vectors.</content></listitem>
+        <listitem><content>Uses the non-IEEE 754 Round-to-Odd rounding mode, which forces bit 0 of an inexact result to 1, and rounds an overflow to an appropriately signed Infinity.</content></listitem>
+        <listitem><content>Flushes denormalized inputs and results to zero, as if <xref linkend="AArch64.fpcr">FPCR</xref>.{FZ, FIZ} is {1, 1}.</content></listitem>
+        <listitem><content>Disables alternative floating point behaviors, as if <xref linkend="AArch64.fpcr">FPCR</xref>.AH is 0.</content></listitem>
+      </list>
+      <para>If FEAT_EBF16 is implemented and <xref linkend="AArch64.fpcr">FPCR</xref>.EBF is 1, then this instruction:</para>
+      <list type="unordered">
+        <listitem><content>Performs a fused sum-of-products of each pair of adjacent BFloat16 elements in the source vectors. The intermediate single-precision products are not rounded before they are summed, but the intermediate sum is rounded before accumulation into the single-precision destination element that overlaps with the corresponding pair of BFloat16 elements in the source vectors.</content></listitem>
+        <listitem><content>Follows all other floating-point behaviors that apply to single-precision arithmetic, as governed by <xref linkend="AArch64.fpcr">FPCR</xref>.RMode, <xref linkend="AArch64.fpcr">FPCR</xref>.FZ, <xref linkend="AArch64.fpcr">FPCR</xref>.AH, and <xref linkend="AArch64.fpcr">FPCR</xref>.FIZ.</content></listitem>
+      </list>
+      <para>Irrespective of FEAT_EBF16 and <xref linkend="AArch64.fpcr">FPCR</xref>.EBF, this instruction:</para>
+      <list type="unordered">
+        <listitem><content>Does not modify the cumulative <xref linkend="AArch64.fpsr">FPSR</xref> exception bits (IDC, IXC, UFC, OFC, DZC, and IOC).</content></listitem>
+        <listitem><content>Disables trapped floating-point exceptions, as if the <xref linkend="AArch64.fpcr">FPCR</xref> trap enable bits (IDE, IXE, UFE, OFE, DZE, and IOE) are all zero.</content></listitem>
+        <listitem><content>Generates only the default NaN, as if <xref linkend="AArch64.fpcr">FPCR</xref>.DN is 1.</content></listitem>
+      </list>
+      <para><xref linkend="AArch64.id_aa64isar1_el1">ID_AA64ISAR1_EL1</xref>.BF16 indicates whether this instruction is supported.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Vector" oneof="1" id="iclass_simd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-type" value="simd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="BFDOT" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.6" feature="FEAT_BF16" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/binary/uniform/mul/int/bfdot">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="size" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="21" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="5" name="Rm" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="15" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="14" width="4" name="opcode" settings="4">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="BFDOT_asimdsame2_D" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="advsimd-type" value="simd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="BFDOT" />
+        </docvars>
+        <asmtemplate><text>BFDOT  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [2S,4S]">&lt;Ta&gt;</a><text>, </text><a link="sa_vn" hover="First SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_tb" hover="Arrangement specifier (field &quot;Q&quot;) [4H,8H]">&lt;Tb&gt;</a><text>, </text><a link="sa_vm" hover="Second SIMD&amp;FP source register (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_tb" hover="Arrangement specifier (field &quot;Q&quot;) [4H,8H]">&lt;Tb&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/binary/uniform/mul/int/bfdot" mylink="aarch64.instrs.vector.arithmetic.binary.uniform.mul.int.bfdot" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveBF16Ext.0" file="shared_pseudocode.xml" hover="function: boolean HaveBF16Ext()">HaveBF16Ext</a>() then UNDEFINED;
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rm);
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV 32;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="BFDOT_asimdsame2_D" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="BFDOT_asimdsame2_D" symboldefcount="1">
+      <symbol link="sa_ta">&lt;Ta&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;Ta&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="BFDOT_asimdsame2_D" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the first SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="BFDOT_asimdsame2_D" symboldefcount="1">
+      <symbol link="sa_tb">&lt;Tb&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;Tb&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="BFDOT_asimdsame2_D" symboldefcount="1">
+      <symbol link="sa_vm">&lt;Vm&gt;</symbol>
+      <account encodedin="Rm">
+        <intro>
+          <para>Is the name of the second SIMD&amp;FP source register, encoded in the "Rm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/binary/uniform/mul/int/bfdot" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) operand1 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, datasize];
+bits(datasize) operand2 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[m, datasize];
+bits(datasize) operand3 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[d, datasize];
+bits(datasize) result;
+
+for e = 0 to elements-1
+    bits(16) elt1_a = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, 2 * e + 0, 16];
+    bits(16) elt1_b = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, 2 * e + 1, 16];
+    bits(16) elt2_a = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, 2 * e + 0, 16];
+    bits(16) elt2_b = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, 2 * e + 1, 16];
+
+    bits(32) sum = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand3, e, 32];
+    sum = <a link="impl-shared.BFDotAdd.6" file="shared_pseudocode.xml" hover="function: bits(32) BFDotAdd(bits(32) addend, bits(16) op1_a, bits(16) op1_b, bits(16) op2_a, bits(16) op2_b, FPCRType fpcr_in)">BFDotAdd</a>(sum, elt1_a, elt1_b, elt2_a, elt2_b, FPCR[]);
+    <a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, 32] = sum;
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, datasize] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

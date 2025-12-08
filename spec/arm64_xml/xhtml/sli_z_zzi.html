@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>SLI</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">SLI</h2><p>Shift left and insert (immediate)</p>
+      <p class="aml">Shift each source vector element left by an immediate value, and insert the result into the corresponding vector element in the destination vector register, merging the shifted bits from each source element with existing bits in each destination vector element. The immediate shift amount is an unsigned value in the range 0 to number of bits per element minus 1. This instruction is unpredicated.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">tszh</td><td class="lr">0</td><td colspan="2" class="lr">tszl</td><td colspan="3" class="lr">imm3</td><td class="l">1</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="lr">1</td><td colspan="5" class="lr">Zn</td><td colspan="5" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="sli_z_zzi_"/><p class="asm-code">SLI     <a href="#sa_zd" title="Destination scalable vector register (field &quot;Zd&quot;)">&lt;Zd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;tszh:tszl&quot;) [B,D,H,S]">&lt;T&gt;</a>, <a href="#sa_zn" title="First source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;tszh:tszl&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_const" title="Immediate shift amount [0-number of bits per element minus 1] (field &quot;tszh:tszl:imm3&quot;)">&lt;const&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE2.0" title="function: boolean HaveSVE2()">HaveSVE2</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+bits(4) tsize = tszh:tszl;
+integer esize;
+case tsize of
+    when '0000' UNDEFINED;
+    when '0001' esize = 8;
+    when '001x' esize = 16;
+    when '01xx' esize = 32;
+    when '1xxx' esize = 64;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd);
+constant integer shift = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(tsize:imm3) - esize;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd&gt;</td><td><a id="sa_zd"/>
+        
+          <p class="aml">Is the name of the destination scalable vector register, encoded in the "Zd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;T&gt;</td><td><a id="sa_t"/>
+        <p>Is the size specifier, 
+      encoded in
+      <q>tszh:tszl</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">tszh</th>
+                <th class="bitfield">tszl</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="bitfield">00</td>
+                <td class="symbol">RESERVED</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="bitfield">01</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="bitfield">1x</td>
+                <td class="symbol">H</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="bitfield">xx</td>
+                <td class="symbol">S</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1x</td>
+                <td class="bitfield">xx</td>
+                <td class="symbol">D</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn&gt;</td><td><a id="sa_zn"/>
+        
+          <p class="aml">Is the name of the first source scalable vector register, encoded in the "Zn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;const&gt;</td><td><a id="sa_const"/>
+        
+          <p class="aml">Is the immediate shift amount, in the range 0 to number of bits per element minus 1, encoded in "tszh:tszl:imm3".</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSVEEnabled.0" title="function: CheckSVEEnabled()">CheckSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer PL = VL DIV 8;
+constant integer elements = VL DIV esize;
+bits(VL) operand = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[n, VL];
+bits(VL) result = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[d, VL];
+
+for e = 0 to elements-1
+    bits(esize) element1 = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[result, e, esize];
+    bits(esize) element2 = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand, e, esize];
+    bits(esize) mask = <a href="shared_pseudocode.html#impl-shared.LSL.2" title="function: bits(N) LSL(bits(N) x, integer shift)">LSL</a>(<a href="shared_pseudocode.html#impl-shared.Ones.1" title="function: bits(N) Ones(integer N)">Ones</a>(esize), shift);
+    bits(esize) shiftedval = <a href="shared_pseudocode.html#impl-shared.LSL.2" title="function: bits(N) LSL(bits(N) x, integer shift)">LSL</a>(element2, shift);
+    <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize] = (element1 AND (NOT mask)) OR shiftedval;
+
+<a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[d, VL] = result;</p>
+    </div>
+  <h3>Operational information</h3><p class="aml">If FEAT_SVE2 is implemented or FEAT_SME is implemented, then if PSTATE.DIT is 1:</p><ul><li>The execution time of this instruction is independent of:
+            <ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li><li>The response of this instruction to asynchronous exceptions does not vary based on:
+            <ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li></ul><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

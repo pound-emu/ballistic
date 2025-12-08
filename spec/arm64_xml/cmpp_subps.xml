@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="CMPP_SUBPS" title="CMPP -- A64" type="alias">
+  <docvars>
+    <docvar key="alias_mnemonic" value="CMPP" />
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="SUBPS" />
+    <docvar key="source-type" value="src-is-register" />
+  </docvars>
+  <heading>CMPP</heading>
+  <desc>
+    <brief>
+      <para>Compare with Tag</para>
+    </brief>
+    <authored>
+      <para>Compare with Tag subtracts the 56-bit address held in the second source register from the 56-bit address held in the first source register, updates the condition flags based on the result of the subtraction, and discards the result.</para>
+    </authored>
+  </desc>
+  <aliasto refiform="subps.xml" iformid="SUBPS">SUBPS</aliasto>
+  <classes>
+    <iclass name="Integer" oneof="1" id="iclass_general" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SUBPS" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.5" feature="FEAT_MTE" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/integer/arithmetic/pointer/mcsubtracttaggedaddresssetflags" tworows="1">
+        <box hibit="31" name="sf" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="30" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="29" name="S" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="8" settings="8">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="20" width="5" name="Xm" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="15" name="opcode&lt;5&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="14" name="opcode&lt;4&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="13" name="opcode&lt;3&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="12" name="opcode&lt;2&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="11" name="opcode&lt;1&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="10" name="opcode&lt;0&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Xn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Xd" usename="1" settings="5" psbits="xxxxx">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="CMPP_SUBPS_64S_dp_2src" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="alias_mnemonic" value="CMPP" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SUBPS" />
+          <docvar key="source-type" value="src-is-register" />
+        </docvars>
+        <asmtemplate><text>CMPP  </text><a link="sa_xn_sp" hover="First 64-bit source general-purpose register or SP (field &quot;Xn&quot;)">&lt;Xn|SP&gt;</a><text>, </text><a link="sa_xm_sp" hover="Second 64-bit general-purpose source register or SP (field &quot;Xm&quot;)">&lt;Xm|SP&gt;</a></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="subps.xml#SUBPS_64S_dp_2src">SUBPS</a><text> XZR, </text><a link="sa_xn_sp" hover="First 64-bit source general-purpose register or SP (field &quot;Xn&quot;)">&lt;Xn|SP&gt;</a><text>, </text><a link="sa_xm_sp" hover="Second 64-bit general-purpose source register or SP (field &quot;Xm&quot;)">&lt;Xm|SP&gt;</a></asmtemplate>
+          <aliascond>Unconditionally</aliascond>
+        </equivalent_to>
+      </encoding>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="CMPP_SUBPS_64S_dp_2src" symboldefcount="1">
+      <symbol link="sa_xn_sp">&lt;Xn|SP&gt;</symbol>
+      <account encodedin="Xn">
+        <intro>
+          <para>Is the 64-bit name of the first source general-purpose register or stack pointer, encoded in the "Xn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="CMPP_SUBPS_64S_dp_2src" symboldefcount="1">
+      <symbol link="sa_xm_sp">&lt;Xm|SP&gt;</symbol>
+      <account encodedin="Xm">
+        <intro>
+          <para>Is the 64-bit name of the second general-purpose source register or stack pointer, encoded in the "Xm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+</instructionsection>

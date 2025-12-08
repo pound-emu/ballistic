@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="DCPS3" title="DCPS3 -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="DCPS3" />
+  </docvars>
+  <heading>DCPS3</heading>
+  <desc>
+    <brief>
+      <para>Debug Change PE State to EL3</para>
+    </brief>
+    <authored>
+      <para>Debug Change PE State to EL3, when executed in Debug state:</para>
+      <list type="unordered">
+        <listitem><content>If executed at EL3 selects SP_EL3.</content></listitem>
+        <listitem><content>Otherwise, changes the current Exception level and SP to EL3 using SP_EL3.</content></listitem>
+      </list>
+      <para>The target exception level of a DCPS3 instruction is EL3.</para>
+      <para>On executing a DCPS3 instruction:</para>
+      <list type="unordered">
+        <listitem><content><xref linkend="AArch64.elr_el3">ELR_EL3</xref> becomes <arm-defined-word>unknown</arm-defined-word>.</content></listitem>
+        <listitem><content><xref linkend="AArch64.spsr_el3">SPSR_EL3</xref> becomes <arm-defined-word>unknown</arm-defined-word>.</content></listitem>
+        <listitem><content><xref linkend="AArch64.esr_el3">ESR_EL3</xref> becomes <arm-defined-word>unknown</arm-defined-word>.</content></listitem>
+        <listitem><content><xref linkend="AArch64.dlr_el0">DLR_EL0</xref> and <xref linkend="AArch64.dspsr_el0">DSPSR_EL0</xref> become <arm-defined-word>unknown</arm-defined-word>.</content></listitem>
+        <listitem><content>The endianness is set according to <xref linkend="AArch64.sctlr_el3">SCTLR_EL3</xref>.EE.</content></listitem>
+      </list>
+      <para>This instruction is <arm-defined-word>undefined</arm-defined-word> at all exception levels if either:</para>
+      <list type="unordered">
+        <listitem><content><xref linkend="ext.edscr">EDSCR</xref>.SDD == 1.</content></listitem>
+        <listitem><content>EL3 is not implemented.</content></listitem>
+      </list>
+      <para>This instruction is always <arm-defined-word>undefined</arm-defined-word> in Non-debug state.</para>
+      <para>For more information on the operation of the DCPS&lt;n&gt; instructions, see <xref linkend="dcps">DCPS</xref>.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="DCPS3" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/system/exceptions/debug/exception" tworows="1">
+        <box hibit="31" width="8" settings="8">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="3" name="opc" settings="3">
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="20" width="16" name="imm16" usename="1">
+          <c colspan="16"></c>
+        </box>
+        <box hibit="4" width="3" name="op2" settings="3">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="1" width="2" name="LL" usename="1" settings="2" psbits="xx">
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="DCPS3_DC_exception" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="DCPS3" />
+        </docvars>
+        <asmtemplate><text>DCPS3  </text><text>{</text><text>#</text><a link="sa_imm" hover="Optional 16-bit unsigned immediate [0-65535], default 0 (field &quot;imm16&quot;)">&lt;imm&gt;</a><text>}</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/exceptions/debug/exception" mylink="aarch64.instrs.system.exceptions.debug.exception" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">bits(2) target_level = LL;
+if LL == '00' then UNDEFINED;
+if !<a link="impl-shared.Halted.0" file="shared_pseudocode.xml" hover="function: boolean Halted()">Halted</a>() then UNDEFINED;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="DCPS3_DC_exception" symboldefcount="1">
+      <symbol link="sa_imm">&lt;imm&gt;</symbol>
+      <account encodedin="imm16">
+        <intro>
+          <para>Is an optional 16-bit unsigned immediate, in the range 0 to 65535, defaulting to 0 and encoded in the "imm16" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/system/exceptions/debug/exception" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-shared.DCPSInstruction.1" file="shared_pseudocode.xml" hover="function: DCPSInstruction(bits(2) target_el)">DCPSInstruction</a>(target_level);</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>LUTI2 (four registers)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">LUTI2 (four registers)</h2><p>Lookup table read with 2-bit indexes</p>
+      <p class="aml">Copy 8-bit, 16-bit or 32-bit elements from ZT0 to four destination vectors using packed 2-bit indices from a segment of the source vector register. A segment corresponds to a portion of the source vector that is consumed in order to fill the destination vector. The segment is selected by the vector segment index modulo the total number of segments.</p>
+      <p class="aml">This instruction is unpredicated.</p>
+    
+    <p class="desc">
+      It has encodings from 2 classes:
+      <a href="#iclass_consecutive">Consecutive</a>
+       and 
+      <a href="#iclass_strided">Strided</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_consecutive"/>Consecutive<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="r">1</td><td class="lr">1</td><td colspan="2" class="lr">i2</td><td class="l">1</td><td class="r">0</td><td colspan="2" class="lr">size</td><td class="l">0</td><td class="r">0</td><td colspan="5" class="lr">Zn</td><td colspan="3" class="lr">Zd</td><td class="l">0</td><td class="r">0</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="luti2_mz4_ztz_1"/><p class="asm-code">LUTI2   { <a href="#sa_zd1" title="First destination scalable vector register of a multi-vector sequence (field Zd)">&lt;Zd1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,H,S]">&lt;T&gt;</a>-<a href="#sa_zd4" title="Fourth destination scalable vector register of a multi-vector sequence (field Zd)">&lt;Zd4&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,H,S]">&lt;T&gt;</a> }, ZT0, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>[<a href="#sa_index" title="Vector segment index [0-3] (field &quot;i2&quot;)">&lt;index&gt;</a>]</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+if size == '11' then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer isize = 2;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer dstride = 1;
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd:'00');
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i2);
+constant integer nreg = 4;</p>
+    <h3 class="classheading"><a id="iclass_strided"/>Strided<span style="font-size:smaller;"><br/>(FEAT_SME2p1)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td class="r">1</td><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td class="r">1</td><td class="lr">1</td><td class="lr">1</td><td colspan="2" class="lr">i2</td><td class="l">1</td><td class="r">0</td><td colspan="2" class="lr">size</td><td class="l">0</td><td class="r">0</td><td colspan="5" class="lr">Zn</td><td class="lr">D</td><td class="lr">0</td><td class="lr">0</td><td colspan="2" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="luti2_mz4_ztz_4"/><p class="asm-code">LUTI2   { <a href="#sa_zd1_1" title="First destination scalable vector register Z0-Z3 or Z16-Z19 of a multi-vector sequence (field D:'00':Zd)">&lt;Zd1&gt;</a>.<a href="#sa_t_1" title="Size specifier (field &quot;size&lt;0&gt;&quot;) [B,H]">&lt;T&gt;</a>, <a href="#sa_zd2" title="Second destination scalable vector register Z4-Z7 or Z20-Z23 of a multi-vector sequence (field D:'01':Zd)">&lt;Zd2&gt;</a>.<a href="#sa_t_1" title="Size specifier (field &quot;size&lt;0&gt;&quot;) [B,H]">&lt;T&gt;</a>, <a href="#sa_zd3" title="Third destination scalable vector register Z8-Z11 or Z24-Z27 of a multi-vector sequence (field D:'10':Zd)">&lt;Zd3&gt;</a>.<a href="#sa_t_1" title="Size specifier (field &quot;size&lt;0&gt;&quot;) [B,H]">&lt;T&gt;</a>, <a href="#sa_zd4_1" title="Fourth destination scalable vector register Z12-Z15 or Z28-Z31 of a multi-vector sequence (field D:'11':Zd)">&lt;Zd4&gt;</a>.<a href="#sa_t_1" title="Size specifier (field &quot;size&lt;0&gt;&quot;) [B,H]">&lt;T&gt;</a> }, ZT0, <a href="#sa_zn" title="Source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>[<a href="#sa_index" title="Vector segment index [0-3] (field &quot;i2&quot;)">&lt;index&gt;</a>]</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2p1.0" title="function: boolean HaveSME2p1()">HaveSME2p1</a>() then UNDEFINED;
+if size == '10' || size == '11' then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer isize = 2;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer dstride = 4;
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(D:'00':Zd);
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i2);
+constant integer nreg = 4;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd1&gt;</td><td><a id="sa_zd1"/>
+        
+          
+        
+        
+          <p class="aml">For the consecutive variant: is the name of the first destination scalable vector register of a multi-vector sequence, encoded as "Zd" times 4.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zd1_1"/>
+        
+          
+        
+        
+          <p class="aml">For the strided variant: is the name of the first destination scalable vector register Z0-Z3 or Z16-Z19 of a multi-vector sequence, encoded as "D:'00':Zd".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;T&gt;</td><td><a id="sa_t"/>
+        <p>For the consecutive variant: is the size specifier, 
+      encoded in
+      <q>size</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">size</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="symbol">H</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10</td>
+                <td class="symbol">S</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11</td>
+                <td class="symbol">RESERVED</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr><tr><td/><td><a id="sa_t_1"/>
+        <p>For the strided variant: is the size specifier, 
+      encoded in
+      <q>size&lt;0&gt;</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">size&lt;0&gt;</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="symbol">H</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd2&gt;</td><td><a id="sa_zd2"/>
+        
+          <p class="aml">Is the name of the second destination scalable vector register Z4-Z7 or Z20-Z23 of a multi-vector sequence, encoded as "D:'01':Zd".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd3&gt;</td><td><a id="sa_zd3"/>
+        
+          <p class="aml">Is the name of the third destination scalable vector register Z8-Z11 or Z24-Z27 of a multi-vector sequence, encoded as "D:'10':Zd".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd4&gt;</td><td><a id="sa_zd4"/>
+        
+          
+        
+        
+          <p class="aml">For the consecutive variant: is the name of the fourth destination scalable vector register of a multi-vector sequence, encoded as "Zd" times 4 plus 3.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zd4_1"/>
+        
+          
+        
+        
+          <p class="aml">For the strided variant: is the name of the fourth destination scalable vector register Z12-Z15 or Z28-Z31 of a multi-vector sequence, encoded as "D:'11':Zd".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn&gt;</td><td><a id="sa_zn"/>
+        
+          <p class="aml">Is the name of the source scalable vector register, encoded in the "Zn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;index&gt;</td><td><a id="sa_index"/>
+        
+          <p class="aml">Is the vector segment index, in the range 0 to 3, encoded in the "i2" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckStreamingSVEEnabled.0" title="function: CheckStreamingSVEEnabled()">CheckStreamingSVEEnabled</a>();
+<a href="shared_pseudocode.html#impl-aarch64.CheckSMEZT0Enabled.0" title="function: CheckSMEZT0Enabled()">CheckSMEZT0Enabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer elements = VL DIV esize;
+integer segments = esize DIV (isize * nreg);
+integer segment = imm MOD segments;
+bits(VL) indexes = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[n, VL];
+bits(512) table = <a href="shared_pseudocode.html#impl-aarch64.ZT0.read.1" title="accessor: bits(width) ZT0[integer width]">ZT0</a>[512];
+
+for r = 0 to nreg-1
+    integer base = (segment * nreg + r) * elements;
+    bits(VL) result = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[d, VL];
+    for e = 0 to elements-1
+        integer index = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[indexes, base+e, isize]);
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize] = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[table, index, 32]&lt;esize-1:0&gt;;
+    <a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[d, VL] = result;
+    d = d + dstride;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

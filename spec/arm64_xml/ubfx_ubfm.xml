@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="UBFX_UBFM" title="UBFX -- A64" type="alias">
+  <docvars>
+    <docvar key="alias_mnemonic" value="UBFX" />
+    <docvar key="bitfield-fill" value="zero-fill" />
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="UBFM" />
+    <docvar key="source-type" value="src-is-immediate" />
+  </docvars>
+  <heading>UBFX</heading>
+  <desc>
+    <brief>
+      <para>Unsigned Bitfield Extract</para>
+    </brief>
+    <authored>
+      <para>Unsigned Bitfield Extract copies a bitfield of <syntax>&lt;width&gt;</syntax> bits starting from bit position <syntax>&lt;lsb&gt;</syntax> in the source register to the least significant bits of the destination register, and sets destination bits above the bitfield to zero.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <aliasto refiform="ubfm.xml" iformid="UBFM">UBFM</aliasto>
+  <classes>
+    <iclass name="With zeros to left and right" oneof="1" id="iclass_zero_fill" no_encodings="2" isa="A64">
+      <docvars>
+        <docvar key="bitfield-fill" value="zero-fill" />
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="UBFM" />
+      </docvars>
+      <iclassintro count="2"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/integer/bitfield" tworows="1">
+        <box hibit="31" name="sf" usename="1">
+          <c></c>
+        </box>
+        <box hibit="30" width="2" name="opc" usename="1" settings="2" psbits="xx">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="28" width="6" settings="6">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="22" name="N" usename="1">
+          <c></c>
+        </box>
+        <box hibit="21" width="6" name="immr" usename="1">
+          <c colspan="6"></c>
+        </box>
+        <box hibit="15" width="6" name="imms" usename="1">
+          <c colspan="6"></c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="UBFX_UBFM_32M_bitfield" oneofinclass="2" oneof="2" label="32-bit" bitdiffs="sf == 0 &amp;&amp; N == 0">
+        <docvars>
+          <docvar key="alias_mnemonic" value="UBFX" />
+          <docvar key="bitfield-fill" value="zero-fill" />
+          <docvar key="datatype" value="32" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="UBFM" />
+          <docvar key="source-type" value="src-is-immediate" />
+        </docvars>
+        <box hibit="31" width="1" name="sf">
+          <c>0</c>
+        </box>
+        <box hibit="22" width="1" name="N">
+          <c>0</c>
+        </box>
+        <asmtemplate><text>UBFX  </text><a link="sa_wd" hover="32-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Wd&gt;</a><text>, </text><a link="sa_wn" hover="32-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Wn&gt;</a><text>, #</text><a link="sa_lsb_1" hover="Bit number of lsb of the source bitfield [0-31]">&lt;lsb&gt;</a><text>, #</text><a link="sa_width" hover="Width of bitfield [1-32-&lt;lsb&gt;]">&lt;width&gt;</a></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="ubfm.xml#UBFM_32M_bitfield">UBFM</a><text> </text><a link="sa_wd" hover="32-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Wd&gt;</a><text>, </text><a link="sa_wn" hover="32-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Wn&gt;</a><text>, #</text><a link="sa_lsb_1" hover="Bit number of lsb of the source bitfield [0-31]">&lt;lsb&gt;</a><text>, #(</text><a link="sa_lsb_1" hover="Bit number of lsb of the source bitfield [0-31]">&lt;lsb&gt;</a><text>+</text><a link="sa_width" hover="Width of bitfield [1-32-&lt;lsb&gt;]">&lt;width&gt;</a><text>-1)</text></asmtemplate>
+          <aliascond><a link="impl-aarch64.BFXPreferred.4" file="shared_pseudocode.xml" hover="function: boolean BFXPreferred(bit sf, bit uns, bits(6) imms, bits(6) immr)">BFXPreferred</a>(sf, opc&lt;1&gt;, imms, immr)</aliascond>
+        </equivalent_to>
+      </encoding>
+      <encoding name="UBFX_UBFM_64M_bitfield" oneofinclass="2" oneof="2" label="64-bit" bitdiffs="sf == 1 &amp;&amp; N == 1">
+        <docvars>
+          <docvar key="alias_mnemonic" value="UBFX" />
+          <docvar key="bitfield-fill" value="zero-fill" />
+          <docvar key="datatype" value="64" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="UBFM" />
+          <docvar key="source-type" value="src-is-immediate" />
+        </docvars>
+        <box hibit="31" width="1" name="sf">
+          <c>1</c>
+        </box>
+        <box hibit="22" width="1" name="N">
+          <c>1</c>
+        </box>
+        <asmtemplate><text>UBFX  </text><a link="sa_xd" hover="64-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Xd&gt;</a><text>, </text><a link="sa_xn" hover="64-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Xn&gt;</a><text>, #</text><a link="sa_lsb_3" hover="Bit number of lsb of the source bitfield [0-63]">&lt;lsb&gt;</a><text>, #</text><a link="sa_width_1" hover="Width of bitfield [1-64-&lt;lsb&gt;]">&lt;width&gt;</a></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="ubfm.xml#UBFM_64M_bitfield">UBFM</a><text> </text><a link="sa_xd" hover="64-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Xd&gt;</a><text>, </text><a link="sa_xn" hover="64-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Xn&gt;</a><text>, #</text><a link="sa_lsb_3" hover="Bit number of lsb of the source bitfield [0-63]">&lt;lsb&gt;</a><text>, #(</text><a link="sa_lsb_3" hover="Bit number of lsb of the source bitfield [0-63]">&lt;lsb&gt;</a><text>+</text><a link="sa_width_1" hover="Width of bitfield [1-64-&lt;lsb&gt;]">&lt;width&gt;</a><text>-1)</text></asmtemplate>
+          <aliascond><a link="impl-aarch64.BFXPreferred.4" file="shared_pseudocode.xml" hover="function: boolean BFXPreferred(bit sf, bit uns, bits(6) imms, bits(6) immr)">BFXPreferred</a>(sf, opc&lt;1&gt;, imms, immr)</aliascond>
+        </equivalent_to>
+      </encoding>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="UBFX_UBFM_32M_bitfield" symboldefcount="1">
+      <symbol link="sa_wd">&lt;Wd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 32-bit name of the general-purpose destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_32M_bitfield" symboldefcount="1">
+      <symbol link="sa_wn">&lt;Wn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 32-bit name of the general-purpose source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_64M_bitfield" symboldefcount="1">
+      <symbol link="sa_xd">&lt;Xd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_64M_bitfield" symboldefcount="1">
+      <symbol link="sa_xn">&lt;Xn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_32M_bitfield" symboldefcount="1">
+      <symbol link="sa_lsb_1">&lt;lsb&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="datatype" value="32" />
+        </docvars>
+        <intro>
+          <para>For the 32-bit variant: is the bit number of the lsb of the source bitfield, in the range 0 to 31.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_64M_bitfield" symboldefcount="2">
+      <symbol link="sa_lsb_3">&lt;lsb&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="datatype" value="64" />
+        </docvars>
+        <intro>
+          <para>For the 64-bit variant: is the bit number of the lsb of the source bitfield, in the range 0 to 63.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_32M_bitfield" symboldefcount="1">
+      <symbol link="sa_width">&lt;width&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="datatype" value="32" />
+        </docvars>
+        <intro>
+          <para>For the 32-bit variant: is the width of the bitfield, in the range 1 to 32-&lt;lsb&gt;.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UBFX_UBFM_64M_bitfield" symboldefcount="2">
+      <symbol link="sa_width_1">&lt;width&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="datatype" value="64" />
+        </docvars>
+        <intro>
+          <para>For the 64-bit variant: is the width of the bitfield, in the range 1 to 64-&lt;lsb&gt;.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+</instructionsection>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>TBL -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">TBL</h2>
+      <p class="aml">Table vector Lookup. This instruction reads each value from the vector elements in the index source SIMD&amp;FP register, uses each result as an index to perform a lookup in a table of bytes that is described by one to four source table SIMD&amp;FP registers, places the lookup result in a vector, and writes the vector to the destination SIMD&amp;FP register. If an index is out of range for the table, the result for that lookup is 0. If more than one source register is used to describe the table, the first source register describes the lowest bytes of the table.</p>
+      <p class="aml">Depending on the settings in the <a class="armarm-xref" title="Reference to Armv8 ARM section">CPACR_EL1</a>, <a class="armarm-xref" title="Reference to Armv8 ARM section">CPTR_EL2</a>, and <a class="armarm-xref" title="Reference to Armv8 ARM section">CPTR_EL3</a> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">0</td><td class="lr">Q</td><td class="l">0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="l">0</td><td class="r">0</td><td class="lr">0</td><td colspan="5" class="lr">Rm</td><td class="lr">0</td><td colspan="2" class="lr">len</td><td class="lr">0</td><td class="l">0</td><td class="r">0</td><td colspan="5" class="lr">Rn</td><td colspan="5" class="lr">Rd</td></tr><tr class="secondrow"><td/><td/><td colspan="6"/><td colspan="2"/><td/><td colspan="5"/><td/><td colspan="2"/><td class="droppedname">op</td><td colspan="2"/><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding">Two register table<span class="bitdiff"> (len == 01)</span></h4><a id="TBL_asimdtbl_L2_2"/><p class="asm-code">TBL  <a href="#sa_vd" title="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a>, { <a href="#sa_vn_1" title="First SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a>.16B, <a href="#sa_vn_plus_1" title="Second SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 1 modulo 32 (field Rn)">&lt;Vn+1&gt;</a>.16B }, <a href="#sa_vm" title="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></p></div><div class="encoding"><h4 class="encoding">Three register table<span class="bitdiff"> (len == 10)</span></h4><a id="TBL_asimdtbl_L3_3"/><p class="asm-code">TBL  <a href="#sa_vd" title="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a>, { <a href="#sa_vn_1" title="First SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a>.16B, <a href="#sa_vn_plus_1" title="Second SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 1 modulo 32 (field Rn)">&lt;Vn+1&gt;</a>.16B, <a href="#sa_vn_plus_2" title="Third SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 2 modulo 32 (field Rn)">&lt;Vn+2&gt;</a>.16B }, <a href="#sa_vm" title="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></p></div><div class="encoding"><h4 class="encoding">Four register table<span class="bitdiff"> (len == 11)</span></h4><a id="TBL_asimdtbl_L4_4"/><p class="asm-code">TBL  <a href="#sa_vd" title="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a>, { <a href="#sa_vn_1" title="First SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a>.16B, <a href="#sa_vn_plus_1" title="Second SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 1 modulo 32 (field Rn)">&lt;Vn+1&gt;</a>.16B, <a href="#sa_vn_plus_2" title="Third SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 2 modulo 32 (field Rn)">&lt;Vn+2&gt;</a>.16B, <a href="#sa_vn_plus_3" title="Fourth SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 3 modulo 32 (field Rn)">&lt;Vn+3&gt;</a>.16B }, <a href="#sa_vm" title="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></p></div><div class="encoding"><h4 class="encoding">Single register table<span class="bitdiff"> (len == 00)</span></h4><a id="TBL_asimdtbl_L1_1"/><p class="asm-code">TBL  <a href="#sa_vd" title="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a>, { <a href="#sa_vn" title="SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a>.16B }, <a href="#sa_vm" title="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a>.<a href="#sa_ta" title="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></p></div><p class="pseudocode">integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rm);
+
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV 8;
+integer regs = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(len) + 1;
+boolean is_tbl = (op == '0');</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vd&gt;</td><td><a id="sa_vd"/>
+        
+          <p class="aml">Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Ta&gt;</td><td><a id="sa_ta"/>
+        <p>Is an arrangement specifier, 
+      encoded in
+      <q>Q</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">Q</th>
+                <th class="symbol">&lt;Ta&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="symbol">8B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="symbol">16B</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vn&gt;</td><td><a id="sa_vn_1"/>
+        
+          <p class="aml">For the four register table, three register table and two register table variant: is the name of the first SIMD&amp;FP table register, encoded in the "Rn" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_vn"/>
+        
+          
+        
+        
+          <p class="aml">For the single register table variant: is the name of the SIMD&amp;FP table register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vn+1&gt;</td><td><a id="sa_vn_plus_1"/>
+        
+          <p class="aml">Is the name of the second SIMD&amp;FP table register, encoded as "Rn" plus 1 modulo 32.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vn+2&gt;</td><td><a id="sa_vn_plus_2"/>
+        
+          <p class="aml">Is the name of the third SIMD&amp;FP table register, encoded as "Rn" plus 2 modulo 32.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vn+3&gt;</td><td><a id="sa_vn_plus_3"/>
+        
+          <p class="aml">Is the name of the fourth SIMD&amp;FP table register, encoded as "Rn" plus 3 modulo 32.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vm&gt;</td><td><a id="sa_vm"/>
+        
+          <p class="aml">Is the name of the SIMD&amp;FP index register, encoded in the "Rm" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckFPAdvSIMDEnabled64.0" title="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) indices = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[m, datasize];
+bits(128*regs) table = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(128*regs);
+bits(datasize) result;
+integer index;
+
+// Create table from registers
+for i = 0 to regs - 1
+    table&lt;128*i+127:128*i&gt; = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[n, 128];
+    n = (n + 1) MOD 32;
+
+result = if is_tbl then <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(datasize) else <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[d, datasize];
+for i = 0 to elements - 1
+    index = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[indices, i, 8]);
+    if index &lt; 16 * regs then
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, i, 8] = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[table, index, 8];
+
+<a href="shared_pseudocode.html#impl-aarch64.V.write.2" title="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, datasize] = result;</p>
+    </div>
+  <h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

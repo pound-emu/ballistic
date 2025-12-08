@@ -1,0 +1,290 @@
+<!--
+
+XML language encodingindex for by-encoding index 
+Copyright (c) 2010-2018 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+--> 
+
+<!-- TEXT: an entity for inline stuff -->
+
+<!ENTITY % TEXT "(#PCDATA|a)*">
+        
+<!-- <a>: a hotlink for general use.
+        Attributes:
+          classid - link target, but this time just the unique name of
+             some level of encoding class.
+-->          
+
+<!ELEMENT a (#PCDATA)>
+<!ATTLIST a classid CDATA #IMPLIED>
+
+<!-- <td>: table cell (as per HTML name)
+        Attributes:
+          colspan, rowspan: used to define horizontal and vertical
+             spans in a table, just like in HTML.
+          class: used to name the cell within the row, usually.
+          iformid: used in the instruction table (which lists
+             instructions within a class) to identify the associated
+             instruction page.
+          bitwidth: used in the instruction table on a cell showing a
+             binary value (though it can be blank for "don't care"),
+             and recording the width of the field.
+          note: historical use only.
+          ingroup: a boolean only ever included as value 1 = true.
+             Used in the main encoding table to identify cells holding
+             bit-settings which are predefined by the higher-level
+             encoding group, to distinguish them from variable fields.
+          bg: bit group number.  I've forgotten what this means: I
+             think it may be more necessary for A32.  Its sole
+             appearance in the A64 version is probably caused by a
+             minor bug.
+-->
+<!ELEMENT td %TEXT;>
+<!ATTLIST td colspan CDATA #IMPLIED rowspan CDATA #IMPLIED
+             class CDATA #IMPLIED iformid CDATA #IMPLIED
+             bitwidth CDATA #IMPLIED note CDATA #IMPLIED
+             ingroup (1) #IMPLIED
+             bg CDATA #IMPLIED
+             hover CDATA #IMPLIED>
+
+             
+<!-- <th>: table header cell (as per HTML).
+        Attributes:
+          colspan, rowspan: used to define horizontal and vertical
+             spans in a table, just like in HTML.
+          class: used to name the cell within the row, usually.
+          bitwidth: used in the instruction table on a cell showing a
+             binary value (though it can be blank for "don't care"),
+             and recording the width of the field.
+-->
+<!ELEMENT th (#PCDATA)>
+<!ATTLIST th colno CDATA #IMPLIED colspan CDATA #IMPLIED rowspan CDATA #IMPLIED
+             class CDATA #IMPLIED bitwidth CDATA #IMPLIED>
+
+<!-- <tr>: table row (as in HTML)
+       In the encoding index, a table row generally corresponds to an
+       encoding of some kind.
+
+        Attributes (too many):
+          class: tells you what table it's part of.
+          iclass: (main table row) names the row's instruction class 
+          id: wrongly and annoyingly used to name the row's role
+             (only header rows have a fixed role)
+          encname: (instruction table row) the associated encoding id
+          first, last: there may well be multiple instruction table
+             lines pointing to different encodings with the same
+             mnemonic and in the same iform.  The first and last of
+             these are marked.  There are better ways to do this.
+          oneofthismnem: the total number of instruction table rows
+             referring to the same mnemonic in the same iform.
+          size: size of encoding described by this row. One of:
+             * 16   - single 16-bit encoding
+             * 16x2 - pair of 16-bit encodings
+             * 32   - single 32-bit encoding
+          label: (instruction table row) where there are multiple
+             instruction table lines for a mnemonic/iform, each has this
+             differentiating text.
+          iformfile: (instruction table rows) the iform file name
+             associated with this row.
+          undef: this row represents an UNALLOCATED encoding
+          unpred:this row represents an UNPREDICTABLE encoding
+          reserved_nop_hint: this row represents an encoding that is
+             reserved as a hint, and behaves as NOP.
+          groupid: (main table rows) the ID of the higher-level
+             encoding group containing this encoding, if any.
+          groupname: the ID of the intermediate group that this 
+             row describes.
+-->
+<!ELEMENT tr (th* | td*)>
+<!ATTLIST tr class CDATA #IMPLIED iclass CDATA #IMPLIED id CDATA #IMPLIED
+             encname CDATA #IMPLIED first CDATA #IMPLIED last CDATA #IMPLIED
+             iformfile CDATA #IMPLIED oneofthismnem CDATA #IMPLIED
+             size (16 | 16x2 | 32) #IMPLIED
+             label CDATA #IMPLIED
+             undef (1) #IMPLIED
+             unpred (1) #IMPLIED
+             reserved_nop_hint (1) #IMPLIED
+             groupid CDATA #IMPLIED
+             groupname CDATA #IMPLIED             
+             arch_version CDATA #IMPLIED>
+
+<!-- <maintablesect>: an auxiliary 'row' inside the main encoding
+        table, which introduces a set of rows belonging to a new
+        high-level group.
+       Attributes:
+         sect: the heading text for the high-level group
+         linkref: unique name for the high-level group
+-->
+<!ELEMENT maintablesect EMPTY>
+<!ATTLIST maintablesect sect CDATA #REQUIRED
+                        linkref CDATA #IMPLIED>
+
+<!-- <tablebody>: used in main table only to wrap the data rows -->
+<!ELEMENT tablebody (maintablesect | tr)+>
+        
+<!ELEMENT tableheader (tr+)>
+        
+<!-- <col>: table elements used to attach some information to main
+        table columns for use in manufacturing output tables.  HTML
+        does not need this data, but framemaker does.
+       Attributes:
+         bitno: the instruction bit number for this column
+         colno: the number of this column, counting from 1
+         printwidth: a proposed width in framemaker-compatible units
+           ("1.3in") or just relative widths ("4*" vs "10*" says to
+           make the first 40% of the width of the second).
+-->
+<!ELEMENT col EMPTY>
+<!ATTLIST col bitno CDATA #IMPLIED colno CDATA #IMPLIED printwidth CDATA #IMPLIED>
+        
+<!-- <maintable>: the main encoding table
+       Attributes:
+         howmanybits: the number of bit-positions used to do this decode
+        
+         class: when 'grouptable' it's a high-level table.  When set
+           to 'allclasses' (the default, usually in fact not set) it
+           means it's the real maintable, which lists instruction
+           classes against their bit-encoding.  The full maintable is
+           convenient for machine readers, but renderers may choose to
+           break it up.
+-->
+<!ELEMENT maintable (col*, tableheader, tablebody)>
+<!ATTLIST maintable size (16x2 | 32) #IMPLIED
+                    isa CDATA #IMPLIED
+                    howmanybits CDATA #IMPLIED
+                    class (grouptable|allclasses) #IMPLIED>
+
+<!ELEMENT tbody (tr+)>
+           
+<!-- <thead>: contains table heading rows, following HTML
+        Attributes:
+           class: identifies the table we are part of.
+-->
+<!ELEMENT thead (tr+)>
+<!ATTLIST thead class CDATA #IMPLIED>
+
+<!-- <instructiontable>: one per iclass, this table lists instruction
+        encodings against their bit-conditions.
+       Attributes:
+          iclass: the iclass ID 
+          cols: the total number of columns in the table (one for each
+            decode bitfield it uses, one for the iform file, one for
+           the encoding.)  There's only one encoding to link to, and
+           in this case renderers may omit the encoding link, which
+           would then be the same as the iform link.
+-->
+<!ELEMENT instructiontable (col*, thead, tbody)>
+<!ATTLIST instructiontable iclass CDATA #REQUIRED cols CDATA #REQUIRED>
+
+<!-- register diagram elements, much better explained in the iform DTD
+     file -->
+<!ELEMENT c (#PCDATA)>
+<!ATTLIST c colspan CDATA #IMPLIED href CDATA #IMPLIED>
+<!ELEMENT box (c*)>
+<!ATTLIST box hibit CDATA #IMPLIED name CDATA #IMPLIED
+              usename CDATA #IMPLIED width CDATA #IMPLIED
+              settings CDATA #IMPLIED
+              constraint CDATA #IMPLIED>
+<!ELEMENT regdiagram (box*)>
+<!ATTLIST regdiagram form (16 | 16x2 | 32) #REQUIRED
+                     isa CDATA #IMPLIED
+                     psname CDATA #IMPLIED
+                     tworows (1) #IMPLIED
+                     constraint CDATA #IMPLIED>
+
+<!-- <header>: the title for this level of decode. -->
+<!ELEMENT header (#PCDATA)>
+
+<!-- <decode>: set of decode bits for this node in the hierarchy. -->
+<!ELEMENT decode (box+)>
+
+<!-- <decode_constraints>: additional decode constraints that apply 
+                           that are not described in <regdiagram>.
+-->
+<!ELEMENT decode_constraints (decode_constraint+)>
+
+<!-- <decode_constraint>: an additional decode constraint that applies. -->
+<!ELEMENT decode_constraint EMPTY>
+<!ATTLIST decode_constraint name CDATA #REQUIRED
+                            op CDATA #REQUIRED
+                            val CDATA #REQUIRED>
+
+<!-- <node>: a node in the encoding hierarchy.
+     Attributes:
+      iclass: the instruction class this node points to.
+      groupname: the ID of this intermediate group.
+      unallocated: if 1, unallocated instruction(s).
+      unpredictable: if 1, unpredictable instruction(s).
+      reserved_nop_hint: if 1, reserved instruction encoding that behaves as NOP
+         and may be used for hint instruction(s).
+-->
+<!ELEMENT node (header, decode?, regdiagram?, decode_constraints?, node*)>
+<!ATTLIST node iclass CDATA #IMPLIED
+               groupname CDATA #IMPLIED
+               unallocated (0 | 1) #IMPLIED
+               unpredictable (0 | 1) #IMPLIED
+               reserved_nop_hint (0 | 1) #IMPLIED>
+
+<!-- <hierarchy>: wrapper for all levels of the encoding hierarchy. -->
+<!ELEMENT hierarchy (regdiagram, node*)>
+
+<!-- <groups>: wrapper for top-level encoding group table.  This
+       apparently superfluous wrapping is there to make it easier for
+       readers to skip this information, which was not present in
+       earlier versions of the encoding index.
+      Attributes:
+       heading: text for heading, if the groups section is used.
+                this is deprecated - it's actually not necessary 
+                and is always "Top-Level Encoding Groups".
+-->
+<!ELEMENT groups (maintable)>
+<!ATTLIST groups heading CDATA #REQUIRED>
+
+<!-- <funcgroupheader>: optionally inserted before a list of related
+       iclass_sects, describing the group below.  Found in later
+       releases.  Renderers can use the header to insert sub-tables
+       (rows of the main encoding table whose groupid matches the id
+       attribute here):
+       The element's text is a suitable heading.
+      Attibutes:
+        id: the unique ID of the high-level group being introduced.
+-->
+<!ELEMENT funcgroupheader (#PCDATA)>
+<!ATTLIST funcgroupheader id CDATA #REQUIRED>
+
+<!-- <iclass_sect>: wraps the data associated with an iclass, which is
+        a register diagram and an instruction table.
+       Attributes:
+          id: the iclass ID
+          title: a suitable heading for the iclass in this file.
+-->
+<!ELEMENT iclass_sect (regdiagram+, decode_constraints?, instructiontable)>
+<!ATTLIST iclass_sect id CDATA #REQUIRED title CDATA #REQUIRED>
+
+<!-- <mapping>: specific mapping from one to another class id.
+
+        Attributes:
+          from_isa: the instruction set defining the 'from' classid.
+              (defaults to the current instruction set.)
+          from: the id of the instruction class in the 'from_isa'
+              instruction set.
+          to_isa: the instruction set defining the 'to' classid.
+          to: the id of the instruction class in the 'to_isa'
+              instruction set.
+-->
+<!ELEMENT mapping EMPTY>
+<!ATTLIST mapping from_isa CDATA #IMPLIED  from CDATA #REQUIRED
+                  to_isa   CDATA #REQUIRED to   CDATA #REQUIRED>
+
+<!-- <mappings>: set of mappings to other classid's, usually in some
+       other instruction sets.
+-->
+<!ELEMENT mappings (mapping*)>
+
+<!-- <encodingindex>: the whole thing -->       
+<!ELEMENT encodingindex (hierarchy?, groups?, maintable,
+                         (funcgroupheader?, iclass_sect+)+,
+                         mappings?)>
+<!ATTLIST encodingindex instructionset CDATA #IMPLIED
+                        title CDATA #IMPLIED>

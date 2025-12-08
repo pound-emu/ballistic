@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="HLT" title="HLT -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="HLT" />
+  </docvars>
+  <heading>HLT</heading>
+  <desc>
+    <brief>
+      <para>Halt instruction</para>
+    </brief>
+    <authored>
+      <para>Halt instruction. An <instruction>HLT</instruction> instruction can generate a Halt Instruction debug event, which causes entry into Debug state.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="HLT" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/system/exceptions/debug/halt">
+        <box hibit="31" width="8" settings="8">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="3" name="opc" settings="3">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="20" width="16" name="imm16" usename="1">
+          <c colspan="16"></c>
+        </box>
+        <box hibit="4" width="3" name="op2" settings="3">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="1" width="2" name="LL" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+      </regdiagram>
+      <encoding name="HLT_EX_exception" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="HLT" />
+        </docvars>
+        <asmtemplate><text>HLT  #</text><a link="sa_imm" hover="16-bit unsigned immediate [0-65535] (field &quot;imm16&quot;)">&lt;imm&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/exceptions/debug/halt" mylink="aarch64.instrs.system.exceptions.debug.halt" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if EDSCR.HDE == '0' || !<a link="impl-shared.HaltingAllowed.0" file="shared_pseudocode.xml" hover="function: boolean HaltingAllowed()">HaltingAllowed</a>() then UNDEFINED;
+if <a link="impl-shared.HaveBTIExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveBTIExt()">HaveBTIExt</a>() then
+    <a link="impl-aarch64.SetBTypeCompatible.1" file="shared_pseudocode.xml" hover="function: SetBTypeCompatible(boolean x)">SetBTypeCompatible</a>(TRUE);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="HLT_EX_exception" symboldefcount="1">
+      <symbol link="sa_imm">&lt;imm&gt;</symbol>
+      <account encodedin="imm16">
+        <intro>
+          <para>Is a 16-bit unsigned immediate, in the range 0 to 65535, encoded in the "imm16" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/system/exceptions/debug/halt" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">boolean is_async = FALSE;
+<a link="impl-shared.Halt.2" file="shared_pseudocode.xml" hover="function: Halt(bits(6) reason, boolean is_async)">Halt</a>(<a link="DebugHalt_HaltInstruction" file="shared_pseudocode.xml" hover="constant bits(6) DebugHalt_HaltInstruction = '101111'">DebugHalt_HaltInstruction</a>, is_async);</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

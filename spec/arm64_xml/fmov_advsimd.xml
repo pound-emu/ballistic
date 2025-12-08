@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="FMOV_advsimd" title="FMOV (vector, immediate) -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="FMOV" />
+  </docvars>
+  <heading>FMOV (vector, immediate)</heading>
+  <desc>
+    <brief>
+      <para>Floating-point move immediate (vector)</para>
+    </brief>
+    <authored>
+      <para>Floating-point move immediate (vector). This instruction copies an immediate floating-point constant into every element of the SIMD&amp;FP destination register.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_per_half">Half-precision</a>
+      <txt> and </txt>
+      <a href="#iclass_single_and_double">Single-precision and double-precision</a>
+    </classesintro>
+    <iclass name="Half-precision" oneof="2" id="iclass_per_half" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="asimdimm-datatype" value="per-half" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FMOV" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.2" feature="FEAT_FP16" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/fp16_movi">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="op" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="10" settings="10">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" name="a" usename="1">
+          <c></c>
+        </box>
+        <box hibit="17" name="b" usename="1">
+          <c></c>
+        </box>
+        <box hibit="16" name="c" usename="1">
+          <c></c>
+        </box>
+        <box hibit="15" width="4" name="cmode" settings="4">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" name="o2" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="9" name="d" usename="1">
+          <c></c>
+        </box>
+        <box hibit="8" name="e" usename="1">
+          <c></c>
+        </box>
+        <box hibit="7" name="f" usename="1">
+          <c></c>
+        </box>
+        <box hibit="6" name="g" usename="1">
+          <c></c>
+        </box>
+        <box hibit="5" name="h" usename="1">
+          <c></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FMOV_asimdimm_H_h" oneofinclass="1" oneof="3" label="">
+        <docvars>
+          <docvar key="asimdimm-datatype" value="per-half" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FMOV" />
+        </docvars>
+        <asmtemplate><text>FMOV  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_t_1" hover="Arrangement specifier (field &quot;Q&quot;) [4H,8H]">&lt;T&gt;</a><text>, #</text><a link="sa_imm" hover="Signed floating-point constant with 3-bit exponent and normalized 4 bits of precision (field &quot;a:b:c:d:e:f:g:h&quot;)">&lt;imm&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/fp16_movi" mylink="aarch64.instrs.vector.fp16_movi" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveFP16Ext.0" file="shared_pseudocode.xml" hover="function: boolean HaveFP16Ext()">HaveFP16Ext</a>() then UNDEFINED;
+
+integer rd = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+
+integer datasize = if Q == '1' then 128 else 64;
+bits(datasize) imm;
+
+imm8 = a:b:c:d:e:f:g:h;
+imm16 = imm8&lt;7&gt;:NOT(imm8&lt;6&gt;):<a link="impl-shared.Replicate.2" file="shared_pseudocode.xml" hover="function: bits(M*N) Replicate(bits(M) x, integer N)">Replicate</a>(imm8&lt;6&gt;,2):imm8&lt;5:0&gt;:<a link="impl-shared.Zeros.1" file="shared_pseudocode.xml" hover="function: bits(N) Zeros(integer N)">Zeros</a>(6);
+
+imm = <a link="impl-shared.Replicate.2" file="shared_pseudocode.xml" hover="function: bits(M*N) Replicate(bits(M) x, integer N)">Replicate</a>(imm16, datasize DIV 16);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Single-precision and double-precision" oneof="2" id="iclass_single_and_double" no_encodings="2" isa="A64">
+      <docvars>
+        <docvar key="datatype" value="single-and-double" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FMOV" />
+      </docvars>
+      <iclassintro count="2"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/logical" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="op" usename="1">
+          <c></c>
+        </box>
+        <box hibit="28" width="10" settings="10">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" name="a" usename="1">
+          <c></c>
+        </box>
+        <box hibit="17" name="b" usename="1">
+          <c></c>
+        </box>
+        <box hibit="16" name="c" usename="1">
+          <c></c>
+        </box>
+        <box hibit="15" width="4" name="cmode" usename="1" settings="4" psbits="xxxx">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" name="o2" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="9" name="d" usename="1">
+          <c></c>
+        </box>
+        <box hibit="8" name="e" usename="1">
+          <c></c>
+        </box>
+        <box hibit="7" name="f" usename="1">
+          <c></c>
+        </box>
+        <box hibit="6" name="g" usename="1">
+          <c></c>
+        </box>
+        <box hibit="5" name="h" usename="1">
+          <c></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FMOV_asimdimm_S_s" oneofinclass="2" oneof="3" label="Single-precision" bitdiffs="op == 0">
+        <docvars>
+          <docvar key="asimdimm-datatype" value="per-single" />
+          <docvar key="datatype" value="single-and-double" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FMOV" />
+        </docvars>
+        <box hibit="29" width="1" name="op">
+          <c>0</c>
+        </box>
+        <asmtemplate><text>FMOV  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_t" hover="Arrangement specifier (field &quot;Q&quot;) [2S,4S]">&lt;T&gt;</a><text>, #</text><a link="sa_imm" hover="Signed floating-point constant with 3-bit exponent and normalized 4 bits of precision (field &quot;a:b:c:d:e:f:g:h&quot;)">&lt;imm&gt;</a></asmtemplate>
+      </encoding>
+      <encoding name="FMOV_asimdimm_D2_d" oneofinclass="2" oneof="3" label="Double-precision" bitdiffs="Q == 1 &amp;&amp; op == 1">
+        <docvars>
+          <docvar key="asimdimm-datatype" value="per-double" />
+          <docvar key="datatype" value="single-and-double" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FMOV" />
+        </docvars>
+        <box hibit="30" width="1" name="Q">
+          <c>1</c>
+        </box>
+        <box hibit="29" width="1" name="op">
+          <c>1</c>
+        </box>
+        <asmtemplate><text>FMOV  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.2D, #</text><a link="sa_imm" hover="Signed floating-point constant with 3-bit exponent and normalized 4 bits of precision (field &quot;a:b:c:d:e:f:g:h&quot;)">&lt;imm&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/logical" mylink="aarch64.instrs.vector.logical" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer rd = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+
+integer datasize = if Q == '1' then 128 else 64;
+bits(datasize) imm;
+bits(64) imm64;
+
+<a link="ImmediateOp" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp</a> operation;
+case cmode:op of
+    when '0xx00' operation = <a link="ImmediateOp_MOVI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '0xx01' operation = <a link="ImmediateOp_MVNI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>;
+    when '0xx10' operation = <a link="ImmediateOp_ORR" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_ORR</a>;
+    when '0xx11' operation = <a link="ImmediateOp_BIC" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_BIC</a>;
+    when '10x00' operation = <a link="ImmediateOp_MOVI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '10x01' operation = <a link="ImmediateOp_MVNI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>;
+    when '10x10' operation = <a link="ImmediateOp_ORR" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_ORR</a>;
+    when '10x11' operation = <a link="ImmediateOp_BIC" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_BIC</a>;
+    when '110x0' operation = <a link="ImmediateOp_MOVI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '110x1' operation = <a link="ImmediateOp_MVNI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>;
+    when '1110x' operation = <a link="ImmediateOp_MOVI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '11110' operation = <a link="ImmediateOp_MOVI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '11111'
+        // FMOV Dn,#imm is in main FP instruction set
+        if Q == '0' then UNDEFINED;
+        operation = <a link="ImmediateOp_MOVI" file="shared_pseudocode.xml" hover="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+
+imm64 = <a link="impl-shared.AdvSIMDExpandImm.3" file="shared_pseudocode.xml" hover="function: bits(64) AdvSIMDExpandImm(bit op, bits(4) cmode, bits(8) imm8)">AdvSIMDExpandImm</a>(op, cmode, a:b:c:d:e:f:g:h);
+imm = <a link="impl-shared.Replicate.2" file="shared_pseudocode.xml" hover="function: bits(M*N) Replicate(bits(M) x, integer N)">Replicate</a>(imm64, datasize DIV 64);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="FMOV_asimdimm_D2_d, FMOV_asimdimm_S_s, FMOV_asimdimm_H_h" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FMOV_asimdimm_H_h" symboldefcount="1">
+      <symbol link="sa_t_1">&lt;T&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>For the half-precision variant: is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;T&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FMOV_asimdimm_S_s" symboldefcount="2">
+      <symbol link="sa_t">&lt;T&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>For the single-precision variant: is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;T&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FMOV_asimdimm_D2_d, FMOV_asimdimm_S_s, FMOV_asimdimm_H_h" symboldefcount="1">
+      <symbol link="sa_imm">&lt;imm&gt;</symbol>
+      <account encodedin="a:b:c:d:e:f:g:h">
+        <intro>
+          <para>Is a signed floating-point constant with 3-bit exponent and normalized 4 bits of precision, encoded in "a:b:c:d:e:f:g:h". For details of the range of constants available and the encoding of <syntax>&lt;imm&gt;</syntax>, see <xref linkend="CJAFAFAI">Modified immediate constants in A64 floating-point instructions</xref>.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/fp16_movi" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[rd, datasize] = imm;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

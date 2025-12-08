@@ -1,0 +1,88 @@
+<!--
+
+Shared pseudocode file XML language
+Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+This is really a variant of the XML format described in the iform.dtd
+variants used by all the instruction pages.  Things found in both are
+generally not documented here.
+
+--> 
+
+<!ENTITY % simpleinline "#PCDATA">      
+<!ENTITY % inline "#PCDATA | a | anchor | txt">
+<!ENTITY % amlparas "aml-para | aml-bullets">
+
+<!ELEMENT aml-para (%inline;)*>
+<!ELEMENT aml-bullets (aml-bullets | aml-bullet)*>
+<!ELEMENT aml-bullet (%inline;)*>
+
+<!ELEMENT heading (%inline;)*>
+
+<!ELEMENT desc (brief)>
+<!ELEMENT brief (%inline;)*>
+
+<!-- the psheading, codegroup is for post-XML-pseudocode editions -->
+<!ELEMENT ps_section (ps+ |
+                     (psheading?, codegroup)+)>
+<!ATTLIST ps_section howmany CDATA #REQUIRED>
+
+<!ELEMENT ps (psdoc?, pstext?)>
+<!ATTLIST ps name CDATA #REQUIRED
+             source CDATA #IMPLIED
+             mylink CDATA #IMPLIED
+             enclabels CDATA #IMPLIED
+             diagram CDATA #IMPLIED
+             sections CDATA #REQUIRED
+             secttype CDATA #IMPLIED>
+
+<!ELEMENT psdoc (#PCDATA)>
+
+<!ELEMENT pstext (#PCDATA | a | anchor)*>
+<!ATTLIST pstext section CDATA #REQUIRED
+                 mayhavelinks CDATA #IMPLIED
+                 rep_section CDATA #IMPLIED>
+
+<!ELEMENT a (%simpleinline;)*>
+<!ATTLIST a href CDATA #IMPLIED
+            link CDATA #IMPLIED file CDATA #IMPLIED
+            hover CDATA #IMPLIED>
+
+<!ELEMENT anchor (#PCDATA)>
+<!ATTLIST anchor link CDATA #REQUIRED
+                 hover CDATA #IMPLIED>
+
+<!ELEMENT instructionsection (heading, desc, ps_section)>
+<!ATTLIST instructionsection id CDATA #REQUIRED
+                             title CDATA #REQUIRED
+                             tags CDATA #IMPLIED
+                             type (pseudocode) #REQUIRED>
+
+<!-- now for the post-XML organisation -->
+
+<!ELEMENT psheading (%amlparas;)*>
+
+<!ELEMENT codegroup (code+)>
+<!ATTLIST codegroup id CDATA #IMPLIED
+                    mylink CDATA #IMPLIED
+                    heading CDATA #IMPLIED
+                    file CDATA #REQUIRED
+                    line CDATA #REQUIRED>
+
+<!ELEMENT code (codeintro?, asl_line+)>
+<!ATTLIST code section CDATA #IMPLIED
+               heading CDATA #IMPLIED>
+
+<!ELEMENT codeintro (%amlparas;)*>
+
+<!ELEMENT asl_line (#PCDATA | a | anchor)*>
+<!ATTLIST asl_line fst (1) #IMPLIED
+                   lst (1) #IMPLIED
+                   hdr (1) #IMPLIED
+                   doc (1) #IMPLIED
+                   dontshow (1) #IMPLIED
+                   indent CDATA #IMPLIED>
+
+<!-- a place holder -->
+<!ELEMENT amltext (#PCDATA)>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>CRC32B, CRC32H, CRC32W, CRC32X -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">CRC32B, CRC32H, CRC32W, CRC32X</h2>
+      <p class="aml"><span class="asm-code">CRC32</span> checksum performs a cyclic redundancy check (CRC) calculation on a value held in a general-purpose register. It takes an input CRC value in the first source operand, performs a CRC on the input value in the second source operand, and returns the output CRC value. The second source operand can be 8, 16, 32, or 64 bits. To align with common usage, the bit order of the values is reversed as part of the operation, and the polynomial 0x04C11DB7 is used for the CRC calculation.</p>
+      <p class="aml">In an Armv8.0 implementation, this is an <span class="arm-defined-word">optional</span> instruction. From Armv8.1, it is mandatory for all implementations to implement this instruction.</p>
+      <div class="note"><hr class="note"/><h4>Note</h4>
+        <p class="aml"><a class="armarm-xref" title="Reference to Armv8 ARM section">ID_AA64ISAR0_EL1</a>.CRC32 indicates whether this instruction is supported.</p>
+      <hr class="note"/></div>
+    
+    <h3 class="classheading"><a id="iclass_crc"/>CRC<span style="font-size:smaller;"><br/>(FEAT_CRC32)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">sf</td><td class="lr">0</td><td class="lr">0</td><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="r">0</td><td colspan="5" class="lr">Rm</td><td class="l">0</td><td>1</td><td class="r">0</td><td class="lr">0</td><td colspan="2" class="lr">sz</td><td colspan="5" class="lr">Rn</td><td colspan="5" class="lr">Rd</td></tr><tr class="secondrow"><td/><td/><td/><td colspan="8"/><td colspan="5"/><td colspan="3"/><td class="droppedname">C</td><td colspan="2"/><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding">CRC32B<span class="bitdiff"> (sf == 0 &amp;&amp; sz == 00)</span></h4><a id="CRC32B_32C_dp_2src"/><p class="asm-code">CRC32B  <a href="#sa_wd" title="32-bit general-purpose accumulator output register (field &quot;Rd&quot;)">&lt;Wd&gt;</a>, <a href="#sa_wn" title="32-bit general-purpose accumulator input register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, <a href="#sa_wm" title="32-bit general-purpose data source register (field &quot;Rm&quot;)">&lt;Wm&gt;</a></p></div><div class="encoding"><h4 class="encoding">CRC32H<span class="bitdiff"> (sf == 0 &amp;&amp; sz == 01)</span></h4><a id="CRC32H_32C_dp_2src"/><p class="asm-code">CRC32H  <a href="#sa_wd" title="32-bit general-purpose accumulator output register (field &quot;Rd&quot;)">&lt;Wd&gt;</a>, <a href="#sa_wn" title="32-bit general-purpose accumulator input register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, <a href="#sa_wm" title="32-bit general-purpose data source register (field &quot;Rm&quot;)">&lt;Wm&gt;</a></p></div><div class="encoding"><h4 class="encoding">CRC32W<span class="bitdiff"> (sf == 0 &amp;&amp; sz == 10)</span></h4><a id="CRC32W_32C_dp_2src"/><p class="asm-code">CRC32W  <a href="#sa_wd" title="32-bit general-purpose accumulator output register (field &quot;Rd&quot;)">&lt;Wd&gt;</a>, <a href="#sa_wn" title="32-bit general-purpose accumulator input register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, <a href="#sa_wm" title="32-bit general-purpose data source register (field &quot;Rm&quot;)">&lt;Wm&gt;</a></p></div><div class="encoding"><h4 class="encoding">CRC32X<span class="bitdiff"> (sf == 1 &amp;&amp; sz == 11)</span></h4><a id="CRC32X_64C_dp_2src"/><p class="asm-code">CRC32X  <a href="#sa_wd" title="32-bit general-purpose accumulator output register (field &quot;Rd&quot;)">&lt;Wd&gt;</a>, <a href="#sa_wn" title="32-bit general-purpose accumulator input register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, <a href="#sa_xm" title="64-bit general-purpose data source register (field &quot;Rm&quot;)">&lt;Xm&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-shared.HaveCRCExt.0" title="function: boolean HaveCRCExt()">HaveCRCExt</a>() then UNDEFINED;
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rm);
+if sf == '1' &amp;&amp; sz != '11' then UNDEFINED;
+if sf == '0' &amp;&amp; sz == '11' then UNDEFINED;
+integer size = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(sz);   // 2-bit size field -&gt; 8, 16, 32, 64
+boolean crc32c = (C == '1');</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wd&gt;</td><td><a id="sa_wd"/>
+        
+          <p class="aml">Is the 32-bit name of the general-purpose accumulator output register, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wn&gt;</td><td><a id="sa_wn"/>
+        
+          <p class="aml">Is the 32-bit name of the general-purpose accumulator input register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xm&gt;</td><td><a id="sa_xm"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose data source register, encoded in the "Rm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wm&gt;</td><td><a id="sa_wm"/>
+        
+          <p class="aml">Is the 32-bit name of the general-purpose data source register, encoded in the "Rm" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">bits(32)      acc     = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[n, 32];     // accumulator
+bits(size)    val     = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[m, size];   // input value
+bits(32)      poly    = (if crc32c then 0x1EDC6F41 else 0x04C11DB7)&lt;31:0&gt;;
+
+bits(32+size) tempacc = <a href="shared_pseudocode.html#impl-shared.BitReverse.1" title="function: bits(N) BitReverse(bits(N) data)">BitReverse</a>(acc) : <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(size);
+bits(size+32) tempval = <a href="shared_pseudocode.html#impl-shared.BitReverse.1" title="function: bits(N) BitReverse(bits(N) data)">BitReverse</a>(val) : <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(32);
+
+// Poly32Mod2 on a bitstring does a polynomial Modulus over {0,1} operation
+<a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, 32] = <a href="shared_pseudocode.html#impl-shared.BitReverse.1" title="function: bits(N) BitReverse(bits(N) data)">BitReverse</a>(<a href="shared_pseudocode.html#impl-shared.Poly32Mod2.2" title="function: bits(32) Poly32Mod2(bits(N) data_in, bits(32) poly)">Poly32Mod2</a>(tempacc EOR tempval, poly));</p>
+    </div>
+  <h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

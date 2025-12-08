@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="FMAXNMV_advsimd" title="FMAXNMV -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="FMAXNMV" />
+  </docvars>
+  <heading>FMAXNMV</heading>
+  <desc>
+    <brief>
+      <para>Floating-point Maximum Number across Vector</para>
+    </brief>
+    <authored>
+      <para>Floating-point Maximum Number across Vector. This instruction compares all the vector elements in the source SIMD&amp;FP register, and writes the largest of the values as a scalar to the destination SIMD&amp;FP register. All the values in this instruction are floating-point values.</para>
+      <para>NaNs are handled according to the IEEE 754-2008 standard. If one vector element is numeric and the other is a quiet NaN, the result of the comparison is the numerical value, otherwise the result is identical to <xref linkend="A64.instructions.FMAX_float">FMAX (scalar)</xref>.</para>
+      <para>This instruction can generate a floating-point exception. Depending on the settings in <xref linkend="AArch64.fpcr">FPCR</xref>, the exception results in either a flag being set in <xref linkend="AArch64.fpsr">FPSR</xref> or a synchronous exception being generated. For more information, see <xref linkend="BEIJDDAG">Floating-point exception traps</xref>.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_half">Half-precision</a>
+      <txt> and </txt>
+      <a href="#iclass_single_and_double">Single-precision and double-precision</a>
+    </classesintro>
+    <iclass name="Half-precision" oneof="2" id="iclass_half" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="datatype" value="half" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FMAXNMV" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.2" feature="FEAT_FP16" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/reduce/fp16-maxnm/simd" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" name="o1" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="22" name="size[0]" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FMAXNMV_asimdall_only_H" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="datatype" value="half" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FMAXNMV" />
+        </docvars>
+        <asmtemplate><text>FMAXNMV  </text><a link="sa_v" hover="Destination width specifier, H">&lt;V&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_t" hover="Arrangement specifier (field &quot;Q&quot;) [4H,8H]">&lt;T&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/reduce/fp16-maxnm/simd" mylink="aarch64.instrs.vector.reduce.fp16-maxnm.simd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveFP16Ext.0" file="shared_pseudocode.xml" hover="function: boolean HaveFP16Ext()">HaveFP16Ext</a>() then UNDEFINED;
+
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+integer esize = 16;
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV esize;
+
+<a link="ReduceOp" file="shared_pseudocode.xml" hover="enumeration ReduceOp {ReduceOp_FMINNUM, ReduceOp_FMAXNUM, ReduceOp_FMIN, ReduceOp_FMAX, ReduceOp_FADD, ReduceOp_ADD}">ReduceOp</a> op = if o1 == '1' then <a link="ReduceOp_FMINNUM" file="shared_pseudocode.xml" hover="enumeration ReduceOp {ReduceOp_FMINNUM, ReduceOp_FMAXNUM, ReduceOp_FMIN, ReduceOp_FMAX, ReduceOp_FADD, ReduceOp_ADD}">ReduceOp_FMINNUM</a> else <a link="ReduceOp_FMAXNUM" file="shared_pseudocode.xml" hover="enumeration ReduceOp {ReduceOp_FMINNUM, ReduceOp_FMAXNUM, ReduceOp_FMIN, ReduceOp_FMAX, ReduceOp_FADD, ReduceOp_ADD}">ReduceOp_FMAXNUM</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Single-precision and double-precision" oneof="2" id="iclass_single_and_double" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="datatype" value="single-and-double" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FMAXNMV" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/reduce/fp-maxnm/simd" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" name="o1" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="22" name="sz" usename="1">
+          <c></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FMAXNMV_asimdall_only_SD" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="datatype" value="single-and-double" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FMAXNMV" />
+        </docvars>
+        <asmtemplate><text>FMAXNMV  </text><a link="sa_v_1" hover="Destination width specifier (field &quot;sz&quot;) [S]">&lt;V&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_t_1" hover="Arrangement specifier (field &quot;Q:sz&quot;) [4S]">&lt;T&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/reduce/fp-maxnm/simd" mylink="aarch64.instrs.vector.reduce.fp-maxnm.simd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if sz:Q != '01' then UNDEFINED;    // .4S only
+
+integer esize = 32 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(sz);
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV esize;
+
+<a link="ReduceOp" file="shared_pseudocode.xml" hover="enumeration ReduceOp {ReduceOp_FMINNUM, ReduceOp_FMAXNUM, ReduceOp_FMIN, ReduceOp_FMAX, ReduceOp_FADD, ReduceOp_ADD}">ReduceOp</a> op = if o1 == '1' then <a link="ReduceOp_FMINNUM" file="shared_pseudocode.xml" hover="enumeration ReduceOp {ReduceOp_FMINNUM, ReduceOp_FMAXNUM, ReduceOp_FMIN, ReduceOp_FMAX, ReduceOp_FADD, ReduceOp_ADD}">ReduceOp_FMINNUM</a> else <a link="ReduceOp_FMAXNUM" file="shared_pseudocode.xml" hover="enumeration ReduceOp {ReduceOp_FMINNUM, ReduceOp_FMAXNUM, ReduceOp_FMIN, ReduceOp_FMAX, ReduceOp_FADD, ReduceOp_ADD}">ReduceOp_FMAXNUM</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="FMAXNMV_asimdall_only_H" symboldefcount="1">
+      <symbol link="sa_v">&lt;V&gt;</symbol>
+      <account encodedin="">
+        <docvars>
+          <docvar key="datatype" value="half" />
+        </docvars>
+        <intro>
+          <para>For the half-precision variant: is the destination width specifier, H.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FMAXNMV_asimdall_only_SD" symboldefcount="2">
+      <symbol link="sa_v_1">&lt;V&gt;</symbol>
+      <definition encodedin="sz">
+        <intro>For the single-precision and double-precision variant: is the destination width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">sz</entry>
+                <entry class="symbol">&lt;V&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FMAXNMV_asimdall_only_H, FMAXNMV_asimdall_only_SD" symboldefcount="1">
+      <symbol link="sa_d">&lt;d&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FMAXNMV_asimdall_only_H, FMAXNMV_asimdall_only_SD" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FMAXNMV_asimdall_only_H" symboldefcount="1">
+      <symbol link="sa_t">&lt;T&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>For the half-precision variant: is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;T&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FMAXNMV_asimdall_only_SD" symboldefcount="2">
+      <symbol link="sa_t_1">&lt;T&gt;</symbol>
+      <definition encodedin="Q:sz">
+        <intro>For the single-precision and double-precision variant: is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="bitfield">sz</entry>
+                <entry class="symbol">&lt;T&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="bitfield">x</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/reduce/fp16-maxnm/simd" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) operand = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, datasize];
+boolean altfp = FALSE;
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, esize] = <a link="impl-aarch64.Reduce.4" file="shared_pseudocode.xml" hover="function: bits(esize) Reduce(ReduceOp op, bits(N) input, integer esize, boolean altfp)">Reduce</a>(op, operand, esize, altfp);</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

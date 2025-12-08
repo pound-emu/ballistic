@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="PRFM_lit" title="PRFM (literal) -- A64" type="instruction">
+  <docvars>
+    <docvar key="address-form" value="literal" />
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="PRFM" />
+    <docvar key="offset-type" value="off19s" />
+  </docvars>
+  <heading>PRFM (literal)</heading>
+  <desc>
+    <brief>
+      <para>Prefetch Memory (literal)</para>
+    </brief>
+    <authored>
+      <para>Prefetch Memory (literal) signals the memory system that data memory accesses from a specified address are likely to occur in the near future. The memory system can respond by taking actions that are expected to speed up the memory accesses when they do occur, such as preloading the cache line containing the specified address into one or more caches.</para>
+      <para>The effect of a <instruction>PRFM</instruction> instruction is <arm-defined-word>implementation defined</arm-defined-word>. For more information, see <xref linkend="CEGGGIDE">Prefetch memory</xref>.</para>
+      <para>For information about memory accesses, see <xref linkend="CHDIIIBB">Load/Store addressing modes</xref>.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Literal" oneof="1" id="iclass_literal" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="address-form" value="literal" />
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="PRFM" />
+        <docvar key="offset-type" value="off19s" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/memory/literal/general" tworows="1">
+        <box hibit="31" width="2" name="opc" usename="1" settings="2" psbits="xx">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" width="3" settings="3">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="26" name="V" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="25" width="2" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="19" name="imm19" usename="1">
+          <c colspan="19"></c>
+        </box>
+        <box hibit="4" width="5" name="Rt" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="PRFM_P_loadlit" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="address-form" value="literal" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="PRFM" />
+          <docvar key="offset-type" value="off19s" />
+        </docvars>
+        <asmtemplate><text>PRFM  (</text><a link="sa_prfop" hover="Prefetch operation, defined as {syntax{&lt;type&gt;&lt;target&gt;&lt;policy&gt;}} (field &quot;Rt&lt;4:3&gt;&quot;)">&lt;prfop&gt;</a><text>|#</text><a link="sa_imm5" hover="Prefetch operation encoding as an immediate [0-31] (field &quot;Rt&quot;)">&lt;imm5&gt;</a><text>), </text><a link="sa_label" hover="Label from which the data is to be loaded (field imm19)">&lt;label&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/memory/literal/general" mylink="aarch64.instrs.memory.literal.general" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer t = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rt);
+<a link="MemOp" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp</a> memop = <a link="MemOp_LOAD" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a>;
+boolean signed = FALSE;
+boolean nontemporal = FALSE;
+integer size;
+bits(64) offset;
+
+case opc of
+    when '00'
+        size = 4;
+    when '01'
+        size = 8;
+    when '10'
+        size = 4;
+        signed = TRUE;
+    when '11'
+        memop = <a link="MemOp_PREFETCH" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_PREFETCH</a>;
+
+offset = <a link="impl-shared.SignExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(imm19:'00', 64);
+boolean tagchecked = FALSE;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="PRFM_P_loadlit" symboldefcount="1">
+      <symbol link="sa_prfop">&lt;prfop&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the prefetch operation, defined as <syntax>&lt;type&gt;&lt;target&gt;&lt;policy&gt;</syntax>.</para>
+          <para><syntax>&lt;type&gt;</syntax> is one of:</para>
+          <list type="param">
+            <listitem>
+              <param>PLD</param><content>Prefetch for load, encoded in the "Rt&lt;4:3&gt;" field as <binarynumber>0b00</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>PLI</param><content>Preload instructions, encoded in the "Rt&lt;4:3&gt;" field as <binarynumber>0b01</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>PST</param><content>Prefetch for store, encoded in the "Rt&lt;4:3&gt;" field as <binarynumber>0b10</binarynumber>.</content>
+            </listitem>
+          </list>
+          <para><syntax>&lt;target&gt;</syntax> is one of:</para>
+          <list type="param">
+            <listitem>
+              <param>L1</param><content>Level 1 cache, encoded in the "Rt&lt;2:1&gt;" field as <binarynumber>0b00</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>L2</param><content>Level 2 cache, encoded in the "Rt&lt;2:1&gt;" field as <binarynumber>0b01</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>L3</param><content>Level 3 cache, encoded in the "Rt&lt;2:1&gt;" field as <binarynumber>0b10</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>SLC</param><content>When FEAT_PRFMSLC is implemented, system level cache, encoded in the "Rt&lt;2:1&gt;" field as <binarynumber>0b11</binarynumber>.</content>
+            </listitem>
+          </list>
+          <para><syntax>&lt;policy&gt;</syntax> is one of:</para>
+          <list type="param">
+            <listitem>
+              <param>KEEP</param><content>Retained or temporal prefetch, allocated in the cache normally. Encoded in the "Rt&lt;0&gt;" field as <binarynumber>0</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>STRM</param><content>Streaming or non-temporal prefetch, for data that is used only once. Encoded in the "Rt&lt;0&gt;" field as <binarynumber>1</binarynumber>.</content>
+            </listitem>
+          </list>
+          <para>For more information on these prefetch operations, see <xref linkend="CEGGGIDE">Prefetch memory</xref>.</para>
+          <para>For other encodings of the "Rt" field, use <syntax>&lt;imm5&gt;</syntax>.</para>
+        </intro>
+      </account>
+      <arch_variants>
+        <arch_variant name="ARMv8.9" />
+      </arch_variants>
+    </explanation>
+    <explanation enclist="PRFM_P_loadlit" symboldefcount="1">
+      <symbol link="sa_imm5">&lt;imm5&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the prefetch operation encoding as an immediate, in the range 0 to 31, encoded in the "Rt" field.</para>
+          <para>This syntax is only for encodings that are not accessible using <syntax>&lt;prfop&gt;</syntax>.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="PRFM_P_loadlit" symboldefcount="1">
+      <symbol link="sa_label">&lt;label&gt;</symbol>
+      <account encodedin="imm19">
+        <intro>
+          <para>Is the program label from which the data is to be loaded. Its offset from the address of this instruction, in the range +/-1MB, is encoded as "imm19" times 4.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/memory/literal/general" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">bits(64) address = <a link="impl-aarch64.PC.read.0" file="shared_pseudocode.xml" hover="accessor: bits(64) PC[]">PC</a>[] + offset;
+bits(size*8) data;
+boolean privileged = PSTATE.EL != <a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a>;
+
+<a link="AccessDescriptor" file="shared_pseudocode.xml" hover="type AccessDescriptor is ( AccessType acctype, bits(2) el, SecurityState ss, boolean acqsc, boolean acqpc, boolean relsc, boolean limitedordered, boolean exclusive, boolean atomicop, MemAtomicOp modop, boolean nontemporal, boolean read, boolean write, CacheOp cacheop, CacheOpScope opscope, CacheType cachetype, boolean pan, boolean transactional, boolean nonfault, boolean firstfault, boolean first, boolean contiguous, boolean streamingsve, boolean ls64, boolean mops, boolean rcw, boolean rcws, boolean toplevel, VARange varange, boolean a32lsmd, boolean tagchecked, boolean tagaccess, MPAMinfo mpam )">AccessDescriptor</a> accdesc = <a link="impl-shared.CreateAccDescGPR.4" file="shared_pseudocode.xml" hover="function: AccessDescriptor CreateAccDescGPR(MemOp memop, boolean nontemporal, boolean privileged, boolean tagchecked)">CreateAccDescGPR</a>(memop, nontemporal, privileged, tagchecked);
+case memop of
+    when <a link="MemOp_LOAD" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a>
+        data = <a link="impl-aarch64.Mem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size*8) Mem[bits(64) address, integer size, AccessDescriptor accdesc]">Mem</a>[address, size, accdesc];
+        if signed then
+            <a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[t, 64] = <a link="impl-shared.SignExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(data, 64);
+        else
+            <a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[t, size*8] = data;
+
+    when <a link="MemOp_PREFETCH" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_PREFETCH</a>
+        <a link="impl-aarch64.Prefetch.2" file="shared_pseudocode.xml" hover="function: Prefetch(bits(64) address, bits(5) prfop)">Prefetch</a>(address, t&lt;4:0&gt;);</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

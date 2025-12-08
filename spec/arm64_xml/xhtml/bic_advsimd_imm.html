@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>BIC (vector, immediate) -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">BIC (vector, immediate)</h2>
+      <p class="aml">Bitwise bit Clear (vector, immediate). This instruction reads each vector element from the destination SIMD&amp;FP register, performs a bitwise AND between each result and the complement of an immediate constant, places the result into a vector, and writes the vector to the destination SIMD&amp;FP register.</p>
+      <p class="aml">Depending on the settings in the <a class="armarm-xref" title="Reference to Armv8 ARM section">CPACR_EL1</a>, <a class="armarm-xref" title="Reference to Armv8 ARM section">CPTR_EL2</a>, and <a class="armarm-xref" title="Reference to Armv8 ARM section">CPTR_EL3</a> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">0</td><td class="lr">Q</td><td class="lr">1</td><td class="l">0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="r">0</td><td class="lr">a</td><td class="lr">b</td><td class="lr">c</td><td class="l">x</td><td>x</td><td>x</td><td class="r">1</td><td class="lr">0</td><td class="lr">1</td><td class="lr">d</td><td class="lr">e</td><td class="lr">f</td><td class="lr">g</td><td class="lr">h</td><td colspan="5" class="lr">Rd</td></tr><tr class="secondrow"><td/><td/><td class="droppedname">op</td><td colspan="10"/><td/><td/><td/><td colspan="4" class="droppedname">cmode</td><td/><td/><td/><td/><td/><td/><td/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding">16-bit<span class="bitdiff"> (cmode == 10x1)</span></h4><a id="BIC_asimdimm_L_hl"/><p class="asm-code">BIC  <a href="#sa_vd" title="SIMD&amp;FP register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.<a href="#sa_t" title="Arrangement specifier (field &quot;Q&quot;) [4H,8H]">&lt;T&gt;</a>, #<a href="#sa_imm8" title="8-bit immediate (field &quot;a:b:c:d:e:f:g:h&quot;)">&lt;imm8&gt;</a>{, LSL #<a href="#sa_amount" title="Shift amount (field &quot;cmode&lt;1&gt;&quot;) [0,8]">&lt;amount&gt;</a>}</p></div><div class="encoding"><h4 class="encoding">32-bit<span class="bitdiff"> (cmode == 0xx1)</span></h4><a id="BIC_asimdimm_L_sl"/><p class="asm-code">BIC  <a href="#sa_vd" title="SIMD&amp;FP register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.<a href="#sa_t_1" title="Arrangement specifier (field &quot;Q&quot;) [2S,4S]">&lt;T&gt;</a>, #<a href="#sa_imm8" title="8-bit immediate (field &quot;a:b:c:d:e:f:g:h&quot;)">&lt;imm8&gt;</a>{, LSL #<a href="#sa_amount_1" title="Shift amount (field &quot;cmode&lt;2:1&gt;&quot;) [0,8,16,24]">&lt;amount&gt;</a>}</p></div><p class="pseudocode">integer rd = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+
+integer datasize = if Q == '1' then 128 else 64;
+bits(datasize) imm;
+bits(64) imm64;
+
+<a href="shared_pseudocode.html#ImmediateOp" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp</a> operation;
+case cmode:op of
+    when '0xx00' operation = <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '0xx01' operation = <a href="shared_pseudocode.html#ImmediateOp_MVNI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>;
+    when '0xx10' operation = <a href="shared_pseudocode.html#ImmediateOp_ORR" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_ORR</a>;
+    when '0xx11' operation = <a href="shared_pseudocode.html#ImmediateOp_BIC" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_BIC</a>;
+    when '10x00' operation = <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '10x01' operation = <a href="shared_pseudocode.html#ImmediateOp_MVNI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>;
+    when '10x10' operation = <a href="shared_pseudocode.html#ImmediateOp_ORR" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_ORR</a>;
+    when '10x11' operation = <a href="shared_pseudocode.html#ImmediateOp_BIC" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_BIC</a>;
+    when '110x0' operation = <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '110x1' operation = <a href="shared_pseudocode.html#ImmediateOp_MVNI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>;
+    when '1110x' operation = <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '11110' operation = <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+    when '11111'
+        // FMOV Dn,#imm is in main FP instruction set
+        if Q == '0' then UNDEFINED;
+        operation = <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>;
+
+imm64 = <a href="shared_pseudocode.html#impl-shared.AdvSIMDExpandImm.3" title="function: bits(64) AdvSIMDExpandImm(bit op, bits(4) cmode, bits(8) imm8)">AdvSIMDExpandImm</a>(op, cmode, a:b:c:d:e:f:g:h);
+imm = <a href="shared_pseudocode.html#impl-shared.Replicate.2" title="function: bits(M*N) Replicate(bits(M) x, integer N)">Replicate</a>(imm64, datasize DIV 64);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vd&gt;</td><td><a id="sa_vd"/>
+        
+          <p class="aml">Is the name of the SIMD&amp;FP register, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;T&gt;</td><td><a id="sa_t"/>
+        <p>For the 16-bit variant: is an arrangement specifier, 
+      encoded in
+      <q>Q</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">Q</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="symbol">4H</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="symbol">8H</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr><tr><td/><td><a id="sa_t_1"/>
+        <p>For the 32-bit variant: is an arrangement specifier, 
+      encoded in
+      <q>Q</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">Q</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="symbol">2S</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="symbol">4S</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm8&gt;</td><td><a id="sa_imm8"/>
+        
+          <p class="aml">Is an 8-bit immediate encoded in "a:b:c:d:e:f:g:h".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;amount&gt;</td><td><a id="sa_amount"/>
+        <p>For the 16-bit variant: is the shift amount 
+      encoded in
+      <q>cmode&lt;1&gt;</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">cmode&lt;1&gt;</th>
+                <th class="symbol">&lt;amount&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="symbol">0</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="symbol">8</td>
+              </tr>
+            </tbody>
+          
+        </table>
+         defaulting to 0 if LSL is omitted.
+      </td></tr><tr><td/><td><a id="sa_amount_1"/>
+        <p>For the 32-bit variant: is the shift amount 
+      encoded in
+      <q>cmode&lt;2:1&gt;</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">cmode&lt;2:1&gt;</th>
+                <th class="symbol">&lt;amount&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="symbol">0</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="symbol">8</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10</td>
+                <td class="symbol">16</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11</td>
+                <td class="symbol">24</td>
+              </tr>
+            </tbody>
+          
+        </table>
+         defaulting to 0 if LSL is omitted.
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckFPAdvSIMDEnabled64.0" title="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) operand;
+bits(datasize) result;
+
+case operation of
+    when <a href="shared_pseudocode.html#ImmediateOp_MOVI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MOVI</a>
+        result = imm;
+    when <a href="shared_pseudocode.html#ImmediateOp_MVNI" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_MVNI</a>
+        result = NOT(imm);
+    when <a href="shared_pseudocode.html#ImmediateOp_ORR" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_ORR</a>
+        operand = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[rd, datasize];
+        result = operand OR imm;
+    when <a href="shared_pseudocode.html#ImmediateOp_BIC" title="enumeration ImmediateOp {ImmediateOp_MOVI, ImmediateOp_MVNI, ImmediateOp_ORR, ImmediateOp_BIC}">ImmediateOp_BIC</a>
+        operand = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[rd, datasize];
+        result = operand AND NOT(imm);
+
+<a href="shared_pseudocode.html#impl-aarch64.V.write.2" title="accessor: V[integer n, integer width] = bits(width) value">V</a>[rd, datasize] = result;</p>
+    </div>
+  <h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

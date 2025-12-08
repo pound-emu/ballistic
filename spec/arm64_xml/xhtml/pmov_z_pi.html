@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>PMOV (to vector)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">PMOV (to vector)</h2><p>Move predicate to vector</p>
+      <p class="aml">Copy the source SVE predicate register elements into the destination vector register as a packed bitmap with one bit per predicate element, where bit value 0b1 represents a TRUE predicate element, and bit value 0b0 represents a FALSE predicate element.</p>
+      <p class="aml">Because the number of bits in an SVE predicate element scales with the the vector element size, the behavior varies according to the specified element size.</p>
+      <ul>
+        <li>
+          When the predicate element specifier is.B, every bit in the predicate register is copied to the least-significant VL/8 bits of the destination vector register. The immediate index, if specified, must be 0.
+        </li>
+        <li>
+          When the predicate element specifier is.H, every second bit in the predicate register is copied to the indexed block of VL/16 bits in the destination vector register, where the immediate index is in the range 0 to 1, inclusive.
+        </li>
+        <li>
+          When the predicate element specifier is.S, every fourth bit in the predicate register is copied to the indexed block of VL/32 bits in the destination vector register, where the immediate index is in the range 0 to 3, inclusive.
+        </li>
+        <li>
+          When the predicate element specifier is.D, every eighth bit in the predicate register is copied to the indexed block of VL/64 bits in the destination vector register, where the immediate index is in the range 0 to 7, inclusive.
+        </li>
+      </ul>
+      <p class="aml">The immediate index is optional, defaulting to 0 if omitted. When the index is zero, the instruction writes zeroes to the most significant VL-(VL/esize) bits of the destination vector register. When a non-zero index is specified, the packed bitmap is inserted into the destination vector register, and the unindexed blocks remain unchanged.</p>
+    
+    <p class="desc">
+      It has encodings from 4 classes:
+      <a href="#iclass_esize_byte">Byte</a>
+      , 
+      <a href="#iclass_esize_doubleword">Doubleword</a>
+      , 
+      <a href="#iclass_esize_halfword">Halfword</a>
+       and 
+      <a href="#iclass_esize_word">Word</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_esize_byte"/>Byte<span style="font-size:smaller;"><br/>(FEAT_SVE2p1)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td class="lr">0</td><td class="lr">0</td><td class="l">1</td><td>0</td><td class="r">1</td><td class="lr">0</td><td class="lr">1</td><td class="l">1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="lr">0</td><td colspan="4" class="lr">Pn</td><td colspan="5" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="pmov_z_pi_b"/><p class="asm-code">PMOV    <a href="#sa_zd" title="Destination scalable vector register (field &quot;Zd&quot;)">&lt;Zd&gt;</a>, <a href="#sa_pn" title="Source scalable predicate register (field &quot;Pn&quot;)">&lt;Pn&gt;</a>.B</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE2p1.0" title="function: boolean HaveSVE2p1()">HaveSVE2p1</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2p1.0" title="function: boolean HaveSME2p1()">HaveSME2p1</a>() then UNDEFINED;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd);
+constant integer esize = 8;
+constant integer imm = 0;</p>
+    <h3 class="classheading"><a id="iclass_esize_doubleword"/>Doubleword<span style="font-size:smaller;"><br/>(FEAT_SVE2p1)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td class="lr">1</td><td class="lr">i3h</td><td class="l">1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">i3l</td><td class="l">1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="lr">0</td><td colspan="4" class="lr">Pn</td><td colspan="5" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="pmov_z_pi_d"/><p class="asm-code">PMOV    <a href="#sa_zd" title="Destination scalable vector register (field &quot;Zd&quot;)">&lt;Zd&gt;</a>[<a href="#sa_imm" title="Element index [0-7] (field &quot;i3h:i3l&quot;)">&lt;imm&gt;</a>], <a href="#sa_pn" title="Source scalable predicate register (field &quot;Pn&quot;)">&lt;Pn&gt;</a>.D</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE2p1.0" title="function: boolean HaveSVE2p1()">HaveSVE2p1</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2p1.0" title="function: boolean HaveSME2p1()">HaveSME2p1</a>() then UNDEFINED;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd);
+constant integer esize = 64;
+constant integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i3h:i3l);</p>
+    <h3 class="classheading"><a id="iclass_esize_halfword"/>Halfword<span style="font-size:smaller;"><br/>(FEAT_SVE2p1)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td class="lr">0</td><td class="lr">0</td><td class="l">1</td><td>0</td><td class="r">1</td><td class="lr">1</td><td class="lr">i1</td><td class="l">1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="lr">0</td><td colspan="4" class="lr">Pn</td><td colspan="5" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="pmov_z_pi_h"/><p class="asm-code">PMOV    <a href="#sa_zd" title="Destination scalable vector register (field &quot;Zd&quot;)">&lt;Zd&gt;</a>[<a href="#sa_imm_1" title="Element index [0-1] (field &quot;i1&quot;)">&lt;imm&gt;</a>], <a href="#sa_pn" title="Source scalable predicate register (field &quot;Pn&quot;)">&lt;Pn&gt;</a>.H</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE2p1.0" title="function: boolean HaveSVE2p1()">HaveSVE2p1</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2p1.0" title="function: boolean HaveSME2p1()">HaveSME2p1</a>() then UNDEFINED;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd);
+constant integer esize = 16;
+constant integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i1);</p>
+    <h3 class="classheading"><a id="iclass_esize_word"/>Word<span style="font-size:smaller;"><br/>(FEAT_SVE2p1)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td class="lr">0</td><td class="lr">1</td><td class="l">1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">i2</td><td class="l">1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="lr">0</td><td colspan="4" class="lr">Pn</td><td colspan="5" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="pmov_z_pi_s"/><p class="asm-code">PMOV    <a href="#sa_zd" title="Destination scalable vector register (field &quot;Zd&quot;)">&lt;Zd&gt;</a>[<a href="#sa_imm_2" title="Element index [0-3] (field &quot;i2&quot;)">&lt;imm&gt;</a>], <a href="#sa_pn" title="Source scalable predicate register (field &quot;Pn&quot;)">&lt;Pn&gt;</a>.S</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE2p1.0" title="function: boolean HaveSVE2p1()">HaveSVE2p1</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2p1.0" title="function: boolean HaveSME2p1()">HaveSME2p1</a>() then UNDEFINED;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pn);
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd);
+constant integer esize = 32;
+constant integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(i2);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd&gt;</td><td><a id="sa_zd"/>
+        
+          <p class="aml">Is the name of the destination scalable vector register, encoded in the "Zd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          
+        
+        
+          <p class="aml">For the doubleword variant: is the element index, in the range 0 to 7, encoded in the "i3h:i3l" fields.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_imm_1"/>
+        
+          
+        
+        
+          <p class="aml">For the halfword variant: is the element index, in the range 0 to 1, encoded in the "i1" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_imm_2"/>
+        
+          
+        
+        
+          <p class="aml">For the word variant: is the element index, in the range 0 to 3, encoded in the "i2" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Pn&gt;</td><td><a id="sa_pn"/>
+        
+          <p class="aml">Is the name of the source scalable predicate register, encoded in the "Pn" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSVEEnabled.0" title="function: CheckSVEEnabled()">CheckSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer PL = VL DIV 8;
+constant integer elements = VL DIV esize;
+bits(PL) operand = <a href="shared_pseudocode.html#impl-aarch64.P.read.2" title="accessor: bits(width) P[integer n, integer width]">P</a>[n, PL];
+bits(VL) result;
+
+if imm == 0 then
+    result = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(VL);
+else
+    result = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[d, VL];
+
+for e = 0 to elements-1
+    result&lt;(elements * imm) + e&gt; = <a href="shared_pseudocode.html#impl-aarch64.PredicateElement.3" title="function: bit PredicateElement(bits(N) pred, integer e, integer esize)">PredicateElement</a>(operand, e, esize);
+
+<a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[d, VL] = result;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

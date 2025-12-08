@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="FRECPX_advsimd" title="FRECPX -- A64" type="instruction">
+  <docvars>
+    <docvar key="advsimd-type" value="sisd" />
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="FRECPX" />
+  </docvars>
+  <heading>FRECPX</heading>
+  <desc>
+    <brief>
+      <para>Floating-point Reciprocal exponent (scalar)</para>
+    </brief>
+    <authored>
+      <para>Floating-point Reciprocal exponent (scalar). This instruction finds an approximate reciprocal exponent for the source SIMD&amp;FP register and writes the result to the destination SIMD&amp;FP register.</para>
+      <para>This instruction can generate a floating-point exception. Depending on the settings in <xref linkend="AArch64.fpcr">FPCR</xref>, the exception results in either a flag being set in <xref linkend="AArch64.fpsr">FPSR</xref> or a synchronous exception being generated. For more information, see <xref linkend="BEIJDDAG">Floating-point exception traps</xref>.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_half">Half-precision</a>
+      <txt> and </txt>
+      <a href="#iclass_single_and_double">Single-precision and double-precision</a>
+    </classesintro>
+    <iclass name="Half-precision" oneof="2" id="iclass_half" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-datatype" value="sisd-half" />
+        <docvar key="advsimd-type" value="sisd" />
+        <docvar key="datatype" value="half" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FRECPX" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.2" feature="FEAT_FP16" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/special/frecpx-fp16">
+        <box hibit="31" width="2" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" name="a" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="22" width="6" settings="6">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FRECPX_asisdmiscfp16_R" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-datatype" value="sisd-half" />
+          <docvar key="advsimd-type" value="sisd" />
+          <docvar key="datatype" value="half" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FRECPX" />
+        </docvars>
+        <asmtemplate><text>FRECPX  </text><a link="sa_hd" hover="16-bit SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Hd&gt;</a><text>, </text><a link="sa_hn" hover="16-bit SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Hn&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/special/frecpx-fp16" mylink="aarch64.instrs.vector.arithmetic.unary.special.frecpx-fp16" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveFP16Ext.0" file="shared_pseudocode.xml" hover="function: boolean HaveFP16Ext()">HaveFP16Ext</a>() then UNDEFINED;
+
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+integer esize = 16;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Single-precision and double-precision" oneof="2" id="iclass_single_and_double" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-datatype" value="sisd-single-and-double" />
+        <docvar key="advsimd-type" value="sisd" />
+        <docvar key="datatype" value="single-and-double" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FRECPX" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/special/frecpx">
+        <box hibit="31" width="2" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" name="size[1]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="22" name="sz" usename="1">
+          <c></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FRECPX_asisdmisc_R" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-datatype" value="sisd-single-and-double" />
+          <docvar key="advsimd-type" value="sisd" />
+          <docvar key="datatype" value="single-and-double" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FRECPX" />
+        </docvars>
+        <asmtemplate><text>FRECPX  </text><a link="sa_v" hover="Width specifier (field &quot;sz&quot;) [D,S]">&lt;V&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_v" hover="Width specifier (field &quot;sz&quot;) [D,S]">&lt;V&gt;</a><a link="sa_n" hover="SIMD&amp;FP source register number (field &quot;Rn&quot;)">&lt;n&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/special/frecpx" mylink="aarch64.instrs.vector.arithmetic.unary.special.frecpx" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+integer esize = 32 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(sz);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="FRECPX_asisdmiscfp16_R" symboldefcount="1">
+      <symbol link="sa_hd">&lt;Hd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 16-bit name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FRECPX_asisdmiscfp16_R" symboldefcount="1">
+      <symbol link="sa_hn">&lt;Hn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 16-bit name of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FRECPX_asisdmisc_R" symboldefcount="1">
+      <symbol link="sa_v">&lt;V&gt;</symbol>
+      <definition encodedin="sz">
+        <intro>Is a width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">sz</entry>
+                <entry class="symbol">&lt;V&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">D</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FRECPX_asisdmisc_R" symboldefcount="1">
+      <symbol link="sa_d">&lt;d&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FRECPX_asisdmisc_R" symboldefcount="1">
+      <symbol link="sa_n">&lt;n&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/unary/special/frecpx-fp16" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPEnabled64()">CheckFPEnabled64</a>();
+bits(esize) operand = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, esize];
+
+<a link="FPCRType" file="shared_pseudocode.xml" hover="type FPCRType">FPCRType</a> fpcr    = FPCR[];
+boolean merge    = <a link="impl-shared.IsMerging.1" file="shared_pseudocode.xml" hover="function: boolean IsMerging(FPCRType fpcr)">IsMerging</a>(fpcr);
+bits(128) result = if merge then <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[d, 128] else <a link="impl-shared.Zeros.1" file="shared_pseudocode.xml" hover="function: bits(N) Zeros(integer N)">Zeros</a>(128);
+
+<a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, 0, esize] = <a link="impl-shared.FPRecpX.2" file="shared_pseudocode.xml" hover="function: bits(N) FPRecpX(bits(N) op, FPCRType fpcr_in)">FPRecpX</a>(operand, fpcr);
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, 128] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

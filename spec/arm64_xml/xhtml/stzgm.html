@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>STZGM -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">STZGM</h2>
+      <p class="aml">Store Tag and Zero Multiple writes a naturally aligned block of N Allocation Tags and stores zero to the associated data locations, where the size of N is identified in DCZID_EL0.BS, and the Allocation Tag is taken from the source register bits&lt;3:0&gt;.</p>
+      <p class="aml">This instruction is <span class="arm-defined-word">undefined</span> at EL0.</p>
+      <p class="aml">This instruction generates an Unchecked access.</p>
+    
+    <h3 class="classheading"><a id="iclass_general"/>Integer<span style="font-size:smaller;"><br/>(FEAT_MTE2)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td class="r">1</td><td class="lr">0</td><td class="lr">0</td><td class="lr">1</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td class="lr">0</td><td colspan="5" class="lr">Xn</td><td colspan="5" class="lr">Xt</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="STZGM_64bulk_ldsttags"/><p class="asm-code">STZGM  <a href="#sa_xt" title="64-bit general-purpose source register (field &quot;Xt&quot;)">&lt;Xt&gt;</a>, [<a href="#sa_xn_sp" title="64-bit general-purpose base register or SP (field &quot;Xn&quot;)">&lt;Xn|SP&gt;</a>]</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-shared.HaveMTE2Ext.0" title="function: boolean HaveMTE2Ext()">HaveMTE2Ext</a>() then UNDEFINED;
+integer t = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Xt);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Xn);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xt&gt;</td><td><a id="sa_xt"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose source register, encoded in the "Xt" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xn|SP&gt;</td><td><a id="sa_xn_sp"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose base register or stack pointer, encoded in the "Xn" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">if PSTATE.EL == <a href="shared_pseudocode.html#EL0" title="constant bits(2) EL0 = '00'">EL0</a> then
+    UNDEFINED;
+
+bits(64) data = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[t, 64];
+bits(4) tag = data&lt;3:0&gt;;
+bits(64) address;
+if n == 31 then
+    <a href="shared_pseudocode.html#impl-aarch64.CheckSPAlignment.0" title="function: CheckSPAlignment()">CheckSPAlignment</a>();
+    address = <a href="shared_pseudocode.html#impl-aarch64.SP.read.0" title="accessor: bits(64) SP[]">SP</a>[];
+else
+    address = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[n, 64];
+
+integer size = 4*(2^(<a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(DCZID_EL0.BS)));
+address = <a href="shared_pseudocode.html#impl-shared.Align.2" title="function: integer Align(integer x, integer y)">Align</a>(address,size);
+integer count = size &gt;&gt; <a href="shared_pseudocode.html#LOG2_TAG_GRANULE" title="constant integer LOG2_TAG_GRANULE = 4">LOG2_TAG_GRANULE</a>;
+<a href="shared_pseudocode.html#AccessDescriptor" title="type AccessDescriptor is ( AccessType acctype, bits(2) el, SecurityState ss, boolean acqsc, boolean acqpc, boolean relsc, boolean limitedordered, boolean exclusive, boolean atomicop, MemAtomicOp modop, boolean nontemporal, boolean read, boolean write, CacheOp cacheop, CacheOpScope opscope, CacheType cachetype, boolean pan, boolean transactional, boolean nonfault, boolean firstfault, boolean first, boolean contiguous, boolean streamingsve, boolean ls64, boolean mops, boolean rcw, boolean rcws, boolean toplevel, VARange varange, boolean a32lsmd, boolean tagchecked, boolean tagaccess, MPAMinfo mpam )">AccessDescriptor</a> accdesc = <a href="shared_pseudocode.html#impl-shared.CreateAccDescLDGSTG.1" title="function: AccessDescriptor CreateAccDescLDGSTG(MemOp memop)">CreateAccDescLDGSTG</a>(<a href="shared_pseudocode.html#MemOp_STORE" title="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_STORE</a>);
+
+for i = 0 to count-1
+    <a href="shared_pseudocode.html#AArch64.MemTag.write.2" title="accessor: AArch64.MemTag[bits(64) address, AccessDescriptor accdesc_in] = bits(4) value">AArch64.MemTag</a>[address, accdesc] = tag;
+    Mem[address, TAG_GRANULE, accdesc] = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(8*<a href="shared_pseudocode.html#TAG_GRANULE" title="constant integer TAG_GRANULE = 1 &lt;&lt; LOG2_TAG_GRANULE">TAG_GRANULE</a>);
+    address = address + <a href="shared_pseudocode.html#TAG_GRANULE" title="constant integer TAG_GRANULE = 1 &lt;&lt; LOG2_TAG_GRANULE">TAG_GRANULE</a>;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

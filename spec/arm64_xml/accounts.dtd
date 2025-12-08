@@ -1,0 +1,34 @@
+<!--
+
+XML language accounts for accounts.xml
+Copyright (c) 2011-2022 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+--> 
+
+<!ATTLIST arch_variant feature CDATA #REQUIRED>
+<!ELEMENT arch_variant EMPTY>
+<!ELEMENT arch_variants (arch_variant+)>
+
+<!ELEMENT entry (#PCDATA | arch_variants)*>
+<!ATTLIST entry class CDATA #REQUIRED bitwidth CDATA #IMPLIED>
+<!ELEMENT row (entry+)>
+<!ELEMENT tbody (row+)>
+<!ELEMENT thead (row+)>
+<!ELEMENT tgroup (thead, tbody)>
+<!ATTLIST tgroup cols CDATA #REQUIRED>
+
+<!ELEMENT table (tgroup+)>
+<!ATTLIST table class CDATA #REQUIRED>
+
+<!ELEMENT encoding EMPTY> 
+<!ATTLIST encoding encname CDATA #REQUIRED>
+<!ELEMENT encodings (encoding+)>
+<!ELEMENT orig (#PCDATA)>
+<!ELEMENT intro (#PCDATA)>
+<!ELEMENT after (#PCDATA)>
+<!ELEMENT definition (intro, table, after?)>
+<!ATTLIST definition encodedin CDATA #REQUIRED tabulatedwith CDATA #IMPLIED>
+<!ELEMENT account (encodings, orig, definition)>
+<!ATTLIST account iclass CDATA #REQUIRED symbol CDATA #REQUIRED iclass_long CDATA #REQUIRED>
+<!ELEMENT accounts (account+)>
