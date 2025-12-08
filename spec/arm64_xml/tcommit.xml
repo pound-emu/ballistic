@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="TCOMMIT" title="TCOMMIT -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="TCOMMIT" />
+  </docvars>
+  <heading>TCOMMIT</heading>
+  <desc>
+    <brief>
+      <para>Commit current transaction</para>
+    </brief>
+    <authored>
+      <para>This instruction commits the current transaction. If the current transaction is an outer transaction, then Transactional state is exited, and all state modifications performed transactionally are committed to the architectural state. TCOMMIT takes no inputs and returns no value.</para>
+      <para>Execution of TCOMMIT is UNDEFINED in Non-transactional state.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="TCOMMIT" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="FEAT_TME" feature="FEAT_TME" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/system/tme/tcommit">
+        <box hibit="31" width="10" settings="10">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" name="L" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="2" name="op0" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" width="3" name="op1" settings="3">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="15" width="4" name="CRn" settings="4">
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" width="4" name="CRm" settings="4">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="7" width="3" name="op2" settings="3">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="4" width="5" name="Rt" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="TCOMMIT_only_barriers" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="TCOMMIT" />
+        </docvars>
+        <asmtemplate><text>TCOMMIT</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/tme/tcommit" mylink="aarch64.instrs.system.tme.tcommit" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveTME.0" file="shared_pseudocode.xml" hover="function: boolean HaveTME()">HaveTME</a>() then UNDEFINED;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all"></explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/system/tme/tcommit" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">if !<a link="impl-aarch64.IsTMEEnabled.0" file="shared_pseudocode.xml" hover="function: boolean IsTMEEnabled()">IsTMEEnabled</a>() then UNDEFINED;
+
+if TSTATE.depth == 0 then
+    UNDEFINED;
+
+if TSTATE.depth == 1 then
+    <a link="impl-aarch64.CommitTransactionalWrites.0" file="shared_pseudocode.xml" hover="function: CommitTransactionalWrites()">CommitTransactionalWrites</a>();
+    <a link="impl-shared.ClearExclusiveLocal.1" file="shared_pseudocode.xml" hover="function: ClearExclusiveLocal(integer processorid)">ClearExclusiveLocal</a>(<a link="impl-shared.ProcessorID.0" file="shared_pseudocode.xml" hover="function: integer ProcessorID()">ProcessorID</a>());
+
+TSTATE.depth = TSTATE.depth - 1;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

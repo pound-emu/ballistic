@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="DRPS" title="DRPS -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="DRPS" />
+  </docvars>
+  <heading>DRPS</heading>
+  <desc>
+    <brief>Debug restore process state</brief>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="DRPS" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/branch/unconditional/dret">
+        <box hibit="31" width="7" settings="7">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="24" width="4" name="opc" settings="4">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="20" width="5" name="op2" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="15" width="6" name="op3" settings="6">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rt" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="4" width="5" name="op4" settings="5">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+      </regdiagram>
+      <encoding name="DRPS_64E_branch_reg" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="DRPS" />
+        </docvars>
+        <asmtemplate><text>DRPS</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/branch/unconditional/dret" mylink="aarch64.instrs.branch.unconditional.dret" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.Halted.0" file="shared_pseudocode.xml" hover="function: boolean Halted()">Halted</a>() || PSTATE.EL == <a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a> then UNDEFINED;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all"></explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/branch/unconditional/dret" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-shared.DRPSInstruction.0" file="shared_pseudocode.xml" hover="function: DRPSInstruction()">DRPSInstruction</a>();</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

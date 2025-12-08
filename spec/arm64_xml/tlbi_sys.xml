@@ -1,0 +1,1942 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="TLBI_SYS" title="TLBI -- A64" type="alias">
+  <docvars>
+    <docvar key="alias_mnemonic" value="TLBI" />
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="SYS" />
+  </docvars>
+  <heading>TLBI</heading>
+  <desc>
+    <brief>
+      <para>TLB Invalidate operation</para>
+    </brief>
+    <authored>
+      <para>TLB Invalidate operation. For more information, see <xref linkend="BABEJJJE">op0==0b01, cache maintenance, TLB maintenance, and address translation instructions</xref>.</para>
+    </authored>
+  </desc>
+  <aliasto refiform="sys.xml" iformid="SYS">SYS</aliasto>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SYS" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/system/sysops" tworows="1">
+        <box hibit="31" width="10" settings="10">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" name="L" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="2" name="op0" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="18" width="3" name="op1" usename="1">
+          <c colspan="3"></c>
+        </box>
+        <box hibit="15" width="4" name="CRn" usename="1" settings="3" psbits="xxxx">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>x</c>
+        </box>
+        <box hibit="11" width="4" name="CRm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="7" width="3" name="op2" usename="1">
+          <c colspan="3"></c>
+        </box>
+        <box hibit="4" width="5" name="Rt" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="TLBI_SYS_CR_systeminstrs" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="alias_mnemonic" value="TLBI" />
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SYS" />
+        </docvars>
+        <asmtemplate><text>TLBI  </text><a link="sa_tlbi_op" hover="TLBI instruction name, as listed for TLBI system instruction group (field &quot;op1:CRn:CRm:op2&quot;) [ALLE1,ALLE1IS,ALLE1ISNXS (FEAT_XS),ALLE1NXS (FEAT_XS),ALLE1OS (FEAT_TLBIOS),ALLE1OSNXS (FEAT_XS),ALLE2,ALLE2IS,ALLE2ISNXS (FEAT_XS),ALLE2NXS (FEAT_XS),ALLE2OS (FEAT_TLBIOS),ALLE2OSNXS (FEAT_XS),ALLE3,ALLE3IS,ALLE3ISNXS (FEAT_XS),ALLE3NXS (FEAT_XS),ALLE3OS (FEAT_TLBIOS),ALLE3OSNXS (FEAT_XS),ASIDE1,ASIDE1IS,ASIDE1ISNXS (FEAT_XS),ASIDE1NXS (FEAT_XS),ASIDE1OS (FEAT_TLBIOS),ASIDE1OSNXS (FEAT_XS),IPAS2E1,IPAS2E1IS,IPAS2E1ISNXS (FEAT_XS),IPAS2E1NXS (FEAT_XS),IPAS2E1OS (FEAT_TLBIOS),IPAS2E1OSNXS (FEAT_XS),IPAS2LE1,IPAS2LE1IS,IPAS2LE1ISNXS (FEAT_XS),IPAS2LE1NXS (FEAT_XS),IPAS2LE1OS (FEAT_TLBIOS),IPAS2LE1OSNXS (FEAT_XS),PAALL (FEAT_RME),PAALLOS (FEAT_RME),RIPAS2E1 (FEAT_TLBIRANGE),RIPAS2E1IS (FEAT_TLBIRANGE),RIPAS2E1ISNXS (FEAT_XS),RIPAS2E1NXS (FEAT_XS),RIPAS2E1OS (FEAT_TLBIRANGE),RIPAS2E1OSNXS (FEAT_XS),RIPAS2LE1 (FEAT_TLBIRANGE),RIPAS2LE1IS (FEAT_TLBIRANGE),RIPAS2LE1ISNXS (FEAT_XS),RIPAS2LE1NXS (FEAT_XS),RIPAS2LE1OS (FEAT_TLBIRANGE),RIPAS2LE1OSNXS (FEAT_XS),RPALOS (FEAT_RME),RPAOS (FEAT_RME),RVAAE1 (FEAT_TLBIRANGE),RVAAE1IS (FEAT_TLBIRANGE),RVAAE1ISNXS (FEAT_XS),RVAAE1NXS (FEAT_XS),RVAAE1OS (FEAT_TLBIRANGE),RVAAE1OSNXS (FEAT_XS),RVAALE1 (FEAT_TLBIRANGE),RVAALE1IS (FEAT_TLBIRANGE),RVAALE1ISNXS (FEAT_XS),RVAALE1NXS (FEAT_XS),RVAALE1OS (FEAT_TLBIRANGE),RVAALE1OSNXS (FEAT_XS),RVAE1 (FEAT_TLBIRANGE),RVAE1IS (FEAT_TLBIRANGE),RVAE1ISNXS (FEAT_XS),RVAE1NXS (FEAT_XS),RVAE1OS (FEAT_TLBIRANGE),RVAE1OSNXS (FEAT_XS),RVAE2 (FEAT_TLBIRANGE),RVAE2IS (FEAT_TLBIRANGE),RVAE2ISNXS (FEAT_XS),RVAE2NXS (FEAT_XS),RVAE2OS (FEAT_TLBIRANGE),RVAE2OSNXS (FEAT_XS),RVAE3 (FEAT_TLBIRANGE),RVAE3IS (FEAT_TLBIRANGE),RVAE3ISNXS (FEAT_XS),RVAE3NXS (FEAT_XS),RVAE3OS (FEAT_TLBIRANGE),RVAE3OSNXS (FEAT_XS),RVALE1 (FEAT_TLBIRANGE),RVALE1IS (FEAT_TLBIRANGE),RVALE1ISNXS (FEAT_XS),RVALE1NXS (FEAT_XS),RVALE1OS (FEAT_TLBIRANGE),RVALE1OSNXS (FEAT_XS),RVALE2 (FEAT_TLBIRANGE),RVALE2IS (FEAT_TLBIRANGE),RVALE2ISNXS (FEAT_XS),RVALE2NXS (FEAT_XS),RVALE2OS (FEAT_TLBIRANGE),RVALE2OSNXS (FEAT_XS),RVALE3 (FEAT_TLBIRANGE),RVALE3IS (FEAT_TLBIRANGE),RVALE3ISNXS (FEAT_XS),RVALE3NXS (FEAT_XS),RVALE3OS (FEAT_TLBIRANGE),RVALE3OSNXS (FEAT_XS),VAAE1,VAAE1IS,VAAE1ISNXS (FEAT_XS),VAAE1NXS (FEAT_XS),VAAE1OS (FEAT_TLBIOS),VAAE1OSNXS (FEAT_XS),VAALE1,VAALE1IS,VAALE1ISNXS (FEAT_XS),VAALE1NXS (FEAT_XS),VAALE1OS (FEAT_TLBIOS),VAALE1OSNXS (FEAT_XS),VAE1,VAE1IS,VAE1ISNXS (FEAT_XS),VAE1NXS (FEAT_XS),VAE1OS (FEAT_TLBIOS),VAE1OSNXS (FEAT_XS),VAE2,VAE2IS,VAE2ISNXS (FEAT_XS),VAE2NXS (FEAT_XS),VAE2OS (FEAT_TLBIOS),VAE2OSNXS (FEAT_XS),VAE3,VAE3IS,VAE3ISNXS (FEAT_XS),VAE3NXS (FEAT_XS),VAE3OS (FEAT_TLBIOS),VAE3OSNXS (FEAT_XS),VALE1,VALE1IS,VALE1ISNXS (FEAT_XS),VALE1NXS (FEAT_XS),VALE1OS (FEAT_TLBIOS),VALE1OSNXS (FEAT_XS),VALE2,VALE2IS,VALE2ISNXS (FEAT_XS),VALE2NXS (FEAT_XS),VALE2OS (FEAT_TLBIOS),VALE2OSNXS (FEAT_XS),VALE3,VALE3IS,VALE3ISNXS (FEAT_XS),VALE3NXS (FEAT_XS),VALE3OS (FEAT_TLBIOS),VALE3OSNXS (FEAT_XS),VMALLE1,VMALLE1IS,VMALLE1ISNXS (FEAT_XS),VMALLE1NXS (FEAT_XS),VMALLE1OS (FEAT_TLBIOS),VMALLE1OSNXS (FEAT_XS),VMALLS12E1,VMALLS12E1IS,VMALLS12E1ISNXS (FEAT_XS),VMALLS12E1NXS (FEAT_XS),VMALLS12E1OS (FEAT_TLBIOS),VMALLS12E1OSNXS (FEAT_XS)]">&lt;tlbi_op&gt;</a><text>{</text><text>, </text><a link="sa_xt" hover="64-bit optional general-purpose source register, default '11111' (field &quot;Rt&quot;)">&lt;Xt&gt;</a><text>}</text></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="sys.xml#SYS_CR_systeminstrs">SYS</a><text> #</text><a link="sa_op1" hover="3-bit unsigned immediate [0-7] (field &quot;op1&quot;)">&lt;op1&gt;</a><text>, </text><a link="sa_cn" hover="Name 'Cn', with 'n' [0-15] (field &quot;CRn&quot;)">&lt;Cn&gt;</a><text>, </text><a link="sa_cm" hover="Name 'Cm', with 'm' [0-15] (field &quot;CRm&quot;)">&lt;Cm&gt;</a><text>, #</text><a link="sa_op2" hover="3-bit unsigned immediate [0-7] (field &quot;op2&quot;)">&lt;op2&gt;</a><text>{</text><text>, </text><a link="sa_xt" hover="64-bit optional general-purpose source register, default '11111' (field &quot;Rt&quot;)">&lt;Xt&gt;</a><text>}</text></asmtemplate>
+          <aliascond><a link="impl-aarch64.SysOp.4" file="shared_pseudocode.xml" hover="function: SystemOp SysOp(bits(3) op1, bits(4) CRn, bits(4) CRm, bits(3) op2)">SysOp</a>(op1,CRn,CRm,op2) == <a link="Sys_TLBI" file="shared_pseudocode.xml" hover="enumeration SystemOp {Sys_AT, Sys_BRB, Sys_DC, Sys_IC, Sys_TLBI, Sys_SYS}">Sys_TLBI</a></aliascond>
+        </equivalent_to>
+      </encoding>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="TLBI_SYS_CR_systeminstrs" symboldefcount="1">
+      <symbol link="sa_op1">&lt;op1&gt;</symbol>
+      <account encodedin="op1">
+        <intro>
+          <para>Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op1" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TLBI_SYS_CR_systeminstrs" symboldefcount="1">
+      <symbol link="sa_cn">&lt;Cn&gt;</symbol>
+      <account encodedin="CRn">
+        <intro>
+          <para>Is a name 'Cn', with 'n' in the range 0 to 15, encoded in the "CRn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TLBI_SYS_CR_systeminstrs" symboldefcount="1">
+      <symbol link="sa_cm">&lt;Cm&gt;</symbol>
+      <account encodedin="CRm">
+        <intro>
+          <para>Is a name 'Cm', with 'm' in the range 0 to 15, encoded in the "CRm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TLBI_SYS_CR_systeminstrs" symboldefcount="1">
+      <symbol link="sa_op2">&lt;op2&gt;</symbol>
+      <account encodedin="op2">
+        <intro>
+          <para>Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op2" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TLBI_SYS_CR_systeminstrs" symboldefcount="1">
+      <symbol link="sa_tlbi_op">&lt;tlbi_op&gt;</symbol>
+      <definition encodedin="op1:CRn:CRm:op2">
+        <intro>Is a TLBI instruction name, as listed for the TLBI system instruction group, </intro>
+        <table class="valuetable">
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry class="bitfield">op1</entry>
+                <entry class="bitfield">CRn</entry>
+                <entry class="bitfield">CRm</entry>
+                <entry class="bitfield">op2</entry>
+                <entry class="symbol">&lt;tlbi_op&gt;</entry>
+                <entry class="symbol">Architectural Feature</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">VMALLE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">ASIDE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">VAAE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">VAALE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE1IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RVAAE1IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE1IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RVAALE1IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">VMALLE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">ASIDE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">VAAE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">VAALE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RVAAE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RVAALE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE1</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RVAAE1</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE1</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RVAALE1</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">VMALLE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">ASIDE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">VAAE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">VAALE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">VMALLE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">ASIDE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">VAAE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">VAALE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RVAAE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RVAALE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">VMALLE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">ASIDE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">VAAE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">VAALE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RVAAE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RVAALE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RVAAE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RVAALE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">VMALLE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">ASIDE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">VAAE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">VAALE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">IPAS2E1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">RIPAS2E1IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">IPAS2LE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">RIPAS2LE1IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE2OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE2OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">ALLE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE2OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">VMALLS12E1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE2IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE2IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE2IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE2IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">ALLE1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE2IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">VMALLS12E1IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">IPAS2E1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">IPAS2E1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">RIPAS2E1</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RIPAS2E1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">IPAS2LE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">IPAS2LE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">RIPAS2LE1</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RIPAS2LE1OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE2OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE2OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE2</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE2</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE2</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE2</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">ALLE1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE2</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">VMALLS12E1</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">IPAS2E1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">RIPAS2E1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">IPAS2LE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0000</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">RIPAS2LE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE2OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE2OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">ALLE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE2OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">VMALLS12E1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE2ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE2ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE2ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE2ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">ALLE1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE2ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">VMALLS12E1ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">IPAS2E1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">IPAS2E1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="symbol">RIPAS2E1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RIPAS2E1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">IPAS2LE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">IPAS2LE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">RIPAS2LE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RIPAS2LE1OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE2OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE2OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE2NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE2NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE2NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE2NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">ALLE1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE2NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="symbol">VMALLS12E1NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE3OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE3OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">PAALLOS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_RME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE3OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIOS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE3IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE3IS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE3IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE3IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE3IS</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="symbol">RPAOS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_RME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0100</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="symbol">RPALOS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_RME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE3OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE3OS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE3</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE3</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_TLBIRANGE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE3</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE3</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="symbol">PAALL</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_RME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1000</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE3</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE3OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE3OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0001</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE3OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE3ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0010</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE3ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE3ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE3ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE3ISNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE3OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0101</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE3OSNXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">RVAE3NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0110</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">RVALE3NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="symbol">ALLE3NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="symbol">VAE3NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">1001</entry>
+                <entry class="bitfield">0111</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="symbol">VALE3NXS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_XS" />
+                  </arch_variants>
+                </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="TLBI_SYS_CR_systeminstrs" symboldefcount="1">
+      <symbol link="sa_xt">&lt;Xt&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the 64-bit name of the optional general-purpose source register, defaulting to '11111', encoded in the "Rt" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+</instructionsection>

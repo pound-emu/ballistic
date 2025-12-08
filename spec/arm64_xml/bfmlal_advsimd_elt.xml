@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="BFMLAL_advsimd_elt" title="BFMLALB, BFMLALT (by element) -- A64" type="instruction">
+  <docvars>
+    <docvar key="advsimd-reguse" value="2reg-element" />
+    <docvar key="datatype" value="half" />
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="BFMLAL" />
+    <docvar key="reguse-datatype" value="2reg-element-half" />
+  </docvars>
+  <heading>BFMLALB, BFMLALT (by element)</heading>
+  <desc>
+    <brief>
+      <para>BFloat16 floating-point widening multiply-add long (by element)</para>
+    </brief>
+    <authored>
+      <para>BFloat16 floating-point widening multiply-add long (by element) widens the even-numbered (bottom) or odd-numbered (top) 16-bit elements in the first source vector, and the indexed element in the second source vector from Bfloat16 to single-precision format. The instruction then multiplies and adds these values without intermediate rounding to single-precision elements of the destination vector that overlap with the corresponding BFloat16 elements in the first source vector.</para>
+      <para><xref linkend="AArch64.id_aa64isar1_el1">ID_AA64ISAR1_EL1</xref>.BF16 indicates whether this instruction is supported.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Vector" oneof="1" id="iclass_2reg_element" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-reguse" value="2reg-element" />
+        <docvar key="datatype" value="half" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="BFMLAL" />
+        <docvar key="reguse-datatype" value="2reg-element-half" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.6" feature="FEAT_BF16" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/bf16/long">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="23" width="2" name="size" settings="2">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="21" name="L" usename="1">
+          <c></c>
+        </box>
+        <box hibit="20" name="M" usename="1">
+          <c></c>
+        </box>
+        <box hibit="19" width="4" name="Rm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="15" name="opcode[3]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="14" name="opcode[2]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="13" width="2" name="opcode[1:0]" settings="2">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" name="H" usename="1">
+          <c></c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="BFMLAL_asimdelem_F" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="advsimd-reguse" value="2reg-element" />
+          <docvar key="datatype" value="half" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="BFMLAL" />
+          <docvar key="reguse-datatype" value="2reg-element-half" />
+        </docvars>
+        <asmtemplate><text>BFMLAL</text><a link="sa_bt" hover="Bottom or top element specifier (field &quot;Q&quot;)">&lt;bt&gt;</a><text>  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.4S, </text><a link="sa_vn" hover="First SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.8H, </text><a link="sa_vm" hover="Second SIMD&amp;FP source register [V0-V15] (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.H[</text><a link="sa_index" hover="Element index [0-7] (field &quot;H:L:M&quot;)">&lt;index&gt;</a><text>]</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/bf16/long" mylink="aarch64.instrs.vector.arithmetic.binary.element.mul-acc.bf16.long" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveBF16Ext.0" file="shared_pseudocode.xml" hover="function: boolean HaveBF16Ext()">HaveBF16Ext</a>() then UNDEFINED;
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>('0':Rm);
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer index = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(H:L:M);
+
+integer elements = 128 DIV 32;
+integer sel = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Q);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="BFMLAL_asimdelem_F" symboldefcount="1">
+      <symbol link="sa_bt">&lt;bt&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>Is the bottom or top element specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;bt&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">T</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="BFMLAL_asimdelem_F" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="BFMLAL_asimdelem_F" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the first SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="BFMLAL_asimdelem_F" symboldefcount="1">
+      <symbol link="sa_vm">&lt;Vm&gt;</symbol>
+      <account encodedin="Rm">
+        <intro>
+          <para>Is the name of the second SIMD&amp;FP source register, in the range V0 to V15, encoded in the "Rm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="BFMLAL_asimdelem_F" symboldefcount="1">
+      <symbol link="sa_index">&lt;index&gt;</symbol>
+      <account encodedin="H:L:M">
+        <intro>
+          <para>Is the element index, in the range 0 to 7, encoded in the "H:L:M" fields.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/binary/element/mul-acc/bf16/long" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(128) result;
+bits(128) operand1 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, 128];
+bits(128) operand2 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[m, 128];
+bits(128) operand3 = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[d, 128];
+bits(16) element2  = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, index, 16];
+
+for e = 0 to elements-1
+    bits(16) element1   = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, 2 * e + sel, 16];
+    bits(32) addend     = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand3, e, 32];
+    <a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, 32] = <a link="impl-shared.BFMulAddH.4" file="shared_pseudocode.xml" hover="function: bits(N) BFMulAddH(bits(N) addend, bits(N DIV 2) op1, bits(N DIV 2) op2, FPCRType fpcr_in)">BFMulAddH</a>(addend, element1, element2, FPCR[]);
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, 128] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

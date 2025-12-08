@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="SMSTART_MSR_imm" title="SMSTART -- A64" type="alias">
+  <docvars>
+    <docvar key="alias_mnemonic" value="SMSTART" />
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="MSR" />
+    <docvar key="msr-sysreg-target" value="whole-register" />
+  </docvars>
+  <heading>SMSTART</heading>
+  <desc>
+    <brief>
+      <para>Enables access to Streaming SVE mode and SME architectural state</para>
+    </brief>
+    <authored>
+      <para>Enables access to Streaming SVE mode and SME architectural state.</para>
+      <para>SMSTART enters Streaming SVE mode, and enables the SME ZA storage.</para>
+      <para>SMSTART SM enters Streaming SVE mode, but does not enable the SME ZA storage.</para>
+      <para>SMSTART ZA enables the SME ZA storage, but does not cause an entry to Streaming SVE mode.</para>
+    </authored>
+  </desc>
+  <aliasto refiform="msr_imm.xml" iformid="MSR_imm">MSR (immediate)</aliasto>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="MSR" />
+        <docvar key="msr-sysreg-target" value="whole-register" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="FEAT_SME" feature="FEAT_SME" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/system/register/cpsr" tworows="1">
+        <box hibit="31" width="10" settings="10">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" name="L" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="2" name="op0" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" width="3" name="op1" usename="1" settings="3" psbits="xxx">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="15" width="4" name="CRn" settings="4">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="4" name="CRm" usename="1" settings="2" psbits="xxxx">
+          <c>0</c>
+          <c>x</c>
+          <c>x</c>
+          <c>1</c>
+        </box>
+        <box hibit="7" width="3" name="op2" usename="1" settings="3" psbits="xxx">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="4" width="5" name="Rt" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="SMSTART_MSR_SI_pstate" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="alias_mnemonic" value="SMSTART" />
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="MSR" />
+          <docvar key="msr-sysreg-target" value="whole-register" />
+        </docvars>
+        <asmtemplate><text>SMSTART  </text><text>{</text><a link="sa_option" hover="Optional mode (field &quot;CRm&lt;2:1&gt;&quot;)">&lt;option&gt;</a><text>}</text></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="msr_imm.xml#MSR_SI_pstate">MSR</a><text>  </text><a link="sa_pstatefield" hover="PSTATE field name (field &quot;op1:op2:CRm&quot;) [ALLINT (FEAT_NMI),DAIFClr,DAIFSet,DIT (FEAT_DIT),PAN (FEAT_PAN),PM (FEAT_EBEP),SEE(pstate),SPSel,SSBS (FEAT_SSBS),SVCRSM (FEAT_SME),SVCRSMZA (FEAT_SME),SVCRZA (FEAT_SME),TCO (FEAT_MTE),UAO (FEAT_UAO)]">&lt;pstatefield&gt;</a><text>, #1</text></asmtemplate>
+          <aliascond>Unconditionally</aliascond>
+        </equivalent_to>
+      </encoding>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="SMSTART_MSR_SI_pstate" symboldefcount="1">
+      <symbol link="sa_option">&lt;option&gt;</symbol>
+      <definition encodedin="CRm&lt;2:1&gt;">
+        <intro>Is an optional mode, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">CRm&lt;2:1&gt;</entry>
+                <entry class="symbol">&lt;option&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">SM</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">ZA</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">[no specifier]</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SMSTART_MSR_SI_pstate" symboldefcount="1">
+      <symbol link="sa_pstatefield">&lt;pstatefield&gt;</symbol>
+      <definition encodedin="op1:op2:CRm">
+        <intro>Is a PSTATE field name. For the MSR instruction, this is </intro>
+        <table class="valuetable">
+          <tgroup cols="4">
+            <thead>
+              <row>
+                <entry class="bitfield">op1</entry>
+                <entry class="bitfield">op2</entry>
+                <entry class="bitfield">CRm</entry>
+                <entry class="symbol">&lt;pstatefield&gt;</entry>
+                <entry class="symbol">Architectural Feature</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">00x</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol" iclasslink="pstate" iclasslinkfile="encodingindex.xml">SEE PSTATE</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol" iclasslink="pstate" iclasslinkfile="encodingindex.xml">SEE PSTATE</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">UAO</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_UAO" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">PAN</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_PAN" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">SPSel</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">11x</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">000x</entry>
+                <entry class="symbol">ALLINT</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_NMI" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">001x</entry>
+                <entry class="symbol">PM</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_EBEP" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">01xx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">1xxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">01x</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">1xx</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">010</entry>
+                <entry class="bitfield">xxx</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">000</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">001</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">SSBS</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_SSBS" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">010</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">DIT</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_DIT" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">000x</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">001x</entry>
+                <entry class="symbol">SVCRSM</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_SME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">010x</entry>
+                <entry class="symbol">SVCRZA</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_SME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">011x</entry>
+                <entry class="symbol">SVCRSMZA</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_SME" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">1xxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">100</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">TCO</entry>
+                <entry class="feature">
+                  <arch_variants>
+                    <arch_variant feature="FEAT_MTE" />
+                  </arch_variants>
+                </entry>
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">101</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">110</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">DAIFSet</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">011</entry>
+                <entry class="bitfield">111</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">DAIFClr</entry>
+                <entry class="feature" />
+              </row>
+              <row>
+                <entry class="bitfield">1xx</entry>
+                <entry class="bitfield">xxx</entry>
+                <entry class="bitfield">xxxx</entry>
+                <entry class="symbol">RESERVED</entry>
+                <entry class="feature" />
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+        <after> For the SMSTART and SMSTOP aliases, this is encoded in "CRm&lt;2:1&gt;", where 0b01 specifies SVCRSM, 0b10 specifies SVCRZA, and 0b11 specifies SVCRSMZA.</after>
+      </definition>
+      <arch_variants>
+        <arch_variant name="FEAT_EBEP" feature="FEAT_EBEP" />
+      </arch_variants>
+    </explanation>
+  </explanations>
+</instructionsection>

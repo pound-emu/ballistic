@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>SYSL -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">SYSL</h2>
+      <p class="aml">System instruction with result. For more information, see <a class="armarm-xref" title="Reference to Armv8 ARM section">Op0 equals 0b01, cache maintenance, TLB maintenance, and address translation instructions</a> for the encodings of System instructions.</p>
+    <p class="desc">This instruction is used by the aliases <a href="gcspopm_sysl.html" title="GCSPOPM">GCSPOPM</a>, and <a href="gcsss2_sysl.html" title="GCSSS2">GCSSS2</a>.</p>
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">1</td><td class="l">0</td><td class="r">1</td><td colspan="3" class="lr">op1</td><td colspan="4" class="lr">CRn</td><td colspan="4" class="lr">CRm</td><td colspan="3" class="lr">op2</td><td colspan="5" class="lr">Rt</td></tr><tr class="secondrow"><td colspan="10"/><td class="droppedname">L</td><td colspan="2"/><td colspan="3"/><td colspan="4"/><td colspan="4"/><td colspan="3"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="SYSL_RC_systeminstrs"/><p class="asm-code">SYSL  <a href="#sa_xt" title="64-bit general-purpose destination register (field &quot;Rt&quot;)">&lt;Xt&gt;</a>, #<a href="#sa_op1" title="3-bit unsigned immediate [0-7] (field &quot;op1&quot;)">&lt;op1&gt;</a>, <a href="#sa_cn" title="Name 'Cn', with 'n' [0-15] (field &quot;CRn&quot;)">&lt;Cn&gt;</a>, <a href="#sa_cm" title="Name 'Cm', with 'm' [0-15] (field &quot;CRm&quot;)">&lt;Cm&gt;</a>, #<a href="#sa_op2" title="3-bit unsigned immediate [0-7] (field &quot;op2&quot;)">&lt;op2&gt;</a></p></div><p class="pseudocode"><a href="shared_pseudocode.html#AArch64.CheckSystemAccess.7" title="function: AArch64.CheckSystemAccess(bits(2) op0, bits(3) op1, bits(4) crn, bits(4) crm, bits(3) op2, bits(5) rt, bit read)">AArch64.CheckSystemAccess</a>('01', op1, CRn, CRm, op2, Rt, L);
+
+integer t = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rt);
+
+integer sys_op0 = 1;
+integer sys_op1 = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(op1);
+integer sys_op2 = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(op2);
+integer sys_crn = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(CRn);
+integer sys_crm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(CRm);
+boolean has_result = (L == '1');</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xt&gt;</td><td><a id="sa_xt"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose destination register, encoded in the "Rt" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;op1&gt;</td><td><a id="sa_op1"/>
+        
+          <p class="aml">Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op1" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Cn&gt;</td><td><a id="sa_cn"/>
+        
+          <p class="aml">Is a name 'Cn', with 'n' in the range 0 to 15, encoded in the "CRn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Cm&gt;</td><td><a id="sa_cm"/>
+        
+          <p class="aml">Is a name 'Cm', with 'm' in the range 0 to 15, encoded in the "CRm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;op2&gt;</td><td><a id="sa_op2"/>
+        
+          <p class="aml">Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op2" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/><h3 class="aliastable" id="">Alias Conditions</h3><table class="aliastable"><thead><tr><th>Alias</th><th>Is preferred when</th></tr></thead><tbody><tr><td><a href="gcspopm_sysl.html" title="GCSPOPM">GCSPOPM</a></td><td class="notfirst"><span class="pseudocode">op1 == '011' &amp;&amp; CRn == '0111' &amp;&amp; CRm == '0111' &amp;&amp; op2 == '001'</span></td></tr><tr><td><a href="gcsss2_sysl.html" title="GCSSS2">GCSSS2</a></td><td class="notfirst"><span class="pseudocode">op1 == '011' &amp;&amp; CRn == '0111' &amp;&amp; CRm == '0111' &amp;&amp; op2 == '011'</span></td></tr></tbody></table>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">if has_result then
+    // No architecturally defined instructions here.
+    <a href="shared_pseudocode.html#AArch64.SysInstrWithResult.6" title="function: AArch64.SysInstrWithResult(integer op0, integer op1, integer crn, integer crm, integer op2, integer t)">AArch64.SysInstrWithResult</a>(sys_op0, sys_op1, sys_crn, sys_crm, sys_op2, t);
+else
+    <a href="shared_pseudocode.html#AArch64.SysInstr.6" title="function: AArch64.SysInstr(integer op0, integer op1, integer crn, integer crm, integer op2, integer t)">AArch64.SysInstr</a>(sys_op0, sys_op1, sys_crn, sys_crm, sys_op2, t);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

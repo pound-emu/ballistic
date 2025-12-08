@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>TST (shifted register) -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">TST (shifted register)</h2>
+      <p class="aml">Test (shifted register) performs a bitwise AND operation on a register value and an optionally-shifted register value. It updates the condition flags based on the result, and discards the result.</p>
+    <p>
+        This is an alias of
+        <a href="ands_log_shift.html">ANDS (shifted register)</a>.
+        This means:
+      </p><ul><li>
+          The encodings in this description are named to match the encodings of
+          <a href="ands_log_shift.html">ANDS (shifted register)</a>.
+        </li><li>The description of <a href="ands_log_shift.html">ANDS (shifted register)</a> gives the operational pseudocode, any <span class="arm-defined-word">constrained unpredictable</span> behavior, and any operational information for this instruction.</li></ul>
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">sf</td><td class="l">1</td><td class="r">1</td><td class="l">0</td><td>1</td><td>0</td><td>1</td><td class="r">0</td><td colspan="2" class="lr">shift</td><td class="lr">0</td><td colspan="5" class="lr">Rm</td><td colspan="6" class="lr">imm6</td><td colspan="5" class="lr">Rn</td><td class="l">1</td><td>1</td><td>1</td><td>1</td><td class="r">1</td></tr><tr class="secondrow"><td/><td colspan="2" class="droppedname">opc</td><td colspan="5"/><td colspan="2"/><td class="droppedname">N</td><td colspan="5"/><td colspan="6"/><td colspan="5"/><td colspan="5" class="droppedname">Rd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding">32-bit<span class="bitdiff"> (sf == 0)</span></h4><a id="TST_ANDS_32_log_shift"/><p class="asm-code">TST  <a href="#sa_wn" title="First 32-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, <a href="#sa_wm" title="Second 32-bit general-purpose source register (field &quot;Rm&quot;)">&lt;Wm&gt;</a>{, <a href="#sa_shift" title="Optional shift applied to final source, default LSL (field &quot;shift&quot;) [ASR,LSL,LSR,ROR]">&lt;shift&gt;</a> #<a href="#sa_amount" title="Shift amount [0-31], default 0 (field &quot;imm6&quot;)">&lt;amount&gt;</a>}</p><p class="equivto">
+      is equivalent to
+    </p>
+          <p class="asm-code"><a href="ands_log_shift.html#ANDS_32_log_shift">ANDS</a> WZR, <a href="#sa_wn" title="First 32-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Wn&gt;</a>, <a href="#sa_wm" title="Second 32-bit general-purpose source register (field &quot;Rm&quot;)">&lt;Wm&gt;</a>{, <a href="#sa_shift" title="Optional shift applied to final source, default LSL (field &quot;shift&quot;) [ASR,LSL,LSR,ROR]">&lt;shift&gt;</a> #<a href="#sa_amount" title="Shift amount [0-31], default 0 (field &quot;imm6&quot;)">&lt;amount&gt;</a>}</p>
+          <p class="equivto">
+          and is always the preferred disassembly.
+        </p>
+        </div><div class="encoding"><h4 class="encoding">64-bit<span class="bitdiff"> (sf == 1)</span></h4><a id="TST_ANDS_64_log_shift"/><p class="asm-code">TST  <a href="#sa_xn" title="First 64-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Xn&gt;</a>, <a href="#sa_xm" title="Second 64-bit general-purpose source register (field &quot;Rm&quot;)">&lt;Xm&gt;</a>{, <a href="#sa_shift" title="Optional shift applied to final source, default LSL (field &quot;shift&quot;) [ASR,LSL,LSR,ROR]">&lt;shift&gt;</a> #<a href="#sa_amount_1" title="Shift amount [0-63], default 0 (field &quot;imm6&quot;)">&lt;amount&gt;</a>}</p><p class="equivto">
+      is equivalent to
+    </p>
+          <p class="asm-code"><a href="ands_log_shift.html#ANDS_64_log_shift">ANDS</a> XZR, <a href="#sa_xn" title="First 64-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Xn&gt;</a>, <a href="#sa_xm" title="Second 64-bit general-purpose source register (field &quot;Rm&quot;)">&lt;Xm&gt;</a>{, <a href="#sa_shift" title="Optional shift applied to final source, default LSL (field &quot;shift&quot;) [ASR,LSL,LSR,ROR]">&lt;shift&gt;</a> #<a href="#sa_amount_1" title="Shift amount [0-63], default 0 (field &quot;imm6&quot;)">&lt;amount&gt;</a>}</p>
+          <p class="equivto">
+          and is always the preferred disassembly.
+        </p>
+        </div>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wn&gt;</td><td><a id="sa_wn"/>
+        
+          <p class="aml">Is the 32-bit name of the first general-purpose source register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wm&gt;</td><td><a id="sa_wm"/>
+        
+          <p class="aml">Is the 32-bit name of the second general-purpose source register, encoded in the "Rm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xn&gt;</td><td><a id="sa_xn"/>
+        
+          <p class="aml">Is the 64-bit name of the first general-purpose source register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xm&gt;</td><td><a id="sa_xm"/>
+        
+          <p class="aml">Is the 64-bit name of the second general-purpose source register, encoded in the "Rm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;shift&gt;</td><td><a id="sa_shift"/>
+        <p>Is the optional shift to be applied to the final source, defaulting to LSL and 
+      encoded in
+      <q>shift</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">shift</th>
+                <th class="symbol">&lt;shift&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="symbol">LSL</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="symbol">LSR</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10</td>
+                <td class="symbol">ASR</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11</td>
+                <td class="symbol">ROR</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;amount&gt;</td><td><a id="sa_amount"/>
+        
+          
+        
+        
+          <p class="aml">For the 32-bit variant: is the shift amount, in the range 0 to 31, defaulting to 0 and encoded in the "imm6" field.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_amount_1"/>
+        
+          
+        
+        
+          <p class="aml">For the 64-bit variant: is the shift amount, in the range 0 to 63, defaulting to 0 and encoded in the "imm6" field,</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/><div class="alias_ps_section"><h3 class="pseudocode">Operation</h3><p>The description of <a href="ands_log_shift.html">ANDS (shifted register)</a> gives the operational pseudocode for this instruction.</p></div><h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

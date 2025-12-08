@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="SUBP" title="SUBP -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="SUBP" />
+  </docvars>
+  <heading>SUBP</heading>
+  <desc>
+    <brief>
+      <para>Subtract Pointer</para>
+    </brief>
+    <authored>
+      <para>Subtract Pointer subtracts the 56-bit address held in the second source register from the 56-bit address held in the first source register, sign-extends the result to 64-bits, and writes the result to the destination register.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Integer" oneof="1" id="iclass_general" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SUBP" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.5" feature="FEAT_MTE" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/integer/arithmetic/pointer/mcsubtracttaggedaddress">
+        <box hibit="31" name="sf" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="30" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="29" name="S" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="8" settings="8">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="20" width="5" name="Xm" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="15" name="opcode&lt;5&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="14" name="opcode&lt;4&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="13" name="opcode&lt;3&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="12" name="opcode&lt;2&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="11" name="opcode&lt;1&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="10" name="opcode&lt;0&gt;" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Xn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Xd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="SUBP_64S_dp_2src" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SUBP" />
+        </docvars>
+        <asmtemplate><text>SUBP  </text><a link="sa_xd" hover="64-bit general-purpose destination register (field &quot;Xd&quot;)">&lt;Xd&gt;</a><text>, </text><a link="sa_xn_sp" hover="First 64-bit source general-purpose register or SP (field &quot;Xn&quot;)">&lt;Xn|SP&gt;</a><text>, </text><a link="sa_xm_sp" hover="Second 64-bit general-purpose source register or SP (field &quot;Xm&quot;)">&lt;Xm|SP&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/integer/arithmetic/pointer/mcsubtracttaggedaddress" mylink="aarch64.instrs.integer.arithmetic.pointer.mcsubtracttaggedaddress" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveMTEExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveMTEExt()">HaveMTEExt</a>() then UNDEFINED;
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Xd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Xn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Xm);
+boolean setflags = FALSE;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="SUBP_64S_dp_2src" symboldefcount="1">
+      <symbol link="sa_xd">&lt;Xd&gt;</symbol>
+      <account encodedin="Xd">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose destination register, encoded in the "Xd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SUBP_64S_dp_2src" symboldefcount="1">
+      <symbol link="sa_xn_sp">&lt;Xn|SP&gt;</symbol>
+      <account encodedin="Xn">
+        <intro>
+          <para>Is the 64-bit name of the first source general-purpose register or stack pointer, encoded in the "Xn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SUBP_64S_dp_2src" symboldefcount="1">
+      <symbol link="sa_xm_sp">&lt;Xm|SP&gt;</symbol>
+      <account encodedin="Xm">
+        <intro>
+          <para>Is the 64-bit name of the second general-purpose source register or stack pointer, encoded in the "Xm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/integer/arithmetic/pointer/mcsubtracttaggedaddress" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">bits(64) operand1 = if n == 31 then <a link="impl-aarch64.SP.read.0" file="shared_pseudocode.xml" hover="accessor: bits(64) SP[]">SP</a>[] else <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[n, 64];
+bits(64) operand2 = if m == 31 then <a link="impl-aarch64.SP.read.0" file="shared_pseudocode.xml" hover="accessor: bits(64) SP[]">SP</a>[] else <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[m, 64];
+operand1 = <a link="impl-shared.SignExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(operand1&lt;55:0&gt;, 64);
+operand2 = <a link="impl-shared.SignExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(operand2&lt;55:0&gt;, 64);
+
+bits(64) result;
+bits(4) nzcv;
+
+operand2 = NOT(operand2);
+(result, nzcv) = <a link="impl-shared.AddWithCarry.3" file="shared_pseudocode.xml" hover="function: (bits(N), bits(4)) AddWithCarry(bits(N) x, bits(N) y, bit carry_in)">AddWithCarry</a>(operand1, operand2, '1');
+
+if setflags then
+    PSTATE.&lt;N,Z,C,V&gt; = nzcv;
+<a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, 64] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

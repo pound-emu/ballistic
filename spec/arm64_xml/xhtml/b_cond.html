@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>B.cond -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">B.cond</h2>
+      <p class="aml">Branch conditionally to a label at a PC-relative offset, with a hint that this is not a subroutine call or return.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="r">0</td><td class="lr">0</td><td colspan="19" class="lr">imm19</td><td class="lr">0</td><td colspan="4" class="lr">cond</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="B_only_condbranch"/><p class="asm-code">B.<a href="#sa_cond" title="Standard condition (field &quot;cond&quot;)">&lt;cond&gt;</a>  <a href="#sa_label" title="Label to be conditionally branched to (field imm19)">&lt;label&gt;</a></p></div><p class="pseudocode">bits(64) offset = <a href="shared_pseudocode.html#impl-shared.SignExtend.2" title="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(imm19:'00', 64);
+bits(4) condition = cond;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;cond&gt;</td><td><a id="sa_cond"/>
+        
+          <p class="aml">Is one of the standard conditions, encoded in the "cond" field in the standard way.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;label&gt;</td><td><a id="sa_label"/>
+        
+          <p class="aml">Is the program label to be conditionally branched to. Its offset from the address of this instruction, in the range +/-1MB, is encoded as "imm19" times 4.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">boolean branch_conditional = TRUE;
+if <a href="shared_pseudocode.html#impl-shared.ConditionHolds.1" title="function: boolean ConditionHolds(bits(4) cond)">ConditionHolds</a>(condition) then
+    <a href="shared_pseudocode.html#impl-shared.BranchTo.3" title="function: BranchTo(bits(N) target, BranchType branch_type, boolean branch_conditional)">BranchTo</a>(<a href="shared_pseudocode.html#impl-aarch64.PC.read.0" title="accessor: bits(64) PC[]">PC</a>[] + offset, <a href="shared_pseudocode.html#BranchType_DIR" title="enumeration BranchType { BranchType_DIRCALL, BranchType_INDCALL, BranchType_ERET, BranchType_DBGEXIT, BranchType_RET, BranchType_DIR, BranchType_INDIR, BranchType_EXCEPTION, BranchType_TMFAIL, BranchType_RESET, BranchType_UNKNOWN}">BranchType_DIR</a>, branch_conditional);
+else
+    <a href="shared_pseudocode.html#impl-shared.BranchNotTaken.2" title="function: BranchNotTaken(BranchType branchtype, boolean branch_conditional)">BranchNotTaken</a>(<a href="shared_pseudocode.html#BranchType_DIR" title="enumeration BranchType { BranchType_DIRCALL, BranchType_INDCALL, BranchType_ERET, BranchType_DBGEXIT, BranchType_RET, BranchType_DIR, BranchType_INDIR, BranchType_EXCEPTION, BranchType_TMFAIL, BranchType_RESET, BranchType_UNKNOWN}">BranchType_DIR</a>, branch_conditional);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

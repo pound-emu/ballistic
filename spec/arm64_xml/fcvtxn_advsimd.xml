@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="FCVTXN_advsimd" title="FCVTXN, FCVTXN2 -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="FCVTXN" />
+  </docvars>
+  <heading>FCVTXN, FCVTXN2</heading>
+  <desc>
+    <brief>
+      <para>Floating-point Convert to lower precision Narrow, rounding to odd (vector)</para>
+    </brief>
+    <authored>
+      <para>Floating-point Convert to lower precision Narrow, rounding to odd (vector). This instruction reads each vector element in the source SIMD&amp;FP register, narrows each value to half the precision of the source element using the Round to Odd rounding mode, writes the result to a vector, and writes the vector to the destination SIMD&amp;FP register.</para>
+      <note>
+        <para>This instruction uses the Round to Odd rounding mode which is not defined by the IEEE 754-2008 standard. This rounding mode ensures that if the result of the conversion is inexact the least significant bit of the mantissa is forced to 1. This rounding mode enables a floating-point value to be converted to a lower precision format via an intermediate precision format while avoiding double rounding errors. For example, a 64-bit floating-point value can be converted to a correctly rounded 16-bit floating-point value by first using this instruction to produce a 32-bit value and then using another instruction with the wanted rounding mode to convert the 32-bit value to the final 16-bit floating-point value.</para>
+      </note>
+      <para>The <instruction>FCVTXN</instruction> instruction writes the vector to the lower half of the destination register and clears the upper half, while the <instruction>FCVTXN2</instruction> instruction writes the vector to the upper half of the destination register without affecting the other bits of the register.</para>
+      <para>This instruction can generate a floating-point exception. Depending on the settings in <xref linkend="AArch64.fpcr">FPCR</xref>, the exception results in either a flag being set in <xref linkend="AArch64.fpsr">FPSR</xref> or a synchronous exception being generated. For more information, see <xref linkend="BEIJDDAG">Floating-point exception traps</xref>.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_sisd">Scalar</a>
+      <txt> and </txt>
+      <a href="#iclass_simd">Vector</a>
+    </classesintro>
+    <iclass name="Scalar" oneof="2" id="iclass_sisd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-type" value="sisd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FCVTXN" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/float/xtn/sisd">
+        <box hibit="31" width="2" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" name="size[1]" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="22" name="sz" usename="1">
+          <c></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FCVTXN_asisdmisc_N" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-type" value="sisd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FCVTXN" />
+        </docvars>
+        <asmtemplate><text>FCVTXN  </text><a link="sa_vb" hover="Destination width specifier (field &quot;sz&quot;) [S]">&lt;Vb&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_va" hover="Source width specifier (field &quot;sz&quot;) [D]">&lt;Va&gt;</a><a link="sa_n" hover="SIMD&amp;FP source register number (field &quot;Rn&quot;)">&lt;n&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/float/xtn/sisd" mylink="aarch64.instrs.vector.arithmetic.unary.float.xtn.sisd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if sz == '0' then UNDEFINED;
+integer esize = 32;
+integer datasize = esize;
+integer elements = 1;
+integer part = 0;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Vector" oneof="2" id="iclass_simd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-datatype" value="simd-single-and-double" />
+        <docvar key="advsimd-type" value="simd" />
+        <docvar key="datatype" value="single-and-double" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="FCVTXN" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/float/xtn/simd">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" name="size[1]" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="22" name="sz" usename="1">
+          <c></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="FCVTXN_asimdmisc_N" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-datatype" value="simd-single-and-double" />
+          <docvar key="advsimd-type" value="simd" />
+          <docvar key="datatype" value="single-and-double" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="FCVTXN" />
+        </docvars>
+        <asmtemplate><text>FCVTXN</text><a link="sa_2" hover="Second and upper half specifier (field &quot;Q&quot;)">{2}</a><text>  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_tb" hover="Arrangement specifier (field &quot;sz:Q&quot;) [2S,4S]">&lt;Tb&gt;</a><text>, </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;sz&quot;) [2D]">&lt;Ta&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/float/xtn/simd" mylink="aarch64.instrs.vector.arithmetic.unary.float.xtn.simd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if sz == '0' then UNDEFINED;
+integer esize = 32;
+integer datasize = 64;
+integer elements = 2;
+integer part = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Q);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="FCVTXN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_2">2</symbol>
+      <definition encodedin="Q">
+        <intro>Is the second and upper half specifier. If present it causes the operation to be performed on the upper 64 bits of the registers holding the narrower elements, and is </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">2</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">[absent]</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">[present]</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FCVTXN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FCVTXN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_tb">&lt;Tb&gt;</symbol>
+      <definition encodedin="sz:Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry class="bitfield">sz</entry>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;Tb&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="bitfield">x</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FCVTXN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FCVTXN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_ta">&lt;Ta&gt;</symbol>
+      <definition encodedin="sz">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">sz</entry>
+                <entry class="symbol">&lt;Ta&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">2D</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FCVTXN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_vb">&lt;Vb&gt;</symbol>
+      <definition encodedin="sz">
+        <intro>Is the destination width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">sz</entry>
+                <entry class="symbol">&lt;Vb&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">S</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FCVTXN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_d">&lt;d&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="FCVTXN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_va">&lt;Va&gt;</symbol>
+      <definition encodedin="sz">
+        <intro>Is the source width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">sz</entry>
+                <entry class="symbol">&lt;Va&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">D</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="FCVTXN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_n">&lt;n&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/unary/float/xtn/sisd" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+
+bits(2*datasize) operand = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, 2*datasize];
+<a link="FPCRType" file="shared_pseudocode.xml" hover="type FPCRType">FPCRType</a> fpcr    = FPCR[];
+boolean merge    = elements == 1 &amp;&amp; <a link="impl-shared.IsMerging.1" file="shared_pseudocode.xml" hover="function: boolean IsMerging(FPCRType fpcr)">IsMerging</a>(fpcr);
+bits(128) result = if merge then <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[d, 128] else <a link="impl-shared.Zeros.1" file="shared_pseudocode.xml" hover="function: bits(N) Zeros(integer N)">Zeros</a>(128);
+
+for e = 0 to elements-1
+    <a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize] = <a link="impl-shared.FPConvert.4" file="shared_pseudocode.xml" hover="function: bits(M) FPConvert(bits(N) op, FPCRType fpcr, FPRounding rounding, integer M)">FPConvert</a>(<a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand, e, 2*esize], fpcr, <a link="FPRounding_ODD" file="shared_pseudocode.xml" hover="enumeration FPRounding  {FPRounding_TIEEVEN, FPRounding_POSINF, FPRounding_NEGINF,  FPRounding_ZERO, FPRounding_TIEAWAY, FPRounding_ODD}">FPRounding_ODD</a>, esize);
+
+if merge then
+    <a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, 128] = result;
+else
+    <a link="impl-aarch64.Vpart.write.3" file="shared_pseudocode.xml" hover="accessor: Vpart[integer n, integer part, integer width] = bits(width) value">Vpart</a>[d, part, datasize] = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[result, 0, datasize];</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

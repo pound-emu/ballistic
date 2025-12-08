@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>SM3TT2B -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">SM3TT2B</h2>
+      <p class="aml">SM3TT2B takes three 128-bit vectors from three source SIMD&amp;FP registers, and a 2-bit immediate index value, and returns a 128-bit result in the destination SIMD&amp;FP register. It performs a 32-bit majority function between the three 32-bit fields held in the upper three elements of the first source vector, and adds the resulting 32-bit value and the following three other 32-bit values:</p>
+      <ul>
+        <li>The bottom 32-bit element of the first source vector, Vd, that was used for the 32-bit majority function.</li>
+        <li>The 32-bit element held in the top 32 bits of the second source vector, Vn.</li>
+        <li>A 32-bit element indexed out of the third source vector, Vm.</li>
+      </ul>
+      <p class="aml">A three-way exclusive-OR is performed of the result of this addition, the result of the addition rotated left by 9, and the result of the addition rotated left by 17. The result of this exclusive-OR is returned as the top element of the returned result. The other elements of this result are taken from elements of the first source vector, with the element returned in bits&lt;63:32&gt; being rotated left by 19.</p>
+      <p class="aml">This instruction is implemented only when <a class="armarm-xref" title="Reference to Armv8 ARM section">FEAT_SM3</a> is implemented.</p>
+    
+    <h3 class="classheading"><a id="iclass_advsimd"/>Advanced SIMD<span style="font-size:smaller;"><br/>(FEAT_SM3)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="r">0</td><td colspan="5" class="lr">Rm</td><td class="l">1</td><td class="r">0</td><td colspan="2" class="lr">imm2</td><td class="l">1</td><td class="r">1</td><td colspan="5" class="lr">Rn</td><td colspan="5" class="lr">Rd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="SM3TT2B_VVV_crypto3_imm2"/><p class="asm-code">SM3TT2B  <a href="#sa_vd" title="SIMD&amp;FP source and destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a>.4S, <a href="#sa_vn" title="Second SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a>.4S, <a href="#sa_vm" title="Third SIMD&amp;FP source register (field &quot;Rm&quot;)">&lt;Vm&gt;</a>.S[<a href="#sa_imm2" title="32-bit element indexed out of &lt;Vm&gt; (field &quot;imm2&quot;)">&lt;imm2&gt;</a>]</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-shared.HaveSM3Ext.0" title="function: boolean HaveSM3Ext()">HaveSM3Ext</a>() then UNDEFINED;
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rm);
+integer i = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm2);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vd&gt;</td><td><a id="sa_vd"/>
+        
+          <p class="aml">Is the name of the SIMD&amp;FP source and destination register, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vn&gt;</td><td><a id="sa_vn"/>
+        
+          <p class="aml">Is the name of the second SIMD&amp;FP source register, encoded in the "Rn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Vm&gt;</td><td><a id="sa_vm"/>
+        
+          <p class="aml">Is the name of the third SIMD&amp;FP source register, encoded in the "Rm" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm2&gt;</td><td><a id="sa_imm2"/>
+        
+          <p class="aml">Is a 32-bit element indexed out of &lt;Vm&gt;, encoded in "imm2".</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#AArch64.CheckFPAdvSIMDEnabled.0" title="function: AArch64.CheckFPAdvSIMDEnabled()">AArch64.CheckFPAdvSIMDEnabled</a>();
+
+bits(128) Vm = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[m, 128];
+bits(128) Vn = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[n, 128];
+bits(128) Vd = <a href="shared_pseudocode.html#impl-aarch64.V.read.2" title="accessor: bits(width) V[integer n, integer width]">V</a>[d, 128];
+bits(32) Wj;
+bits(128) result; 
+bits(32) TT2;
+
+Wj = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[Vm,i,32];
+TT2 = (Vd&lt;127:96&gt; AND Vd&lt;95:64&gt;) OR (NOT(Vd&lt;127:96&gt;) AND Vd&lt;63:32&gt;); 
+TT2 = (TT2 + Vd&lt;31:0&gt; + Vn&lt;127:96&gt; + Wj)&lt;31:0&gt;;
+
+result&lt;31:0&gt; = Vd&lt;63:32&gt;;
+result&lt;63:32&gt; = <a href="shared_pseudocode.html#impl-shared.ROL.2" title="function: bits(N) ROL(bits(N) x, integer shift)">ROL</a>(Vd&lt;95:64&gt;,19); 
+result&lt;95:64&gt; = Vd&lt;127:96&gt;; 
+result&lt;127:96&gt; = TT2 EOR <a href="shared_pseudocode.html#impl-shared.ROL.2" title="function: bits(N) ROL(bits(N) x, integer shift)">ROL</a>(TT2,9) EOR <a href="shared_pseudocode.html#impl-shared.ROL.2" title="function: bits(N) ROL(bits(N) x, integer shift)">ROL</a>(TT2,17); 
+<a href="shared_pseudocode.html#impl-aarch64.V.write.2" title="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, 128] = result;</p>
+    </div>
+  <h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

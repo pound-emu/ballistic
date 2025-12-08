@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="UMAX_imm" title="UMAX (immediate) -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="UMAX" />
+  </docvars>
+  <heading>UMAX (immediate)</heading>
+  <desc>
+    <brief>
+      <para>Unsigned Maximum (immediate)</para>
+    </brief>
+    <authored>
+      <para>Unsigned Maximum (immediate) determines the unsigned maximum of the source register value and immediate, and writes the result to the destination register.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Integer" oneof="1" id="iclass_general" no_encodings="2" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="UMAX" />
+      </docvars>
+      <iclassintro count="2"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.9" feature="FEAT_CSSC" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/integer/arithmetic/max-min/umax_imm">
+        <box hibit="31" name="sf" usename="1">
+          <c></c>
+        </box>
+        <box hibit="30" name="op" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="29" name="s" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="7" settings="7">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="21" width="3" name="opc&lt;3:1&gt;" settings="3">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" name="opc&lt;0&gt;" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="17" width="8" name="imm8" usename="1">
+          <c colspan="8"></c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="UMAX_32U_minmax_imm" oneofinclass="2" oneof="2" label="32-bit" bitdiffs="sf == 0">
+        <docvars>
+          <docvar key="datatype" value="32" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="UMAX" />
+        </docvars>
+        <box hibit="31" width="1" name="sf">
+          <c>0</c>
+        </box>
+        <asmtemplate><text>UMAX  </text><a link="sa_wd" hover="32-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Wd&gt;</a><text>, </text><a link="sa_wn" hover="32-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Wn&gt;</a><text>, #</text><a link="sa_uimm" hover="Unsigned immediate [0-255] (field &quot;imm8&quot;)">&lt;uimm&gt;</a></asmtemplate>
+      </encoding>
+      <encoding name="UMAX_64U_minmax_imm" oneofinclass="2" oneof="2" label="64-bit" bitdiffs="sf == 1">
+        <docvars>
+          <docvar key="datatype" value="64" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="UMAX" />
+        </docvars>
+        <box hibit="31" width="1" name="sf">
+          <c>1</c>
+        </box>
+        <asmtemplate><text>UMAX  </text><a link="sa_xd" hover="64-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Xd&gt;</a><text>, </text><a link="sa_xn" hover="64-bit general-purpose source register (field &quot;Rn&quot;)">&lt;Xn&gt;</a><text>, #</text><a link="sa_uimm" hover="Unsigned immediate [0-255] (field &quot;imm8&quot;)">&lt;uimm&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/integer/arithmetic/max-min/umax_imm" mylink="aarch64.instrs.integer.arithmetic.max-min.umax_imm" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveCSSC.0" file="shared_pseudocode.xml" hover="function: boolean HaveCSSC()">HaveCSSC</a>() then UNDEFINED;
+integer datasize = 32 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(sf);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer imm = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(imm8);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="UMAX_32U_minmax_imm" symboldefcount="1">
+      <symbol link="sa_wd">&lt;Wd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 32-bit name of the general-purpose destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UMAX_32U_minmax_imm" symboldefcount="1">
+      <symbol link="sa_wn">&lt;Wn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 32-bit name of the general-purpose source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UMAX_64U_minmax_imm" symboldefcount="1">
+      <symbol link="sa_xd">&lt;Xd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UMAX_64U_minmax_imm" symboldefcount="1">
+      <symbol link="sa_xn">&lt;Xn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="UMAX_32U_minmax_imm, UMAX_64U_minmax_imm" symboldefcount="1">
+      <symbol link="sa_uimm">&lt;uimm&gt;</symbol>
+      <account encodedin="imm8">
+        <intro>
+          <para>Is an unsigned immediate, in the range 0 to 255, encoded in the "imm8" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/integer/arithmetic/max-min/umax_imm" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">bits(datasize) operand1 = <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[n, datasize];
+integer result = <a link="impl-shared.Max.2" file="shared_pseudocode.xml" hover="function: integer Max(integer a, integer b)">Max</a>(<a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(operand1), imm);
+<a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[d, datasize] = result&lt;datasize-1:0&gt;;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

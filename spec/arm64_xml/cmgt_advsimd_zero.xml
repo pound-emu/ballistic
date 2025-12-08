@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="CMGT_advsimd_zero" title="CMGT (zero) -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="CMGT" />
+  </docvars>
+  <heading>CMGT (zero)</heading>
+  <desc>
+    <brief>
+      <para>Compare signed Greater than zero (vector)</para>
+    </brief>
+    <authored>
+      <para>Compare signed Greater than zero (vector). This instruction reads each vector element in the source SIMD&amp;FP register and if the signed integer value is greater than zero sets every bit of the corresponding vector element in the destination SIMD&amp;FP register to one, otherwise sets every bit of the corresponding vector element in the destination SIMD&amp;FP register to zero.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_sisd">Scalar</a>
+      <txt> and </txt>
+      <a href="#iclass_simd">Vector</a>
+    </classesintro>
+    <iclass name="Scalar" oneof="2" id="iclass_sisd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-type" value="sisd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="CMGT" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/cmp/int/bulk/sisd" tworows="1">
+        <box hibit="31" width="2" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" name="U" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="size" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="4" name="opcode[4:1]" settings="4">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="12" name="op" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="CMGT_asisdmisc_Z" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-type" value="sisd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="CMGT" />
+        </docvars>
+        <asmtemplate><text>CMGT  </text><a link="sa_v" hover="Width specifier (field &quot;size&quot;) [D]">&lt;V&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_v" hover="Width specifier (field &quot;size&quot;) [D]">&lt;V&gt;</a><a link="sa_n" hover="SIMD&amp;FP source register number (field &quot;Rn&quot;)">&lt;n&gt;</a><text>, #0</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/cmp/int/bulk/sisd" mylink="aarch64.instrs.vector.arithmetic.unary.cmp.int.bulk.sisd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if size != '11' then UNDEFINED;
+integer esize = 8 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer datasize = esize;
+integer elements = 1;
+
+<a link="CompareOp" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp</a> comparison;
+case op:U of
+    when '00' comparison = <a link="CompareOp_GT" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_GT</a>;
+    when '01' comparison = <a link="CompareOp_GE" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_GE</a>;
+    when '10' comparison = <a link="CompareOp_EQ" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_EQ</a>;
+    when '11' comparison = <a link="CompareOp_LE" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_LE</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Vector" oneof="2" id="iclass_simd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-type" value="simd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="CMGT" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/cmp/int/bulk/simd" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="size" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="4" name="opcode[4:1]" settings="4">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="12" name="op" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="CMGT_asimdmisc_Z" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-type" value="simd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="CMGT" />
+        </docvars>
+        <asmtemplate><text>CMGT  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_t" hover="Arrangement specifier (field &quot;size:Q&quot;) [2D,2S,4H,4S,8B,8H,16B]">&lt;T&gt;</a><text>, </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_t" hover="Arrangement specifier (field &quot;size:Q&quot;) [2D,2S,4H,4S,8B,8H,16B]">&lt;T&gt;</a><text>, #0</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/cmp/int/bulk/simd" mylink="aarch64.instrs.vector.arithmetic.unary.cmp.int.bulk.simd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if size:Q == '110' then UNDEFINED;
+integer esize = 8 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV esize;
+
+<a link="CompareOp" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp</a> comparison;
+case op:U of
+    when '00' comparison = <a link="CompareOp_GT" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_GT</a>;
+    when '01' comparison = <a link="CompareOp_GE" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_GE</a>;
+    when '10' comparison = <a link="CompareOp_EQ" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_EQ</a>;
+    when '11' comparison = <a link="CompareOp_LE" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_LE</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="CMGT_asisdmisc_Z" symboldefcount="1">
+      <symbol link="sa_v">&lt;V&gt;</symbol>
+      <definition encodedin="size">
+        <intro>Is a width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;V&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0x</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">D</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="CMGT_asisdmisc_Z" symboldefcount="1">
+      <symbol link="sa_d">&lt;d&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="CMGT_asisdmisc_Z" symboldefcount="1">
+      <symbol link="sa_n">&lt;n&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="CMGT_asimdmisc_Z" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="CMGT_asimdmisc_Z" symboldefcount="1">
+      <symbol link="sa_t">&lt;T&gt;</symbol>
+      <definition encodedin="size:Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;T&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">8B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">16B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">2D</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="CMGT_asimdmisc_Z" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/unary/cmp/int/bulk/sisd" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) operand = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, datasize];
+bits(datasize) result;
+integer element;
+boolean test_passed;
+
+for e = 0 to elements-1
+    element = <a link="impl-shared.SInt.1" file="shared_pseudocode.xml" hover="function: integer SInt(bits(N) x)">SInt</a>(<a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand, e, esize]);
+    case comparison of
+        when <a link="CompareOp_GT" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_GT</a> test_passed = element &gt; 0;
+        when <a link="CompareOp_GE" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_GE</a> test_passed = element &gt;= 0;
+        when <a link="CompareOp_EQ" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_EQ</a> test_passed = element == 0;
+        when <a link="CompareOp_LE" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_LE</a> test_passed = element &lt;= 0;
+        when <a link="CompareOp_LT" file="shared_pseudocode.xml" hover="enumeration CompareOp   {CompareOp_GT, CompareOp_GE, CompareOp_EQ, CompareOp_LE, CompareOp_LT}">CompareOp_LT</a> test_passed = element &lt; 0;
+    <a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize] = if test_passed then <a link="impl-shared.Ones.1" file="shared_pseudocode.xml" hover="function: bits(N) Ones(integer N)">Ones</a>(esize) else <a link="impl-shared.Zeros.1" file="shared_pseudocode.xml" hover="function: bits(N) Zeros(integer N)">Zeros</a>(esize);
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, datasize] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

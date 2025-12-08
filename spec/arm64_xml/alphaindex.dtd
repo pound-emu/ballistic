@@ -1,0 +1,16 @@
+<!--
+
+XML language accounts for alphaindex.xml
+Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+--> 
+
+<!ELEMENT toptitle EMPTY>
+<!ATTLIST toptitle instructionset CDATA #REQUIRED>
+
+<!ELEMENT iform (#PCDATA)>
+<!ATTLIST iform id CDATA #REQUIRED heading CDATA #REQUIRED iformfile CDATA #REQUIRED>
+<!ELEMENT iforms (iform+)>
+<!ATTLIST iforms title CDATA #REQUIRED>
+<!ELEMENT alphaindex (toptitle, iforms)>

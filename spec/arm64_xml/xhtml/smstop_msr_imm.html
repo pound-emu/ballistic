@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>SMSTOP -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">SMSTOP</h2>
+      <p class="aml">Disables access to Streaming SVE mode and SME architectural state.</p>
+      <p class="aml">SMSTOP exits Streaming SVE mode, and disables the SME ZA storage.</p>
+      <p class="aml">SMSTOP SM exits Streaming SVE mode, but does not disable the SME ZA storage.</p>
+      <p class="aml">SMSTOP ZA disables the SME ZA storage, but does not cause an exit from Streaming SVE mode.</p>
+    <p>
+        This is an alias of
+        <a href="msr_imm.html">MSR (immediate)</a>.
+        This means:
+      </p><ul><li>
+          The encodings in this description are named to match the encodings of
+          <a href="msr_imm.html">MSR (immediate)</a>.
+        </li><li>The description of <a href="msr_imm.html">MSR (immediate)</a> gives the operational pseudocode, any <span class="arm-defined-word">constrained unpredictable</span> behavior, and any operational information for this instruction.</li></ul>
+    <h3 class="classheading"><a id="iclass_system"/>System<span style="font-size:smaller;"><br/>(FEAT_SME)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">0</td><td class="l">0</td><td class="r">0</td><td class="l">0</td><td>1</td><td class="r">1</td><td class="l">0</td><td>1</td><td>0</td><td class="r">0</td><td class="l">0</td><td>x</td><td>x</td><td class="r">0</td><td class="l">0</td><td>1</td><td class="r">1</td><td class="l">1</td><td>1</td><td>1</td><td>1</td><td class="r">1</td></tr><tr class="secondrow"><td colspan="10"/><td/><td colspan="2"/><td colspan="3" class="droppedname">op1</td><td colspan="4"/><td colspan="4" class="droppedname">CRm</td><td colspan="3" class="droppedname">op2</td><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="SMSTOP_MSR_SI_pstate"/><p class="asm-code">SMSTOP  {<a href="#sa_option" title="Optional mode (field &quot;CRm&lt;2:1&gt;&quot;)">&lt;option&gt;</a>}</p><p class="equivto">
+      is equivalent to
+    </p>
+          <p class="asm-code"><a href="msr_imm.html#MSR_SI_pstate">MSR</a>  <a href="#sa_pstatefield" title="PSTATE field name (field &quot;op1:op2:CRm&quot;) [ALLINT (FEAT_NMI),DAIFClr,DAIFSet,DIT (FEAT_DIT),PAN (FEAT_PAN),PM (FEAT_EBEP),SEE(pstate),SPSel,SSBS (FEAT_SSBS),SVCRSM (FEAT_SME),SVCRSMZA (FEAT_SME),SVCRZA (FEAT_SME),TCO (FEAT_MTE),UAO (FEAT_UAO)]">&lt;pstatefield&gt;</a>, #0</p>
+          <p class="equivto">
+          and is always the preferred disassembly.
+        </p>
+        </div>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;option&gt;</td><td><a id="sa_option"/>
+        <p>Is an optional mode, 
+      encoded in
+      <q>CRm&lt;2:1&gt;</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">CRm&lt;2:1&gt;</th>
+                <th class="symbol">&lt;option&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="symbol">RESERVED</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="symbol">SM</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10</td>
+                <td class="symbol">ZA</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11</td>
+                <td class="symbol">[no specifier]</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;pstatefield&gt;</td><td><a id="sa_pstatefield"/>
+        <p>Is a PSTATE field name. For the MSR instruction, this is 
+      encoded in
+      <q>op1:op2:CRm</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">op1</th>
+                <th class="bitfield">op2</th>
+                <th class="bitfield">CRm</th>
+                <th class="symbol">&lt;pstatefield&gt;</th>
+                <th class="symbol">Architectural Feature</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">00x</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol"><a href="encodingindex.html#pstate">SEE PSTATE</a></td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">010</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol"><a href="encodingindex.html#pstate">SEE PSTATE</a></td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">011</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">UAO</td>
+                <td class="feature">
+                  FEAT_UAO
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">100</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">PAN</td>
+                <td class="feature">
+                  FEAT_PAN
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">101</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">SPSel</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">000</td>
+                <td class="bitfield">11x</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">000</td>
+                <td class="bitfield">000x</td>
+                <td class="symbol">ALLINT</td>
+                <td class="feature">
+                  FEAT_NMI
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">000</td>
+                <td class="bitfield">001x</td>
+                <td class="symbol">PM</td>
+                <td class="feature">
+                  FEAT_EBEP
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">000</td>
+                <td class="bitfield">01xx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">000</td>
+                <td class="bitfield">1xxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">001</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">01x</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">001</td>
+                <td class="bitfield">1xx</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">010</td>
+                <td class="bitfield">xxx</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">000</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">001</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">SSBS</td>
+                <td class="feature">
+                  FEAT_SSBS
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">010</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">DIT</td>
+                <td class="feature">
+                  FEAT_DIT
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">011</td>
+                <td class="bitfield">000x</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">011</td>
+                <td class="bitfield">001x</td>
+                <td class="symbol">SVCRSM</td>
+                <td class="feature">
+                  FEAT_SME
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">011</td>
+                <td class="bitfield">010x</td>
+                <td class="symbol">SVCRZA</td>
+                <td class="feature">
+                  FEAT_SME
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">011</td>
+                <td class="bitfield">011x</td>
+                <td class="symbol">SVCRSMZA</td>
+                <td class="feature">
+                  FEAT_SME
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">011</td>
+                <td class="bitfield">1xxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">100</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">TCO</td>
+                <td class="feature">
+                  FEAT_MTE
+                </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">101</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">110</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">DAIFSet</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">011</td>
+                <td class="bitfield">111</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">DAIFClr</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+              <tr>
+                <td class="bitfield">1xx</td>
+                <td class="bitfield">xxx</td>
+                <td class="bitfield">xxxx</td>
+                <td class="symbol">RESERVED</td>
+                <td class="feature">
+          -
+        </td>
+              </tr>
+            </tbody>
+          
+        </table>
+         For the SMSTART and SMSTOP aliases, this is encoded in "CRm&lt;2:1&gt;", where 0b01 specifies SVCRSM, 0b10 specifies SVCRZA, and 0b11 specifies SVCRSMZA.
+      </td></tr></table></div><div class="syntax-notes"/><div class="alias_ps_section"><h3 class="pseudocode">Operation</h3><p>The description of <a href="msr_imm.html">MSR (immediate)</a> gives the operational pseudocode for this instruction.</p></div><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

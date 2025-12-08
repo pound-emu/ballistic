@@ -1,0 +1,451 @@
+/* Stylesheet for an instruction page.
+  Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved.
+  This document is Non-Confidential.
+*/
+
+p {
+  margin-left: 2em;
+}
+h1 { font: bold large sans-serif; text-align: center; }
+h2 { font: bold medium sans-serif; }
+h3 { font: bold small sans-serif; }
+h4 { font: bold smaller sans-serif; }
+p td { text-align:center; }
+
+ul { 
+  margin-left: 2em;
+  padding: 0% 2%; 
+}
+
+div[class="note"] { 
+  margin-left: 2em;
+}
+
+hr[class="note"] { 
+    max-width:50%;
+    margin-left:0;
+}
+
+li { margin-left: 1em; }
+
+body {
+	color: #000;
+	background-color: #F6F6F5;
+}
+code { font-size: medium; }
+
+td {vertical-align: baseline;}
+col.enctype-l {width: 15em;}
+col.asyn-l {width: 8em;}
+
+div[class="regdiagram-16"] {
+  width: 50%;
+  align: left;
+}
+
+table.regdiagram {
+  border-collapse: collapse;
+  width: 95%;
+  align: left;
+}
+*[class="regdiagram"] * {
+  text-align: center;
+  font-size: small;
+  font-family: lucida-sans, sans-serif;
+}
+*[class="regdiagram"] td {
+  vertical-align: middle;
+  padding: 0px;
+}
+*[class="regdiagram"] tbody td[class="r"] {
+  border-right: 1px solid #000;
+}
+*[class="regdiagram"] tbody td[class="l"] {
+  border-left: 1px solid #000;
+}
+*[class="regdiagram"] tbody td[class="lr"] {
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+}
+*[class="regdiagram"] tbody td[class="droppedname"] {
+  /*
+     This would make the bars go around dropped names
+     border-left: 1px solid #000;
+     border-right: 1px solid #000;
+  */
+}
+*[class="regdiagram"] tr[class="firstrow"] td { 
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+*[class="regdiagram"] tbody tr {
+  padding: 0px;
+}
+*[class="regdiagram"] thead td {
+  width: 3%;
+  font-size: smaller;
+}
+
+th[class="boxright"] { 
+  border-right: 1px solid #000;
+}
+
+td span[class="regnote"] { 
+  font-size: smaller;
+  color: #dd0000;
+}
+
+col.enctype-l {width: 10em;}
+.enctype-l {font-weight: bold;}
+
+p[class="asm-code"] { margin-left: 4em; white-space: nowrap;}
+
+[class="asm-code"] {font-family: courier, monospace;
+                    font-size: medium;}
+[class="desc-alg"] {
+  font-family: courier, monospace;
+  font-size: medium;
+  white-space: nowrap;
+}
+
+*[class="asm-code"] a { text-decoration: none;}
+
+/* styling for tabulated symbol explanations */
+table[class="valuetable"] 
+{ 
+  border-collapse: collapse; 
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+table[class="valuetable"] td, table[class="valuetable"] th
+{
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: medium;
+}
+
+table[class="valuetable"] th { border-bottom: 1px solid #000; }
+
+table[class="valuetable"] td[class="symbol"] {
+  border-left: 1px solid #000; text-align: left; 
+  font-family: courier, monospace;
+}
+table[class="valuetable"] td[class="feature"] {
+  border-left: 1px solid #000; text-align: left; 
+  font-family: courier;
+}
+table[class="valuetable"] td[class="bitfield"] {
+  text-align: center;
+  font-family: courier, monospace;
+}
+
+/* styling for alias table */
+
+table[class="aliases"],table[class="aliastable"] { 
+  border-collapse: collapse;
+  margin-left: 5%;
+  width: 90%;
+  border-bottom: 1px solid #000;
+}
+
+table[class="aliases"] th { 
+  font-size: small;
+  text-align: left;
+  border-bottom: 1px solid #000;
+}
+
+table[class="aliastable"] th { 
+  font-size: small;
+  text-align: left;
+  border-bottom: 1px solid #000;
+}
+
+table[class="aliastable"] td { 
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid #D0D0D0;
+}
+
+table[class="aliastable"] td[class="notfirst"] { 
+  padding-left: 0.5em;
+  border-left: 1px solid #D0D0D0;
+}
+
+table[class="aliases"] td { 
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid #D0D0D0;
+}
+
+table[class="aliases"] td[notfirst] { 
+  padding-left: 0.5em;
+  border-left: 1px solid #D0D0D0;
+}
+
+td[class="asm-code"] {
+  white-space: pre;
+  font-size: small;
+}
+
+/* styling for (non-filling) )pseudocode text */
+
+p[class="pseudocode"] {
+  white-space: pre;
+  margin-left:2em;
+  margin-right:2em;
+  font-family: courier, monospace;
+  font-size: medium;  
+  background-color: #F0F0E0;
+}
+
+h4[class="ps.code"] { margin-left: 2em; }
+
+span[class="pseudocode"] { 
+  font-family: courier, monospace;
+  font-size: medium;  
+  background-color: #F0F0E0;
+  white-space: nowrap;
+}
+
+h4[class="pseudocode"] { margin-left: 2em; }
+
+div[class="encoding"] { margin-top: 1em; }
+/* id version kept for backward compatibility */
+div[id="encoding"] { margin-top: 1em; }
+
+col[class="dt1"] { width: 15em; }
+col[class="dt2"] { width: 85%; }
+
+/* styles for the encoding index, much tidying desirable */
+
+table.maintable {
+  border-collapse: collapse;
+  width: 95%;
+  vertical-align: center;
+}
+
+table[class="maintable"] * {
+  text-align: center;
+  font-size: small;
+  font-family: lucida-sans, sans-serif;
+}
+
+tr[class="header1"] th { text-align: center;}
+
+/* it's good to print the bitnumbers fairly small and control their
+   width.  The trouble is that the "2.5%" works well for A64 (22 bits)
+   but 2% is better for T32 (28 bits)... we need some way to vary this */
+
+tr[class="header2"] th {
+  font-weight: medium;
+  text-align: center;
+  width: 2.5%;
+  font-size: smaller;
+}
+
+tr[class="header2-morebits"] th {
+  font-weight: medium;
+  text-align: center;
+  width: 2%;
+  font-size: smaller;
+}
+
+table[class="maintable"] tbody td {
+  vertical-align: middle;
+  padding: 0px;
+  border: 1px solid #000;
+}
+
+table[class="maintable"] tbody td[bgcolor] {
+  background-color: #FFFF80;
+}
+
+table[class="maintable"] tbody td[class="t16-padding"] {
+  background-color: #C0C0C0;
+}
+
+table[class="maintable"] tbody td div[class="maintable-neq"] {
+  background-color: #E0E020;
+}
+
+table[class="maintable"] td[class="iclassname"] {
+  width: 60%;
+  padding-left: 1em;
+  text-align: left;
+  font-size: small;
+}
+
+[class="encindex-maintablesect"] {
+  font-style: italic;
+  text-decoration: none;
+}
+
+h2[class="encfuncgroup"] { padding-top: 1.5em; }
+
+div.instructiontable { margin-left: 2em; padding-top: 2em; }
+div[class="instructiontable"] table[class="regdiagram"] { margin-left: 2em; }
+
+table.instructiontable {
+  border-collapse: collapse;
+}
+
+table[class="instructiontable"] th {
+  padding-left: 1em;
+  padding-right: 1em;
+  text-align: center;
+}
+
+table[class="instructiontable"] th[class="bitfields"] {
+  font-size: small;
+}
+
+table[class="instructiontable"] td {
+  border: 1px solid #000;
+}
+
+table[class="instructiontable"] td[class="bitfield"] {
+  text-align: center;
+  font-family: monospace, courier;
+  font-size: medium;
+}
+
+table[class="instructiontable"] td[class="iformname"], td[class="enctags"] {
+  text-align: left;
+}
+
+/* used when decode fields in instruction table are themselves
+   tabulated by bit */
+
+table[class="instructiontable"] tbody
+  td[class="bits"],td[class="bits_lr"],td[class="bits_r"],td[class="bits_l"] { 
+  margin-left: 1px;
+  margin-right: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
+  width: 3%;
+  font-size: small;
+  text-align: center;
+}
+
+td[class="bits_r"] {
+  border-right: 1px solid #000;
+}
+td[class="bits_l"] {
+  border-left: 1px solid #000;
+}
+td[class="bits_lr"] {
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+}
+
+*[class="instructiontable"] td[class="iformname"],td[class="enctags"] { 
+  padding-left: 1em;
+  padding-right: 1em;
+  text-align: left;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+}
+
+/* styles for top and bottom bar, and version string */
+
+.topbar {margin: 0em 1.5em; font-size: smaller; font-style: bold; text-align: center;}
+
+p[class="versions"],p[class="copyconf"] { 
+  text-align: right;
+  font-size: small;
+}
+
+/* for htmldiff output */
+
+ins { background-color: #80FF80; text-decoration: none;}
+del { background-color: #FF8080; }
+*[class="brokenlink"] { color: dark-grey; }
+*[class="goodlink"] { background-color: #FFD8D8; }
+
+div[class="htmldiff_header"] {
+  margin-left: 10%; margin-right: 10%; width: 80%;
+  margin-top: 0.5em; margin-bottom: 0.5em;
+  background-color: yellow;
+}
+div[class="htmldiff_header"] table {
+  font: bold medium monospace;
+  text-align: center; width: 100%;
+}
+
+body[htmldiffstatus="gone"] { background-color: #DD8080; }
+body[htmldiffstatus="new"] { background-color: #80DD80; }
+a[title="Reordering ignored"] { background-color: #C0C0DD; }
+
+/* for permuted index */
+
+*[class="permindex-initials"] td {
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  padding-bottom: 0.5em;
+}
+
+*[class="permindex-container"] {
+  display: table;
+  border-collapse: collapse;
+  width: 95%;
+}
+*[class="permindex-line"] {
+  display: table-row;
+  margin: 0em;
+  padding: 0em;
+}
+*[class="permindex-left"], *[class="permindex-right"] {
+  display: table-cell; 
+  padding-bottom: 0.25em;
+}
+
+*[class="permindex-right"] {
+  padding-left: 1em;
+  width: 52%;
+}
+
+*[class="permindex-left"] {
+  padding-left: 1em;
+  width: 48%;
+}
+
+*[class="right"] { 
+  padding: 0em;
+  margin: 0em;
+  text-align: left;
+  font-size: smaller;
+}
+
+*[class="left"] { 
+  padding: 0em;
+  margin: 0em;
+  text-align: right;
+  font-size: smaller;
+}
+
+/* AML-generated paragraphs */
+
+/* AML paragraphs are generalloy wrapping, and probably shouldn't
+   add much space */
+
+p[class="aml"], p[class="desc"], ul[class="aml"] {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  margin-left: 0em;
+}
+
+/* decorate Armv8 ARM references, while we can't link them */
+a[class="armarm-xref"] { 
+  font-style: italic;
+  background-color: #C0FEF0;
+}
+
+/* Make <arm-defined-word> elements show up in small-caps */
+span[class="arm-defined-word"] {
+  font-variant: small-caps;
+  text-transform: lowercase;
+}

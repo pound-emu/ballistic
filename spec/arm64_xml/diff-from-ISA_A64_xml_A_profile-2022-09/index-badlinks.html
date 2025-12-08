@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>A64</title><link href="insn.css" rel="stylesheet" type="text/css"/></head><body><div align="center" class="htmldiff_header"><table><tbody><tr><td class="old">(old) </td><td class="explain">htmldiff from-</td><td class="new">(new) </td></tr></tbody></table></div><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h1 class="alphindextitle">A64 -- Base Instructions (alphabetic order)</h1><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="abs.html">ABS</a>:
+        Absolute value.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adc.html">ADC</a>:
+        Add with Carry.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adcs.html">ADCS</a>:
+        Add with Carry, setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_addsub_ext.html">ADD (extended register)</a>:
+        Add (extended register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_addsub_imm.html">ADD (immediate)</a>:
+        Add (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_addsub_shift.html">ADD (shifted register)</a>:
+        Add (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="addg.html">ADDG</a>:
+        Add with Tag.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adds_addsub_ext.html">ADDS (extended register)</a>:
+        Add (extended register), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adds_addsub_imm.html">ADDS (immediate)</a>:
+        Add (immediate), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adds_addsub_shift.html">ADDS (shifted register)</a>:
+        Add (shifted register), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adr.html">ADR</a>:
+        Form PC-relative address.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adrp.html">ADRP</a>:
+        Form PC-relative address to 4KB page.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="and_log_imm.html">AND (immediate)</a>:
+        Bitwise AND (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="and_log_shift.html">AND (shifted register)</a>:
+        Bitwise AND (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ands_log_imm.html">ANDS (immediate)</a>:
+        Bitwise AND (immediate), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ands_log_shift.html">ANDS (shifted register)</a>:
+        Bitwise AND (shifted register), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asr_sbfm.html">ASR (immediate)</a>:
+        Arithmetic Shift Right (immediate): an alias of SBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asr_asrv.html">ASR (register)</a>:
+        Arithmetic Shift Right (register): an alias of ASRV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asrv.html">ASRV</a>:
+        Arithmetic Shift Right Variable.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="at_sys.html">AT</a>:
+        Address Translate: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="autda.html">AUTDA, AUTDZA</a>:
+        Authenticate Data address, using key A.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="autdb.html">AUTDB, AUTDZB</a>:
+        Authenticate Data address, using key B.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="autia.html">AUTIA, AUTIA1716, AUTIASP, AUTIAZ, AUTIZA</a>:
+        Authenticate Instruction address, using key A.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="autib.html">AUTIB, AUTIB1716, AUTIBSP, AUTIBZ, AUTIZB</a>:
+        Authenticate Instruction address, using key B.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="axflag.html">AXFLAG</a>:
+        Convert floating-point condition flags from Arm to external format.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="b_uncond.html">B</a>:
+        Branch.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="b_cond.html">B.cond</a>:
+        Branch conditionally.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bc_cond.html">BC.cond</a>:
+        Branch Consistent conditionally.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfc_bfm.html">BFC</a>:
+        Bitfield Clear: an alias of BFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfi_bfm.html">BFI</a>:
+        Bitfield Insert: an alias of BFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfm.html">BFM</a>:
+        Bitfield Move.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfxil_bfm.html">BFXIL</a>:
+        Bitfield extract and insert at low end: an alias of BFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bic_log_shift.html">BIC (shifted register)</a>:
+        Bitwise Bit Clear (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bics.html">BICS (shifted register)</a>:
+        Bitwise Bit Clear (shifted register), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bl.html">BL</a>:
+        Branch with Link.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="blr.html">BLR</a>:
+        Branch with Link to Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="blra.html">BLRAA, BLRAAZ, BLRAB, BLRABZ</a>:
+        Branch with Link to Register, with pointer authentication.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="br.html">BR</a>:
+        Branch to Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bra.html">BRAA, BRAAZ, BRAB, BRABZ</a>:
+        Branch to Register, with pointer authentication.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="brb_sys.html">BRB</a>:
+        Branch Record Buffer: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="brk.html">BRK</a>:
+        Breakpoint instruction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bti.html">BTI</a>:
+        Branch Target Identification.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cas.html">CAS, CASA, CASAL, CASL</a>:
+        Compare and Swap word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="casb.html">CASB, CASAB, CASALB, CASLB</a>:
+        Compare and Swap byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cash.html">CASH, CASAH, CASALH, CASLH</a>:
+        Compare and Swap halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="casp.html">CASP, CASPA, CASPAL, CASPL</a>:
+        Compare and Swap Pair of words or doublewords in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cbnz.html">CBNZ</a>:
+        Compare and Branch on Nonzero.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cbz.html">CBZ</a>:
+        Compare and Branch on Zero.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ccmn_imm.html">CCMN (immediate)</a>:
+        Conditional Compare Negative (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ccmn_reg.html">CCMN (register)</a>:
+        Conditional Compare Negative (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ccmp_imm.html">CCMP (immediate)</a>:
+        Conditional Compare (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ccmp_reg.html">CCMP (register)</a>:
+        Conditional Compare (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cfinv.html">CFINV</a>:
+        Invert Carry Flag.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cfp_sys.html">CFP</a>:
+        Control Flow Prediction Restriction by Context: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="chkfeat.html"><ins>CHKFEAT</ins></a><ins>:
+        Check feature status.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cinc_csinc.html">CINC</a>:
+        Conditional Increment: an alias of CSINC.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cinv_csinv.html">CINV</a>:
+        Conditional Invert: an alias of CSINV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clrbhb.html">CLRBHB</a>:
+        Clear Branch History.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clrex.html">CLREX</a>:
+        Clear Exclusive.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cls_int.html">CLS</a>:
+        Count Leading Sign bits.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clz_int.html">CLZ</a>:
+        Count Leading Zeros.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmn_adds_addsub_ext.html">CMN (extended register)</a>:
+        Compare Negative (extended register): an alias of ADDS (extended register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmn_adds_addsub_imm.html">CMN (immediate)</a>:
+        Compare Negative (immediate): an alias of ADDS (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmn_adds_addsub_shift.html">CMN (shifted register)</a>:
+        Compare Negative (shifted register): an alias of ADDS (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmp_subs_addsub_ext.html">CMP (extended register)</a>:
+        Compare (extended register): an alias of SUBS (extended register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmp_subs_addsub_imm.html">CMP (immediate)</a>:
+        Compare (immediate): an alias of SUBS (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmp_subs_addsub_shift.html">CMP (shifted register)</a>:
+        Compare (shifted register): an alias of SUBS (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmpp_subps.html">CMPP</a>:
+        Compare with Tag: an alias of SUBPS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cneg_csneg.html">CNEG</a>:
+        Conditional Negate: an alias of CSNEG.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cnt.html">CNT</a>:
+        Count bits.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cosp_sys.html">COSP</a>:
+        Clear Other Speculative Predictions by Context: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpp_sys.html">CPP</a>:
+        Cache Prefetch Prediction Restriction by Context: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfp.html">CPYFP, CPYFM, CPYFE</a>:
+        Memory Copy Forward-only.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpn.html">CPYFPN, CPYFMN, CPYFEN</a>:
+        Memory Copy Forward-only, reads and writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfprn.html">CPYFPRN, CPYFMRN, CPYFERN</a>:
+        Memory Copy Forward-only, reads non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfprt.html">CPYFPRT, CPYFMRT, CPYFERT</a>:
+        Memory Copy Forward-only, reads unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfprtn.html">CPYFPRTN, CPYFMRTN, CPYFERTN</a>:
+        Memory Copy Forward-only, reads unprivileged, reads and writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfprtrn.html">CPYFPRTRN, CPYFMRTRN, CPYFERTRN</a>:
+        Memory Copy Forward-only, reads unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfprtwn.html">CPYFPRTWN, CPYFMRTWN, CPYFERTWN</a>:
+        Memory Copy Forward-only, reads unprivileged, writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpt.html">CPYFPT, CPYFMT, CPYFET</a>:
+        Memory Copy Forward-only, reads and writes unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfptn.html">CPYFPTN, CPYFMTN, CPYFETN</a>:
+        Memory Copy Forward-only, reads and writes unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfptrn.html">CPYFPTRN, CPYFMTRN, CPYFETRN</a>:
+        Memory Copy Forward-only, reads and writes unprivileged, reads non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfptwn.html">CPYFPTWN, CPYFMTWN, CPYFETWN</a>:
+        Memory Copy Forward-only, reads and writes unprivileged, writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpwn.html">CPYFPWN, CPYFMWN, CPYFEWN</a>:
+        Memory Copy Forward-only, writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpwt.html">CPYFPWT, CPYFMWT, CPYFEWT</a>:
+        Memory Copy Forward-only, writes unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpwtn.html">CPYFPWTN, CPYFMWTN, CPYFEWTN</a>:
+        Memory Copy Forward-only, writes unprivileged, reads and writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpwtrn.html">CPYFPWTRN, CPYFMWTRN, CPYFEWTRN</a>:
+        Memory Copy Forward-only, writes unprivileged, reads non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyfpwtwn.html">CPYFPWTWN, CPYFMWTWN, CPYFEWTWN</a>:
+        Memory Copy Forward-only, writes unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyp.html">CPYP, CPYM, CPYE</a>:
+        Memory Copy.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypn.html">CPYPN, CPYMN, CPYEN</a>:
+        Memory Copy, reads and writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyprn.html">CPYPRN, CPYMRN, CPYERN</a>:
+        Memory Copy, reads non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyprt.html">CPYPRT, CPYMRT, CPYERT</a>:
+        Memory Copy, reads unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyprtn.html">CPYPRTN, CPYMRTN, CPYERTN</a>:
+        Memory Copy, reads unprivileged, reads and writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyprtrn.html">CPYPRTRN, CPYMRTRN, CPYERTRN</a>:
+        Memory Copy, reads unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyprtwn.html">CPYPRTWN, CPYMRTWN, CPYERTWN</a>:
+        Memory Copy, reads unprivileged, writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypt.html">CPYPT, CPYMT, CPYET</a>:
+        Memory Copy, reads and writes unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyptn.html">CPYPTN, CPYMTN, CPYETN</a>:
+        Memory Copy, reads and writes unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyptrn.html">CPYPTRN, CPYMTRN, CPYETRN</a>:
+        Memory Copy, reads and writes unprivileged, reads non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpyptwn.html">CPYPTWN, CPYMTWN, CPYETWN</a>:
+        Memory Copy, reads and writes unprivileged, writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypwn.html">CPYPWN, CPYMWN, CPYEWN</a>:
+        Memory Copy, writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypwt.html">CPYPWT, CPYMWT, CPYEWT</a>:
+        Memory Copy, writes unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypwtn.html">CPYPWTN, CPYMWTN, CPYEWTN</a>:
+        Memory Copy, writes unprivileged, reads and writes non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypwtrn.html">CPYPWTRN, CPYMWTRN, CPYEWTRN</a>:
+        Memory Copy, writes unprivileged, reads non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cpypwtwn.html">CPYPWTWN, CPYMWTWN, CPYEWTWN</a>:
+        Memory Copy, writes unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="crc32.html">CRC32B, CRC32H, CRC32W, CRC32X</a>:
+        CRC32 checksum.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="crc32c.html">CRC32CB, CRC32CH, CRC32CW, CRC32CX</a>:
+        CRC32C checksum.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csdb.html">CSDB</a>:
+        Consumption of Speculative Data Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csel.html">CSEL</a>:
+        Conditional Select.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cset_csinc.html">CSET</a>:
+        Conditional Set: an alias of CSINC.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csetm_csinv.html">CSETM</a>:
+        Conditional Set Mask: an alias of CSINV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csinc.html">CSINC</a>:
+        Conditional Select Increment.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csinv.html">CSINV</a>:
+        Conditional Select Invert.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csneg.html">CSNEG</a>:
+        Conditional Select Negation.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ctz.html">CTZ</a>:
+        Count Trailing Zeros.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dc_sys.html">DC</a>:
+        Data Cache operation: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dcps1.html">DCPS1</a>:
+        Debug Change PE State to EL1..</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dcps2.html">DCPS2</a>:
+        Debug Change PE State to EL2..</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dcps3.html">DCPS3</a>:
+        Debug Change PE State to EL3.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dgh.html">DGH</a>:
+        Data Gathering Hint.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dmb.html">DMB</a>:
+        Data Memory Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="drps.html">DRPS</a>:
+        Debug restore process state.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dsb.html">DSB</a>:
+        Data Synchronization Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dvp_sys.html">DVP</a>:
+        Data Value Prediction Restriction by Context: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eon.html">EON (shifted register)</a>:
+        Bitwise Exclusive-OR NOT (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor_log_imm.html">EOR (immediate)</a>:
+        Bitwise Exclusive-OR (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor_log_shift.html">EOR (shifted register)</a>:
+        Bitwise Exclusive-OR (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eret.html">ERET</a>:
+        Exception Return.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ereta.html">ERETAA, ERETAB</a>:
+        Exception Return, with pointer authentication.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="esb.html">ESB</a>:
+        Error Synchronization Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="extr.html">EXTR</a>:
+        Extract register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcsb.html"><ins>GCSB DSYNC</ins></a><ins>:
+        Guarded Control Stack Barrier.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcspopcx_sys.html"><ins>GCSPOPCX</ins></a><ins>:
+        Guarded Control Stack Pop and Compare exception return record: an alias of SYS.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcspopm_sysl.html"><ins>GCSPOPM</ins></a><ins>:
+        Guarded Control Stack Pop: an alias of SYSL.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcspopx_sys.html"><ins>GCSPOPX</ins></a><ins>:
+        Guarded Control Stack Pop exception return record: an alias of SYS.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcspushm_sys.html"><ins>GCSPUSHM</ins></a><ins>:
+        Guarded Control Stack Push: an alias of SYS.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcspushx_sys.html"><ins>GCSPUSHX</ins></a><ins>:
+        Guarded Control Stack Push exception return record: an alias of SYS.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcsss1_sys.html"><ins>GCSSS1</ins></a><ins>:
+        Guarded Control Stack Switch Stack 1: an alias of SYS.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcsss2_sysl.html"><ins>GCSSS2</ins></a><ins>:
+        Guarded Control Stack Switch Stack 2: an alias of SYSL.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcsstr.html"><ins>GCSSTR</ins></a><ins>:
+        Guarded Control Stack Store.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gcssttr.html"><ins>GCSSTTR</ins></a><ins>:
+        Guarded Control Stack unprivileged Store.</ins></span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="gmi.html">GMI</a>:
+        Tag Mask Insert.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="hint.html">HINT</a>:
+        Hint instruction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="hlt.html">HLT</a>:
+        Halt instruction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="hvc.html">HVC</a>:
+        Hypervisor Call.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ic_sys.html">IC</a>:
+        Instruction Cache operation: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="irg.html">IRG</a>:
+        Insert Random Tag.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="isb.html">ISB</a>:
+        Instruction Synchronization Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld64b.html">LD64B</a>:
+        Single-copy Atomic 64-byte Load.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldadd.html">LDADD, LDADDA, LDADDAL, LDADDL</a>:
+        Atomic add on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaddb.html">LDADDB, LDADDAB, LDADDALB, LDADDLB</a>:
+        Atomic add on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaddh.html">LDADDH, LDADDAH, LDADDALH, LDADDLH</a>:
+        Atomic add on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapr.html">LDAPR</a>:
+        Load-Acquire RCpc Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaprb.html">LDAPRB</a>:
+        Load-Acquire RCpc Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaprh.html">LDAPRH</a>:
+        Load-Acquire RCpc Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapur_gen.html">LDAPUR</a>:
+        Load-Acquire RCpc Register (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapurb.html">LDAPURB</a>:
+        Load-Acquire RCpc Register Byte (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapurh.html">LDAPURH</a>:
+        Load-Acquire RCpc Register Halfword (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapursb.html">LDAPURSB</a>:
+        Load-Acquire RCpc Register Signed Byte (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapursh.html">LDAPURSH</a>:
+        Load-Acquire RCpc Register Signed Halfword (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapursw.html">LDAPURSW</a>:
+        Load-Acquire RCpc Register Signed Word (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldar.html">LDAR</a>:
+        Load-Acquire Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldarb.html">LDARB</a>:
+        Load-Acquire Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldarh.html">LDARH</a>:
+        Load-Acquire Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaxp.html">LDAXP</a>:
+        Load-Acquire Exclusive Pair of Registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaxr.html">LDAXR</a>:
+        Load-Acquire Exclusive Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaxrb.html">LDAXRB</a>:
+        Load-Acquire Exclusive Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaxrh.html">LDAXRH</a>:
+        Load-Acquire Exclusive Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldclr.html">LDCLR, LDCLRA, LDCLRAL, LDCLRL</a>:
+        Atomic bit clear on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldclrb.html">LDCLRB, LDCLRAB, LDCLRALB, LDCLRLB</a>:
+        Atomic bit clear on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldclrh.html">LDCLRH, LDCLRAH, LDCLRALH, LDCLRLH</a>:
+        Atomic bit clear on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldclrp.html">LDCLRP, LDCLRPA, LDCLRPAL, LDCLRPL</a>:
+        Atomic bit clear on quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldeor.html">LDEOR, LDEORA, LDEORAL, LDEORL</a>:
+        Atomic Exclusive-OR on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldeorb.html">LDEORB, LDEORAB, LDEORALB, LDEORLB</a>:
+        Atomic Exclusive-OR on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldeorh.html">LDEORH, LDEORAH, LDEORALH, LDEORLH</a>:
+        Atomic Exclusive-OR on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldg.html">LDG</a>:
+        Load Allocation Tag.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldgm.html">LDGM</a>:
+        Load Tag Multiple.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldiapp.html">LDIAPP</a>:
+        Load-Acquire RCpc ordered Pair of registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldlar.html">LDLAR</a>:
+        Load LOAcquire Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldlarb.html">LDLARB</a>:
+        Load LOAcquire Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldlarh.html">LDLARH</a>:
+        Load LOAcquire Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldnp_gen.html">LDNP</a>:
+        Load Pair of Registers, with non-temporal hint.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldp_gen.html">LDP</a>:
+        Load Pair of Registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldpsw.html">LDPSW</a>:
+        Load Pair of Registers Signed Word.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_imm_gen.html">LDR (immediate)</a>:
+        Load Register (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_lit_gen.html">LDR (literal)</a>:
+        Load Register (literal).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_reg_gen.html">LDR (register)</a>:
+        Load Register (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldra.html">LDRAA, LDRAB</a>:
+        Load Register, with pointer authentication.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrb_imm.html">LDRB (immediate)</a>:
+        Load Register Byte (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrb_reg.html">LDRB (register)</a>:
+        Load Register Byte (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrh_imm.html">LDRH (immediate)</a>:
+        Load Register Halfword (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrh_reg.html">LDRH (register)</a>:
+        Load Register Halfword (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsb_imm.html">LDRSB (immediate)</a>:
+        Load Register Signed Byte (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsb_reg.html">LDRSB (register)</a>:
+        Load Register Signed Byte (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsh_imm.html">LDRSH (immediate)</a>:
+        Load Register Signed Halfword (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsh_reg.html">LDRSH (register)</a>:
+        Load Register Signed Halfword (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsw_imm.html">LDRSW (immediate)</a>:
+        Load Register Signed Word (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsw_lit.html">LDRSW (literal)</a>:
+        Load Register Signed Word (literal).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsw_reg.html">LDRSW (register)</a>:
+        Load Register Signed Word (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldset.html">LDSET, LDSETA, LDSETAL, LDSETL</a>:
+        Atomic bit set on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsetb.html">LDSETB, LDSETAB, LDSETALB, LDSETLB</a>:
+        Atomic bit set on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldseth.html">LDSETH, LDSETAH, LDSETALH, LDSETLH</a>:
+        Atomic bit set on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsetp.html">LDSETP, LDSETPA, LDSETPAL, LDSETPL</a>:
+        Atomic bit set on quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsmax.html">LDSMAX, LDSMAXA, LDSMAXAL, LDSMAXL</a>:
+        Atomic signed maximum on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsmaxb.html">LDSMAXB, LDSMAXAB, LDSMAXALB, LDSMAXLB</a>:
+        Atomic signed maximum on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsmaxh.html">LDSMAXH, LDSMAXAH, LDSMAXALH, LDSMAXLH</a>:
+        Atomic signed maximum on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsmin.html">LDSMIN, LDSMINA, LDSMINAL, LDSMINL</a>:
+        Atomic signed minimum on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsminb.html">LDSMINB, LDSMINAB, LDSMINALB, LDSMINLB</a>:
+        Atomic signed minimum on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldsminh.html">LDSMINH, LDSMINAH, LDSMINALH, LDSMINLH</a>:
+        Atomic signed minimum on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldtr.html">LDTR</a>:
+        Load Register (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldtrb.html">LDTRB</a>:
+        Load Register Byte (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldtrh.html">LDTRH</a>:
+        Load Register Halfword (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldtrsb.html">LDTRSB</a>:
+        Load Register Signed Byte (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldtrsh.html">LDTRSH</a>:
+        Load Register Signed Halfword (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldtrsw.html">LDTRSW</a>:
+        Load Register Signed Word (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldumax.html">LDUMAX, LDUMAXA, LDUMAXAL, LDUMAXL</a>:
+        Atomic unsigned maximum on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldumaxb.html">LDUMAXB, LDUMAXAB, LDUMAXALB, LDUMAXLB</a>:
+        Atomic unsigned maximum on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldumaxh.html">LDUMAXH, LDUMAXAH, LDUMAXALH, LDUMAXLH</a>:
+        Atomic unsigned maximum on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldumin.html">LDUMIN, LDUMINA, LDUMINAL, LDUMINL</a>:
+        Atomic unsigned minimum on word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lduminb.html">LDUMINB, LDUMINAB, LDUMINALB, LDUMINLB</a>:
+        Atomic unsigned minimum on byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lduminh.html">LDUMINH, LDUMINAH, LDUMINALH, LDUMINLH</a>:
+        Atomic unsigned minimum on halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldur_gen.html">LDUR</a>:
+        Load Register (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldurb.html">LDURB</a>:
+        Load Register Byte (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldurh.html">LDURH</a>:
+        Load Register Halfword (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldursb.html">LDURSB</a>:
+        Load Register Signed Byte (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldursh.html">LDURSH</a>:
+        Load Register Signed Halfword (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldursw.html">LDURSW</a>:
+        Load Register Signed Word (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldxp.html">LDXP</a>:
+        Load Exclusive Pair of Registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldxr.html">LDXR</a>:
+        Load Exclusive Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldxrb.html">LDXRB</a>:
+        Load Exclusive Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldxrh.html">LDXRH</a>:
+        Load Exclusive Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsl_ubfm.html">LSL (immediate)</a>:
+        Logical Shift Left (immediate): an alias of UBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsl_lslv.html">LSL (register)</a>:
+        Logical Shift Left (register): an alias of LSLV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lslv.html">LSLV</a>:
+        Logical Shift Left Variable.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsr_ubfm.html">LSR (immediate)</a>:
+        Logical Shift Right (immediate): an alias of UBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsr_lsrv.html">LSR (register)</a>:
+        Logical Shift Right (register): an alias of LSRV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsrv.html">LSRV</a>:
+        Logical Shift Right Variable.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="madd.html">MADD</a>:
+        Multiply-Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mneg_msub.html">MNEG</a>:
+        Multiply-Negate: an alias of MSUB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_orr_log_imm.html">MOV (bitmask immediate)</a>:
+        Move (bitmask immediate): an alias of ORR (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_movn.html">MOV (inverted wide immediate)</a>:
+        Move (inverted wide immediate): an alias of MOVN.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_orr_log_shift.html">MOV (register)</a>:
+        Move (register): an alias of ORR (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_add_addsub_imm.html">MOV (to/from SP)</a>:
+        Move between register and stack pointer: an alias of ADD (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_movz.html">MOV (wide immediate)</a>:
+        Move (wide immediate): an alias of MOVZ.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="movk.html">MOVK</a>:
+        Move wide with keep.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="movn.html">MOVN</a>:
+        Move wide with NOT.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="movz.html">MOVZ</a>:
+        Move wide with zero.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mrrs.html">MRRS</a>:
+        Move System Register to two adjacent general-purpose registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mrs.html">MRS</a>:
+        Move System Register to general-purpose register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msr_imm.html">MSR (immediate)</a>:
+        Move immediate value to Special Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msr_reg.html">MSR (register)</a>:
+        Move general-purpose register to System Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msrr.html">MSRR</a>:
+        Move two adjacent general-purpose registers to System Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msub.html">MSUB</a>:
+        Multiply-Subtract.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mul_madd.html">MUL</a>:
+        Multiply: an alias of MADD.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mvn_orn_log_shift.html">MVN</a>:
+        Bitwise NOT: an alias of ORN (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="neg_sub_addsub_shift.html">NEG (shifted register)</a>:
+        Negate (shifted register): an alias of SUB (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="negs_subs_addsub_shift.html">NEGS</a>:
+        Negate, setting flags: an alias of SUBS (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ngc_sbc.html">NGC</a>:
+        Negate with Carry: an alias of SBC.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ngcs_sbcs.html">NGCS</a>:
+        Negate with Carry, setting flags: an alias of SBCS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="nop.html">NOP</a>:
+        No Operation.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orn_log_shift.html">ORN (shifted register)</a>:
+        Bitwise OR NOT (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_log_imm.html">ORR (immediate)</a>:
+        Bitwise OR (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_log_shift.html">ORR (shifted register)</a>:
+        Bitwise OR (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pacda.html">PACDA, PACDZA</a>:
+        Pointer Authentication Code for Data address, using key A.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pacdb.html">PACDB, PACDZB</a>:
+        Pointer Authentication Code for Data address, using key B.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pacga.html">PACGA</a>:
+        Pointer Authentication Code, using Generic key.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pacia.html">PACIA, PACIA1716, PACIASP, PACIAZ, PACIZA</a>:
+        Pointer Authentication Code for Instruction address, using key A.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pacib.html">PACIB, PACIB1716, PACIBSP, PACIBZ, PACIZB</a>:
+        Pointer Authentication Code for Instruction address, using key B.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="prfm_imm.html">PRFM (immediate)</a>:
+        Prefetch Memory (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="prfm_lit.html">PRFM (literal)</a>:
+        Prefetch Memory (literal).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="prfm_reg.html">PRFM (register)</a>:
+        Prefetch Memory (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="prfum.html">PRFUM</a>:
+        Prefetch Memory (unscaled offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="psb.html">PSB CSYNC</a>:
+        Profiling Synchronization Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pssbb_dsb.html">PSSBB</a>:
+        Physical Speculative Store Bypass Barrier: an alias of DSB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rbit_int.html">RBIT</a>:
+        Reverse Bits.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwcas.html">RCWCAS, RCWCASA, RCWCASL, RCWCASAL</a>:
+        Read Check Write Compare and Swap doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwcasp.html">RCWCASP, RCWCASPA, RCWCASPL, RCWCASPAL</a>:
+        Read Check Write Compare and Swap quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwclr.html">RCWCLR, RCWCLRA, RCWCLRL, RCWCLRAL</a>:
+        Read Check Write atomic bit Clear on doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwclrp.html">RCWCLRP, RCWCLRPA, RCWCLRPL, RCWCLRPAL</a>:
+        Read Check Write atomic bit Clear on quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwscas.html">RCWSCAS, RCWSCASA, RCWSCASL, RCWSCASAL</a>:
+        Read Check Write Software Compare and Swap doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwscasp.html">RCWSCASP, RCWSCASPA, RCWSCASPL, RCWSCASPAL</a>:
+        Read Check Write Software Compare and Swap quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwsclr.html">RCWSCLR, RCWSCLRA, RCWSCLRL, RCWSCLRAL</a>:
+        Read Check Write Software atomic bit Clear on doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwsclrp.html">RCWSCLRP, RCWSCLRPA, RCWSCLRPL, RCWSCLRPAL</a>:
+        Read Check Write Software atomic bit Clear on quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwset.html">RCWSET, RCWSETA, RCWSETL, RCWSETAL</a>:
+        Read Check Write atomic bit Set on doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwsetp.html">RCWSETP, RCWSETPA, RCWSETPL, RCWSETPAL</a>:
+        Read Check Write atomic bit Set on quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwsset.html">RCWSSET, RCWSSETA, RCWSSETL, RCWSSETAL</a>:
+        Read Check Write Software atomic bit Set on doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwssetp.html">RCWSSETP, RCWSSETPA, RCWSSETPL, RCWSSETPAL</a>:
+        Read Check Write Software atomic bit Set on quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwsswp.html">RCWSSWP, RCWSSWPA, RCWSSWPL, RCWSSWPAL</a>:
+        Read Check Write Software Swap doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwsswpp.html">RCWSSWPP, RCWSSWPPA, RCWSSWPPL, RCWSSWPPAL</a>:
+        Read Check Write Software Swap quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwswp.html">RCWSWP, RCWSWPA, RCWSWPL, RCWSWPAL</a>:
+        Read Check Write Swap doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rcwswpp.html">RCWSWPP, RCWSWPPA, RCWSWPPL, RCWSWPPAL</a>:
+        Read Check Write Swap quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ret.html">RET</a>:
+        Return from subroutine.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="reta.html">RETAA, RETAB</a>:
+        Return from subroutine, with pointer authentication.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev.html">REV</a>:
+        Reverse Bytes.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev16_int.html">REV16</a>:
+        Reverse bytes in 16-bit halfwords.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev32_int.html">REV32</a>:
+        Reverse bytes in 32-bit words.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev64_rev.html">REV64</a>:
+        Reverse Bytes: an alias of REV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rmif.html">RMIF</a>:
+        Rotate, Mask Insert Flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ror_extr.html">ROR (immediate)</a>:
+        Rotate right (immediate): an alias of EXTR.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ror_rorv.html">ROR (register)</a>:
+        Rotate Right (register): an alias of RORV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rorv.html">RORV</a>:
+        Rotate Right Variable.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rprfm_reg.html">RPRFM</a>:
+        Range Prefetch Memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sb.html">SB</a>:
+        Speculation Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbc.html">SBC</a>:
+        Subtract with Carry.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbcs.html">SBCS</a>:
+        Subtract with Carry, setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbfiz_sbfm.html">SBFIZ</a>:
+        Signed Bitfield Insert in Zero: an alias of SBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbfm.html">SBFM</a>:
+        Signed Bitfield Move.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbfx_sbfm.html">SBFX</a>:
+        Signed Bitfield Extract: an alias of SBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sdiv.html">SDIV</a>:
+        Signed Divide.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setf.html">SETF8, SETF16</a>:
+        Evaluation of 8 or 16 bit flag values.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setgp.html">SETGP, SETGM, SETGE</a>:
+        Memory Set with tag setting.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setgpn.html">SETGPN, SETGMN, SETGEN</a>:
+        Memory Set with tag setting, non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setgpt.html">SETGPT, SETGMT, SETGET</a>:
+        Memory Set with tag setting, unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setgptn.html">SETGPTN, SETGMTN, SETGETN</a>:
+        Memory Set with tag setting, unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setp.html">SETP, SETM, SETE</a>:
+        Memory Set.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setpn.html">SETPN, SETMN, SETEN</a>:
+        Memory Set, non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setpt.html">SETPT, SETMT, SETET</a>:
+        Memory Set, unprivileged.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setptn.html">SETPTN, SETMTN, SETETN</a>:
+        Memory Set, unprivileged and non-temporal.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sev.html">SEV</a>:
+        Send Event.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sevl.html">SEVL</a>:
+        Send Event Local.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smaddl.html">SMADDL</a>:
+        Signed Multiply-Add Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smax_imm.html">SMAX (immediate)</a>:
+        Signed Maximum (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smax_reg.html">SMAX (register)</a>:
+        Signed Maximum (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smc.html">SMC</a>:
+        Secure Monitor Call.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smin_imm.html">SMIN (immediate)</a>:
+        Signed Minimum (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smin_reg.html">SMIN (register)</a>:
+        Signed Minimum (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smnegl_smsubl.html">SMNEGL</a>:
+        Signed Multiply-Negate Long: an alias of SMSUBL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smstart_msr_imm.html">SMSTART</a>:
+        Enables access to Streaming SVE mode and SME architectural state: an alias of MSR (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smstop_msr_imm.html">SMSTOP</a>:
+        Disables access to Streaming SVE mode and SME architectural state: an alias of MSR (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smsubl.html">SMSUBL</a>:
+        Signed Multiply-Subtract Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smulh.html">SMULH</a>:
+        Signed Multiply High.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smull_smaddl.html">SMULL</a>:
+        Signed Multiply Long: an alias of SMADDL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssbb_dsb.html">SSBB</a>:
+        Speculative Store Bypass Barrier: an alias of DSB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st2g.html">ST2G</a>:
+        Store Allocation Tags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st64b.html">ST64B</a>:
+        Single-copy Atomic 64-byte Store without Return.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st64bv.html">ST64BV</a>:
+        Single-copy Atomic 64-byte Store with Return.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st64bv0.html">ST64BV0</a>:
+        Single-copy Atomic 64-byte EL0 Store with Return.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stadd_ldadd.html">STADD, STADDL</a>:
+        Atomic add on word or doubleword in memory, without return: an alias of LDADD, LDADDA, LDADDAL, LDADDL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="staddb_ldaddb.html">STADDB, STADDLB</a>:
+        Atomic add on byte in memory, without return: an alias of LDADDB, LDADDAB, LDADDALB, LDADDLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="staddh_ldaddh.html">STADDH, STADDLH</a>:
+        Atomic add on halfword in memory, without return: an alias of LDADDH, LDADDAH, LDADDALH, LDADDLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stclr_ldclr.html">STCLR, STCLRL</a>:
+        Atomic bit clear on word or doubleword in memory, without return: an alias of LDCLR, LDCLRA, LDCLRAL, LDCLRL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stclrb_ldclrb.html">STCLRB, STCLRLB</a>:
+        Atomic bit clear on byte in memory, without return: an alias of LDCLRB, LDCLRAB, LDCLRALB, LDCLRLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stclrh_ldclrh.html">STCLRH, STCLRLH</a>:
+        Atomic bit clear on halfword in memory, without return: an alias of LDCLRH, LDCLRAH, LDCLRALH, LDCLRLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="steor_ldeor.html">STEOR, STEORL</a>:
+        Atomic Exclusive-OR on word or doubleword in memory, without return: an alias of LDEOR, LDEORA, LDEORAL, LDEORL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="steorb_ldeorb.html">STEORB, STEORLB</a>:
+        Atomic Exclusive-OR on byte in memory, without return: an alias of LDEORB, LDEORAB, LDEORALB, LDEORLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="steorh_ldeorh.html">STEORH, STEORLH</a>:
+        Atomic Exclusive-OR on halfword in memory, without return: an alias of LDEORH, LDEORAH, LDEORALH, LDEORLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stg.html">STG</a>:
+        Store Allocation Tag.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stgm.html">STGM</a>:
+        Store Tag Multiple.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stgp.html">STGP</a>:
+        Store Allocation Tag and Pair of registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stilp.html">STILP</a>:
+        Store-Release ordered Pair of registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stllr.html">STLLR</a>:
+        Store LORelease Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stllrb.html">STLLRB</a>:
+        Store LORelease Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stllrh.html">STLLRH</a>:
+        Store LORelease Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlr.html">STLR</a>:
+        Store-Release Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlrb.html">STLRB</a>:
+        Store-Release Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlrh.html">STLRH</a>:
+        Store-Release Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlur_gen.html">STLUR</a>:
+        Store-Release Register (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlurb.html">STLURB</a>:
+        Store-Release Register Byte (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlurh.html">STLURH</a>:
+        Store-Release Register Halfword (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlxp.html">STLXP</a>:
+        Store-Release Exclusive Pair of registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlxr.html">STLXR</a>:
+        Store-Release Exclusive Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlxrb.html">STLXRB</a>:
+        Store-Release Exclusive Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlxrh.html">STLXRH</a>:
+        Store-Release Exclusive Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stnp_gen.html">STNP</a>:
+        Store Pair of Registers, with non-temporal hint.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stp_gen.html">STP</a>:
+        Store Pair of Registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="str_imm_gen.html">STR (immediate)</a>:
+        Store Register (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="str_reg_gen.html">STR (register)</a>:
+        Store Register (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strb_imm.html">STRB (immediate)</a>:
+        Store Register Byte (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strb_reg.html">STRB (register)</a>:
+        Store Register Byte (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strh_imm.html">STRH (immediate)</a>:
+        Store Register Halfword (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strh_reg.html">STRH (register)</a>:
+        Store Register Halfword (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stset_ldset.html">STSET, STSETL</a>:
+        Atomic bit set on word or doubleword in memory, without return: an alias of LDSET, LDSETA, LDSETAL, LDSETL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsetb_ldsetb.html">STSETB, STSETLB</a>:
+        Atomic bit set on byte in memory, without return: an alias of LDSETB, LDSETAB, LDSETALB, LDSETLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stseth_ldseth.html">STSETH, STSETLH</a>:
+        Atomic bit set on halfword in memory, without return: an alias of LDSETH, LDSETAH, LDSETALH, LDSETLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsmax_ldsmax.html">STSMAX, STSMAXL</a>:
+        Atomic signed maximum on word or doubleword in memory, without return: an alias of LDSMAX, LDSMAXA, LDSMAXAL, LDSMAXL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsmaxb_ldsmaxb.html">STSMAXB, STSMAXLB</a>:
+        Atomic signed maximum on byte in memory, without return: an alias of LDSMAXB, LDSMAXAB, LDSMAXALB, LDSMAXLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsmaxh_ldsmaxh.html">STSMAXH, STSMAXLH</a>:
+        Atomic signed maximum on halfword in memory, without return: an alias of LDSMAXH, LDSMAXAH, LDSMAXALH, LDSMAXLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsmin_ldsmin.html">STSMIN, STSMINL</a>:
+        Atomic signed minimum on word or doubleword in memory, without return: an alias of LDSMIN, LDSMINA, LDSMINAL, LDSMINL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsminb_ldsminb.html">STSMINB, STSMINLB</a>:
+        Atomic signed minimum on byte in memory, without return: an alias of LDSMINB, LDSMINAB, LDSMINALB, LDSMINLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stsminh_ldsminh.html">STSMINH, STSMINLH</a>:
+        Atomic signed minimum on halfword in memory, without return: an alias of LDSMINH, LDSMINAH, LDSMINALH, LDSMINLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sttr.html">STTR</a>:
+        Store Register (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sttrb.html">STTRB</a>:
+        Store Register Byte (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sttrh.html">STTRH</a>:
+        Store Register Halfword (unprivileged).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stumax_ldumax.html">STUMAX, STUMAXL</a>:
+        Atomic unsigned maximum on word or doubleword in memory, without return: an alias of LDUMAX, LDUMAXA, LDUMAXAL, LDUMAXL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stumaxb_ldumaxb.html">STUMAXB, STUMAXLB</a>:
+        Atomic unsigned maximum on byte in memory, without return: an alias of LDUMAXB, LDUMAXAB, LDUMAXALB, LDUMAXLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stumaxh_ldumaxh.html">STUMAXH, STUMAXLH</a>:
+        Atomic unsigned maximum on halfword in memory, without return: an alias of LDUMAXH, LDUMAXAH, LDUMAXALH, LDUMAXLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stumin_ldumin.html">STUMIN, STUMINL</a>:
+        Atomic unsigned minimum on word or doubleword in memory, without return: an alias of LDUMIN, LDUMINA, LDUMINAL, LDUMINL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stuminb_lduminb.html">STUMINB, STUMINLB</a>:
+        Atomic unsigned minimum on byte in memory, without return: an alias of LDUMINB, LDUMINAB, LDUMINALB, LDUMINLB.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stuminh_lduminh.html">STUMINH, STUMINLH</a>:
+        Atomic unsigned minimum on halfword in memory, without return: an alias of LDUMINH, LDUMINAH, LDUMINALH, LDUMINLH.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stur_gen.html">STUR</a>:
+        Store Register (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sturb.html">STURB</a>:
+        Store Register Byte (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sturh.html">STURH</a>:
+        Store Register Halfword (unscaled).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stxp.html">STXP</a>:
+        Store Exclusive Pair of registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stxr.html">STXR</a>:
+        Store Exclusive Register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stxrb.html">STXRB</a>:
+        Store Exclusive Register Byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stxrh.html">STXRH</a>:
+        Store Exclusive Register Halfword.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stz2g.html">STZ2G</a>:
+        Store Allocation Tags, Zeroing.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stzg.html">STZG</a>:
+        Store Allocation Tag, Zeroing.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stzgm.html">STZGM</a>:
+        Store Tag and Zero Multiple.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_addsub_ext.html">SUB (extended register)</a>:
+        Subtract (extended register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_addsub_imm.html">SUB (immediate)</a>:
+        Subtract (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_addsub_shift.html">SUB (shifted register)</a>:
+        Subtract (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subg.html">SUBG</a>:
+        Subtract with Tag.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subp.html">SUBP</a>:
+        Subtract Pointer.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subps.html">SUBPS</a>:
+        Subtract Pointer, setting Flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subs_addsub_ext.html">SUBS (extended register)</a>:
+        Subtract (extended register), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subs_addsub_imm.html">SUBS (immediate)</a>:
+        Subtract (immediate), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subs_addsub_shift.html">SUBS (shifted register)</a>:
+        Subtract (shifted register), setting flags.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="svc.html">SVC</a>:
+        Supervisor Call.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="swp.html">SWP, SWPA, SWPAL, SWPL</a>:
+        Swap word or doubleword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="swpb.html">SWPB, SWPAB, SWPALB, SWPLB</a>:
+        Swap byte in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="swph.html">SWPH, SWPAH, SWPALH, SWPLH</a>:
+        Swap halfword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="swpp.html">SWPP, SWPPA, SWPPAL, SWPPL</a>:
+        Swap quadword in memory.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtb_sbfm.html">SXTB</a>:
+        Signed Extend Byte: an alias of SBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxth_sbfm.html">SXTH</a>:
+        Sign Extend Halfword: an alias of SBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtw_sbfm.html">SXTW</a>:
+        Sign Extend Word: an alias of SBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sys.html">SYS</a>:
+        System instruction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sysl.html">SYSL</a>:
+        System instruction with result.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sysp.html">SYSP</a>:
+        128-bit System instruction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tbnz.html">TBNZ</a>:
+        Test bit and Branch if Nonzero.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tbz.html">TBZ</a>:
+        Test bit and Branch if Zero.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tcancel.html">TCANCEL</a>:
+        Cancel current transaction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tcommit.html">TCOMMIT</a>:
+        Commit current transaction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tlbi_sys.html">TLBI</a>:
+        TLB Invalidate operation: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tlbip_sysp.html">TLBIP</a>:
+        TLB Invalidate Pair operation: an alias of SYSP.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="trcit_sys.html">TRCIT</a>:
+        Trace Instrumentation: an alias of SYS.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tsb.html">TSB CSYNC</a>:
+        Trace Synchronization Barrier.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tst_ands_log_imm.html">TST (immediate)</a>:
+        Test bits (immediate): an alias of ANDS (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tst_ands_log_shift.html">TST (shifted register)</a>:
+        Test (shifted register): an alias of ANDS (shifted register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tstart.html">TSTART</a>:
+        Start transaction.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ttest.html">TTEST</a>:
+        Test transaction state.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ubfiz_ubfm.html">UBFIZ</a>:
+        Unsigned Bitfield Insert in Zero: an alias of UBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ubfm.html">UBFM</a>:
+        Unsigned Bitfield Move.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ubfx_ubfm.html">UBFX</a>:
+        Unsigned Bitfield Extract: an alias of UBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="udf_perm_undef.html">UDF</a>:
+        Permanently Undefined.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="udiv.html">UDIV</a>:
+        Unsigned Divide.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umaddl.html">UMADDL</a>:
+        Unsigned Multiply-Add Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umax_imm.html">UMAX (immediate)</a>:
+        Unsigned Maximum (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umax_reg.html">UMAX (register)</a>:
+        Unsigned Maximum (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umin_imm.html">UMIN (immediate)</a>:
+        Unsigned Minimum (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umin_reg.html">UMIN (register)</a>:
+        Unsigned Minimum (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umnegl_umsubl.html">UMNEGL</a>:
+        Unsigned Multiply-Negate Long: an alias of UMSUBL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umsubl.html">UMSUBL</a>:
+        Unsigned Multiply-Subtract Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umulh.html">UMULH</a>:
+        Unsigned Multiply High.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umull_umaddl.html">UMULL</a>:
+        Unsigned Multiply Long: an alias of UMADDL.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtb_ubfm.html">UXTB</a>:
+        Unsigned Extend Byte: an alias of UBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxth_ubfm.html">UXTH</a>:
+        Unsigned Extend Halfword: an alias of UBFM.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="wfe.html">WFE</a>:
+        Wait For Event.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="wfet.html">WFET</a>:
+        Wait For Event with Timeout.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="wfi.html">WFI</a>:
+        Wait For Interrupt.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="wfit.html">WFIT</a>:
+        Wait For Interrupt with Timeout.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="xaflag.html">XAFLAG</a>:
+        Convert floating-point condition flags from external format to Arm format.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="xpac.html">XPACD, XPACI, XPACLRI</a>:
+        Strip Pointer Authentication Code.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="yield.html">YIELD</a>:
+        YIELD.</span></p></div><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+        Internal version only: isa <ins>v33.59</ins><del>v33.53</del>, AdvSIMD <ins>v29.12</ins><del>v29.11</del>, pseudocode <ins>v2022-12_rel</ins><del>no_diffs_2022_12_RC1_0</del>, sve <ins>v2022-12_relb</ins><del>shoji_no_diff_2022_12_rc1</del>      
+        ; Build timestamp: <ins>2022-12-14T22</ins><del>2022-11-21T13</del>:<ins>29</ins><del>57</del>
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p><div align="center" class="htmldiff_header"><table><tbody><tr><td class="old">(old) </td><td class="explain">htmldiff from-</td><td class="new">(new) </td></tr></tbody></table></div></body></html>

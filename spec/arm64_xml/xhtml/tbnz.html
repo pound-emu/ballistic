@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>TBNZ -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">TBNZ</h2>
+      <p class="aml">Test bit and Branch if Nonzero compares the value of a bit in a general-purpose register with zero, and conditionally branches to a label at a PC-relative offset if the comparison is not equal. It provides a hint that this is not a subroutine call or return. This instruction does not affect condition flags.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">b5</td><td class="l">0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="r">1</td><td class="lr">1</td><td colspan="5" class="lr">b40</td><td colspan="14" class="lr">imm14</td><td colspan="5" class="lr">Rt</td></tr><tr class="secondrow"><td/><td colspan="6"/><td class="droppedname">op</td><td colspan="5"/><td colspan="14"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="TBNZ_only_testbranch"/><p class="asm-code">TBNZ  <a href="#sa_r" title="Width specifier (field &quot;b5&quot;) [W,X]">&lt;R&gt;</a><a href="#sa_t" title="General-purpose register number [0-30] to be tested or ZR (31) (field &quot;Rt&quot;)">&lt;t&gt;</a>, #<a href="#sa_imm" title="Bit number to be tested [0-63] (field &quot;b5:b40&quot;)">&lt;imm&gt;</a>, <a href="#sa_label" title="Label to be conditionally branched to (field imm14)">&lt;label&gt;</a></p></div><p class="pseudocode">integer t = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rt);
+
+integer datasize = if b5 == '1' then 64 else 32;
+integer bit_pos = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(b5:b40);
+bit bit_val = op;
+bits(64) offset = <a href="shared_pseudocode.html#impl-shared.SignExtend.2" title="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(imm14:'00', 64);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;R&gt;</td><td><a id="sa_r"/>
+        <p>Is a width specifier, 
+      encoded in
+      <q>b5</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">b5</th>
+                <th class="symbol">&lt;R&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="symbol">W</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="symbol">X</td>
+              </tr>
+            </tbody>
+          
+        </table>
+        In assembler source code an 'X' specifier is always permitted, but a 'W' specifier is only permitted when the bit number is less than 32.
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;t&gt;</td><td><a id="sa_t"/>
+        
+          <p class="aml">Is the number [0-30] of the general-purpose register to be tested or the name ZR (31), encoded in the "Rt" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          <p class="aml">Is the bit number to be tested, in the range 0 to 63, encoded in "b5:b40".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;label&gt;</td><td><a id="sa_label"/>
+        
+          <p class="aml">Is the program label to be conditionally branched to. Its offset from the address of this instruction, in the range +/-32KB, is encoded as "imm14" times 4.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">bits(datasize) operand = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[t, datasize];
+boolean branch_conditional = TRUE;
+if operand&lt;bit_pos&gt; == bit_val then
+    <a href="shared_pseudocode.html#impl-shared.BranchTo.3" title="function: BranchTo(bits(N) target, BranchType branch_type, boolean branch_conditional)">BranchTo</a>(<a href="shared_pseudocode.html#impl-aarch64.PC.read.0" title="accessor: bits(64) PC[]">PC</a>[] + offset, <a href="shared_pseudocode.html#BranchType_DIR" title="enumeration BranchType { BranchType_DIRCALL, BranchType_INDCALL, BranchType_ERET, BranchType_DBGEXIT, BranchType_RET, BranchType_DIR, BranchType_INDIR, BranchType_EXCEPTION, BranchType_TMFAIL, BranchType_RESET, BranchType_UNKNOWN}">BranchType_DIR</a>, branch_conditional);
+else
+    <a href="shared_pseudocode.html#impl-shared.BranchNotTaken.2" title="function: BranchNotTaken(BranchType branchtype, boolean branch_conditional)">BranchNotTaken</a>(<a href="shared_pseudocode.html#BranchType_DIR" title="enumeration BranchType { BranchType_DIRCALL, BranchType_INDCALL, BranchType_ERET, BranchType_DBGEXIT, BranchType_RET, BranchType_DIR, BranchType_INDIR, BranchType_EXCEPTION, BranchType_TMFAIL, BranchType_RESET, BranchType_UNKNOWN}">BranchType_DIR</a>, branch_conditional);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

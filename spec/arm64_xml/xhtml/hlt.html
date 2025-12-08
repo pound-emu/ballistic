@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>HLT -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">HLT</h2>
+      <p class="aml">Halt instruction. An <span class="asm-code">HLT</span> instruction can generate a Halt Instruction debug event, which causes entry into Debug state.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="l">0</td><td>1</td><td class="r">0</td><td colspan="16" class="lr">imm16</td><td class="l">0</td><td>0</td><td class="r">0</td><td class="l">0</td><td class="r">0</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="HLT_EX_exception"/><p class="asm-code">HLT  #<a href="#sa_imm" title="16-bit unsigned immediate [0-65535] (field &quot;imm16&quot;)">&lt;imm&gt;</a></p></div><p class="pseudocode">if EDSCR.HDE == '0' || !<a href="shared_pseudocode.html#impl-shared.HaltingAllowed.0" title="function: boolean HaltingAllowed()">HaltingAllowed</a>() then UNDEFINED;
+if <a href="shared_pseudocode.html#impl-shared.HaveBTIExt.0" title="function: boolean HaveBTIExt()">HaveBTIExt</a>() then
+    <a href="shared_pseudocode.html#impl-aarch64.SetBTypeCompatible.1" title="function: SetBTypeCompatible(boolean x)">SetBTypeCompatible</a>(TRUE);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          <p class="aml">Is a 16-bit unsigned immediate, in the range 0 to 65535, encoded in the "imm16" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode">boolean is_async = FALSE;
+<a href="shared_pseudocode.html#impl-shared.Halt.2" title="function: Halt(bits(6) reason, boolean is_async)">Halt</a>(<a href="shared_pseudocode.html#DebugHalt_HaltInstruction" title="constant bits(6) DebugHalt_HaltInstruction = '101111'">DebugHalt_HaltInstruction</a>, is_async);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

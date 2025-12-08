@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>BFMLS (vectors)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">BFMLS (vectors)</h2><p>BFloat16 floating-point fused multiply-subtract vectors</p>
+      <p class="aml">Multiply the corresponding active BFloat16 elements of the first and second source vectors and subtract from elements of the third source (addend) vector without intermediate rounding. Destructively place the results in the destination and third source (addend) vector. Inactive elements in the destination vector register remain unmodified.</p>
+      <p class="aml">This instruction follows SVE2.1 non-widening BFloat16 numerical behaviors.</p>
+      <p class="aml">ID_AA64ZFR0_EL1.B16B16 indicates whether this instruction is implemented.</p>
+    
+    <h3 class="classheading"><a id="iclass_sve2"/>SVE2<span style="font-size:smaller;"><br/>(FEAT_B16B16)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td class="lr">0</td><td class="lr">0</td><td class="lr">1</td><td colspan="5" class="lr">Zm</td><td class="lr">0</td><td class="lr">0</td><td class="lr">1</td><td colspan="3" class="lr">Pg</td><td colspan="5" class="lr">Zn</td><td colspan="5" class="lr">Zda</td></tr><tr class="secondrow"><td colspan="8"/><td class="droppedname">size&lt;1&gt;</td><td class="droppedname">size&lt;0&gt;</td><td/><td colspan="5"/><td/><td/><td class="droppedname">op</td><td colspan="3"/><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="bfmls_z_p_zzz_"/><p class="asm-code">BFMLS   <a href="#sa_zda" title="Third source and destination scalable vector register (field &quot;Zda&quot;)">&lt;Zda&gt;</a>.H, <a href="#sa_pg" title="Governing scalable predicate register P0-P7 (field &quot;Pg&quot;)">&lt;Pg&gt;</a>/M, <a href="#sa_zn" title="First source scalable vector register (field &quot;Zn&quot;)">&lt;Zn&gt;</a>.H, <a href="#sa_zm" title="Second source scalable vector register (field &quot;Zm&quot;)">&lt;Zm&gt;</a>.H</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVEB16B16.0" title="function: boolean HaveSVEB16B16()">HaveSVEB16B16</a>() then UNDEFINED;
+integer g = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Pg);
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn);
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zm);
+integer da = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zda);
+boolean op1_neg = TRUE;
+boolean op3_neg = FALSE;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zda&gt;</td><td><a id="sa_zda"/>
+        
+          <p class="aml">Is the name of the third source and destination scalable vector register, encoded in the "Zda" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Pg&gt;</td><td><a id="sa_pg"/>
+        
+          <p class="aml">Is the name of the governing scalable predicate register P0-P7, encoded in the "Pg" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn&gt;</td><td><a id="sa_zn"/>
+        
+          <p class="aml">Is the name of the first source scalable vector register, encoded in the "Zn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zm&gt;</td><td><a id="sa_zm"/>
+        
+          <p class="aml">Is the name of the second source scalable vector register, encoded in the "Zm" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSVEEnabled.0" title="function: CheckSVEEnabled()">CheckSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer PL = VL DIV 8;
+constant integer elements = VL DIV 16;
+bits(PL) mask = <a href="shared_pseudocode.html#impl-aarch64.P.read.2" title="accessor: bits(width) P[integer n, integer width]">P</a>[g, PL];
+bits(VL) operand1 = if <a href="shared_pseudocode.html#impl-aarch64.AnyActiveElement.2" title="function: boolean AnyActiveElement(bits(N) mask, integer esize)">AnyActiveElement</a>(mask, 16) then <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[n, VL] else <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(VL);
+bits(VL) operand2 = if <a href="shared_pseudocode.html#impl-aarch64.AnyActiveElement.2" title="function: boolean AnyActiveElement(bits(N) mask, integer esize)">AnyActiveElement</a>(mask, 16) then <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[m, VL] else <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(VL);
+bits(VL) operand3 = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[da, VL];
+bits(VL) result;
+
+for e = 0 to elements-1
+    if <a href="shared_pseudocode.html#impl-aarch64.ActivePredicateElement.3" title="function: boolean ActivePredicateElement(bits(N) pred, integer e, integer esize)">ActivePredicateElement</a>(mask, e, 16) then
+        bits(16) element1 = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, e, 16];
+        bits(16) element2 = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, e, 16];
+        bits(16) element3 = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand3, e, 16];
+
+        if op1_neg then element1 = <a href="shared_pseudocode.html#impl-shared.BFNeg.1" title="function: bits(16) BFNeg(bits(16) op)">BFNeg</a>(element1);
+        if op3_neg then element3 = <a href="shared_pseudocode.html#impl-shared.BFNeg.1" title="function: bits(16) BFNeg(bits(16) op)">BFNeg</a>(element3);
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, 16] = <a href="shared_pseudocode.html#impl-shared.BFMulAdd.4" title="function: bits(16) BFMulAdd(bits(16) addend, bits(16) op1, bits(16) op2, FPCRType fpcr)">BFMulAdd</a>(element3, element1, element2, FPCR[]);
+    else
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, 16] = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand3, e, 16];
+
+<a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[da, VL] = result;</p>
+    </div>
+  <h3>Operational information</h3><p class="aml">
+          This instruction might be immediately preceded in program order by a <span class="asm-code">MOVPRFX</span> instruction. The <span class="asm-code">MOVPRFX</span> instruction must conform to all of the following requirements, otherwise the behavior of the <span class="asm-code">MOVPRFX</span> and this instruction is <span class="arm-defined-word">unpredictable</span>:
+        </p><ul><li>The <span class="asm-code">MOVPRFX</span> instruction must be unpredicated, or be predicated using the same governing predicate register and source element size as this instruction.</li><li>The <span class="asm-code">MOVPRFX</span> instruction must specify the same destination register as this instruction.</li><li>The destination register must not refer to architectural register state referenced by any other source operand register of this instruction.</li></ul><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

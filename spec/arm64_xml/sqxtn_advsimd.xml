@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="SQXTN_advsimd" title="SQXTN, SQXTN2 -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="SQXTN" />
+  </docvars>
+  <heading>SQXTN, SQXTN2</heading>
+  <desc>
+    <brief>
+      <para>Signed saturating extract Narrow</para>
+    </brief>
+    <authored>
+      <para>Signed saturating extract Narrow. This instruction reads each vector element from the source SIMD&amp;FP register, saturates the value to half the original width, places the result into a vector, and writes the vector to the lower or upper half of the destination SIMD&amp;FP register. The destination vector elements are half as long as the source vector elements. All the values in this instruction are signed integer values.</para>
+      <para>If overflow occurs with any of the results, those results are saturated. If saturation occurs, the cumulative saturation bit <xref linkend="AArch64.fpsr">FPSR</xref>.QC is set.</para>
+      <para>The <instruction>SQXTN</instruction> instruction writes the vector to the lower half of the destination register and clears the upper half, while the <instruction>SQXTN2</instruction> instruction writes the vector to the upper half of the destination register without affecting the other bits of the register.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <classesintro count="2">
+      <txt>It has encodings from 2 classes:</txt>
+      <a href="#iclass_sisd">Scalar</a>
+      <txt> and </txt>
+      <a href="#iclass_simd">Vector</a>
+    </classesintro>
+    <iclass name="Scalar" oneof="2" id="iclass_sisd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-type" value="sisd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SQXTN" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/extract/sat/sisd" tworows="1">
+        <box hibit="31" width="2" settings="2">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" name="U" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="size" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="SQXTN_asisdmisc_N" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-type" value="sisd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SQXTN" />
+        </docvars>
+        <asmtemplate><text>SQXTN  </text><a link="sa_vb" hover="Destination width specifier (field &quot;size&quot;) [B,H,S]">&lt;Vb&gt;</a><a link="sa_d" hover="SIMD&amp;FP destination register number (field &quot;Rd&quot;)">&lt;d&gt;</a><text>, </text><a link="sa_va" hover="Source width specifier (field &quot;size&quot;) [D,H,S]">&lt;Va&gt;</a><a link="sa_n" hover="SIMD&amp;FP source register number (field &quot;Rn&quot;)">&lt;n&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/extract/sat/sisd" mylink="aarch64.instrs.vector.arithmetic.unary.extract.sat.sisd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if size == '11' then UNDEFINED;
+integer esize = 8 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer datasize = esize;
+integer part = 0;
+integer elements = 1;
+
+boolean unsigned = (U == '1');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+    <iclass name="Vector" oneof="2" id="iclass_simd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="advsimd-type" value="simd" />
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SQXTN" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/arithmetic/unary/extract/sat/simd" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" name="U" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="5" settings="5">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="size" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="21" width="5" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="16" width="5" name="opcode" settings="5">
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="SQXTN_asimdmisc_N" oneofinclass="1" oneof="2" label="">
+        <docvars>
+          <docvar key="advsimd-type" value="simd" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SQXTN" />
+        </docvars>
+        <asmtemplate><text>SQXTN</text><a link="sa_2" hover="Second and upper half specifier (field &quot;Q&quot;)">{2}</a><text>  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_tb" hover="Arrangement specifier (field &quot;size:Q&quot;) [2S,4H,4S,8B,8H,16B]">&lt;Tb&gt;</a><text>, </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;size&quot;) [2D,4S,8H]">&lt;Ta&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/arithmetic/unary/extract/sat/simd" mylink="aarch64.instrs.vector.arithmetic.unary.extract.sat.simd" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+
+if size == '11' then UNDEFINED;
+integer esize = 8 &lt;&lt; <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer datasize = 64;
+integer part = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Q);
+integer elements = datasize DIV esize;
+
+boolean unsigned = (U == '1');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="SQXTN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_2">2</symbol>
+      <definition encodedin="Q">
+        <intro>Is the second and upper half specifier. If present it causes the operation to be performed on the upper 64 bits of the registers holding the narrower elements, and is </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">2</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">[absent]</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">[present]</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQXTN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQXTN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_tb">&lt;Tb&gt;</symbol>
+      <definition encodedin="size:Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;Tb&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">8B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">16B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">4H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="bitfield">x</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQXTN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQXTN_asimdmisc_N" symboldefcount="1">
+      <symbol link="sa_ta">&lt;Ta&gt;</symbol>
+      <definition encodedin="size">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;Ta&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">8H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">4S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">2D</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQXTN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_vb">&lt;Vb&gt;</symbol>
+      <definition encodedin="size">
+        <intro>Is the destination width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;Vb&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQXTN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_d">&lt;d&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SQXTN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_va">&lt;Va&gt;</symbol>
+      <definition encodedin="size">
+        <intro>Is the source width specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">size</entry>
+                <entry class="symbol">&lt;Va&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">00</entry>
+                <entry class="symbol">H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">01</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">10</entry>
+                <entry class="symbol">D</entry>
+              </row>
+              <row>
+                <entry class="bitfield">11</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="SQXTN_asisdmisc_N" symboldefcount="1">
+      <symbol link="sa_n">&lt;n&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the number of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/arithmetic/unary/extract/sat/sisd" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(2*datasize) operand = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, 2*datasize];
+bits(datasize) result;
+bits(2*esize) element;
+boolean sat;
+
+for e = 0 to elements-1
+    element = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand, e, 2*esize];
+    (<a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, e, esize], sat) = <a link="impl-shared.SatQ.3" file="shared_pseudocode.xml" hover="function: (bits(N), boolean) SatQ(integer i, integer N, boolean unsigned)">SatQ</a>(<a link="impl-shared.Int.2" file="shared_pseudocode.xml" hover="function: integer Int(bits(N) x, boolean unsigned)">Int</a>(element, unsigned), esize, unsigned);
+    if sat then FPSR.QC = '1';
+
+<a link="impl-aarch64.Vpart.write.3" file="shared_pseudocode.xml" hover="accessor: Vpart[integer n, integer part, integer width] = bits(width) value">Vpart</a>[d, part, datasize] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>ZERO (tile)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">ZERO (tile)</h2><p>Zero a list of 64-bit element ZA tiles</p>
+      <p class="aml">Zeroes all bytes within each of the up to eight listed 64-bit element tiles named ZA0.D to ZA7.D, leaving the other 64-bit element tiles unmodified.</p>
+      <p class="aml">This instruction does not require the PE to be in Streaming SVE mode, and it is expected that this instruction will not experience a significant slowdown due to contention with other PEs that are executing in Streaming SVE mode.</p>
+      <p class="aml">For programmer convenience an assembler must also accept the names of 32-bit, 16-bit, and 8-bit element tiles which are converted into the corresponding set of 64-bit element tiles.</p>
+      <p class="aml">In accordance with the architecturally defined mapping between different element size tiles:</p>
+      <ul>
+        <li>
+          Zeroing the 8-bit element tile name ZA0.B, or the entire array name ZA, is equivalent to zeroing all eight 64-bit element tiles named ZA0.D to ZA7.D.
+        </li>
+        <li>
+          Zeroing the 16-bit element tile name ZA0.H is equivalent to zeroing 64-bit element tiles named ZA0.D, ZA2.D, ZA4.D, and ZA6.D.
+        </li>
+        <li>
+          Zeroing the 16-bit element tile name ZA1.H is equivalent to zeroing 64-bit element tiles named ZA1.D, ZA3.D, ZA5.D, and ZA7.D.
+        </li>
+        <li>
+          Zeroing the 32-bit element tile name ZA0.S is equivalent to zeroing 64-bit element tiles named ZA0.D and ZA4.D.
+        </li>
+        <li>
+          Zeroing the 32-bit element tile name ZA1.S is equivalent to zeroing 64-bit element tiles named ZA1.D and ZA5.D.
+        </li>
+        <li>
+          Zeroing the 32-bit element tile name ZA2.S is equivalent to zeroing 64-bit element tiles named ZA2.D and ZA6.D.
+        </li>
+        <li>
+          Zeroing the 32-bit element tile name ZA3.S is equivalent to zeroing 64-bit element tiles named ZA3.D and ZA7.D.
+        </li>
+      </ul>
+      <p class="aml">The preferred disassembly of this instruction uses the shortest list of tile names that represent the encoded immediate mask.</p>
+      <p class="aml">For example:</p>
+      <ul>
+        <li>
+          An immediate which encodes 64-bit element tiles ZA0.D, ZA1.D, ZA4.D, and ZA5.D is disassembled as {ZA0.S, ZA1.S}.
+        </li>
+        <li>
+          An immediate which encodes 64-bit element tiles ZA0.D, ZA2.D, ZA4.D, and ZA6.D is disassembled as {ZA0.H}.
+        </li>
+        <li>
+          An all-ones immediate is disassembled as {ZA}.
+        </li>
+        <li>
+          An all-zeros immediate is disassembled as an empty list { }.
+        </li>
+      </ul>
+    
+    <h3 class="classheading"><a id="iclass_mortlach"/>SME<span style="font-size:smaller;"><br/>(FEAT_SME)
+          </span></h3><p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="r">0</td><td class="l">0</td><td class="r">0</td><td colspan="8" class="lr">imm8</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="zero_za_i_"/><p class="asm-code">ZERO    { <a href="#sa_mask" title="List of up to eight 64-bit element tile names separated by commas (field &quot;imm8&quot;)">&lt;mask&gt;</a> }</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+bits(8) mask = imm8;
+constant integer esize = 64;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;mask&gt;</td><td><a id="sa_mask"/>
+        
+          <p class="aml">Is a list of up to eight 64-bit element tile names separated by commas, encoded in the "imm8" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSMEAndZAEnabled.0" title="function: CheckSMEAndZAEnabled()">CheckSMEAndZAEnabled</a>();
+constant integer SVL = <a href="shared_pseudocode.html#impl-aarch64.CurrentSVL.read.none" title="accessor: integer CurrentSVL">CurrentSVL</a>;
+constant integer dim = SVL DIV esize;
+bits(dim*dim*esize) result = <a href="shared_pseudocode.html#impl-shared.Zeros.1" title="function: bits(N) Zeros(integer N)">Zeros</a>(dim*dim*esize);
+
+if <a href="shared_pseudocode.html#impl-shared.HaveTME.0" title="function: boolean HaveTME()">HaveTME</a>() &amp;&amp; TSTATE.depth &gt; 0 then
+    <a href="shared_pseudocode.html#impl-aarch64.FailTransaction.2" title="function: FailTransaction(TMFailure cause, boolean retry)">FailTransaction</a>(<a href="shared_pseudocode.html#TMFailure_ERR" title="enumeration TMFailure { TMFailure_CNCL, TMFailure_DBG, TMFailure_ERR, TMFailure_NEST, TMFailure_SIZE, TMFailure_MEM, TMFailure_TRIVIAL, TMFailure_IMP }">TMFailure_ERR</a>, FALSE);
+
+for i = 0 to 7
+    if mask&lt;i&gt; == '1' then <a href="shared_pseudocode.html#impl-aarch64.ZAtile.write.3" title="accessor: ZAtile[integer tile, integer esize, integer width] = bits(width) value">ZAtile</a>[i, esize, dim*dim*esize] = result;</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

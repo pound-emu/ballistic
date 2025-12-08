@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="LDURSH" title="LDURSH -- A64" type="instruction">
+  <docvars>
+    <docvar key="address-form" value="base-plus-offset" />
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="LDURSH" />
+    <docvar key="offset-type" value="off9s_u" />
+  </docvars>
+  <heading>LDURSH</heading>
+  <desc>
+    <brief>
+      <para>Load Register Signed Halfword (unscaled)</para>
+    </brief>
+    <authored>
+      <para>Load Register Signed Halfword (unscaled) calculates an address from a base register and an immediate offset, loads a signed halfword from memory, sign-extends it, and writes it to a register. For information about memory accesses, see <xref linkend="CHDIIIBB">Load/Store addressing modes</xref>.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1, the timing of this instruction is insensitive to the value of the data being loaded or stored.</para>
+  </operationalnotes>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Unscaled offset" oneof="1" id="iclass_base_plus_offset" no_encodings="2" isa="A64">
+      <docvars>
+        <docvar key="address-form" value="base-plus-offset" />
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="LDURSH" />
+        <docvar key="offset-type" value="off9s_u" />
+      </docvars>
+      <iclassintro count="2"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/memory/single/general/immediate/signed/offset/normal" tworows="1">
+        <box hibit="31" width="2" name="size" usename="1" settings="2" psbits="xx">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="29" width="3" settings="3">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="26" name="V" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="25" width="2" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="opc" usename="1" settings="1" psbits="xx">
+          <c>1</c>
+          <c>x</c>
+        </box>
+        <box hibit="21" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="9" name="imm9" usename="1">
+          <c colspan="9"></c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rt" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="LDURSH_32_ldst_unscaled" oneofinclass="2" oneof="2" label="32-bit" bitdiffs="opc == 11">
+        <docvars>
+          <docvar key="address-form" value="base-plus-offset" />
+          <docvar key="datatype" value="32" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="LDURSH" />
+          <docvar key="offset-type" value="off9s_u" />
+        </docvars>
+        <box hibit="23" width="2" name="opc">
+          <c></c>
+          <c>1</c>
+        </box>
+        <asmtemplate><text>LDURSH  </text><a link="sa_wt" hover="32-bit general-purpose register to be transferred (field &quot;Rt&quot;)">&lt;Wt&gt;</a><text>, [</text><a link="sa_xn_sp" hover="64-bit general-purpose base register or SP (field &quot;Rn&quot;)">&lt;Xn|SP&gt;</a><text>{</text><text>, #</text><a link="sa_simm" hover="Optional signed immediate byte offset [-256-255], default 0 (field &quot;imm9&quot;)">&lt;simm&gt;</a><text>}</text><text>]</text></asmtemplate>
+      </encoding>
+      <encoding name="LDURSH_64_ldst_unscaled" oneofinclass="2" oneof="2" label="64-bit" bitdiffs="opc == 10">
+        <docvars>
+          <docvar key="address-form" value="base-plus-offset" />
+          <docvar key="datatype" value="64" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="LDURSH" />
+          <docvar key="offset-type" value="off9s_u" />
+        </docvars>
+        <box hibit="23" width="2" name="opc">
+          <c></c>
+          <c>0</c>
+        </box>
+        <asmtemplate><text>LDURSH  </text><a link="sa_xt" hover="64-bit general-purpose register to be transferred (field &quot;Rt&quot;)">&lt;Xt&gt;</a><text>, [</text><a link="sa_xn_sp" hover="64-bit general-purpose base register or SP (field &quot;Rn&quot;)">&lt;Xn|SP&gt;</a><text>{</text><text>, #</text><a link="sa_simm" hover="Optional signed immediate byte offset [-256-255], default 0 (field &quot;imm9&quot;)">&lt;simm&gt;</a><text>}</text><text>]</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/memory/single/general/immediate/signed/offset/normal" mylink="aarch64.instrs.memory.single.general.immediate.signed.offset.normal" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">boolean wback = FALSE;
+boolean postindex = FALSE;
+integer scale = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(size);
+bits(64) offset = <a link="impl-shared.SignExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(imm9, 64);</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="LDURSH_32_ldst_unscaled" symboldefcount="1">
+      <symbol link="sa_wt">&lt;Wt&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the 32-bit name of the general-purpose register to be transferred, encoded in the "Rt" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="LDURSH_64_ldst_unscaled" symboldefcount="1">
+      <symbol link="sa_xt">&lt;Xt&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose register to be transferred, encoded in the "Rt" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="LDURSH_32_ldst_unscaled, LDURSH_64_ldst_unscaled" symboldefcount="1">
+      <symbol link="sa_xn_sp">&lt;Xn|SP&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose base register or stack pointer, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="LDURSH_32_ldst_unscaled, LDURSH_64_ldst_unscaled" symboldefcount="1">
+      <symbol link="sa_simm">&lt;simm&gt;</symbol>
+      <account encodedin="imm9">
+        <intro>
+          <para>Is the optional signed immediate byte offset, in the range -256 to 255, defaulting to 0 and encoded in the "imm9" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/memory/single/general/immediate/signed/offset/normal" mylink="postdecode" enclabels="" sections="1" secttype="Shared Decode">
+      <pstext mayhavelinks="1" section="Postdecode" rep_section="postdecode">integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer t = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rt);
+boolean nontemporal = FALSE;
+boolean privileged = PSTATE.EL != <a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a>;
+<a link="MemOp" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp</a> memop;
+boolean signed;
+integer regsize;
+
+if opc&lt;1&gt; == '0' then
+    // store or zero-extending load
+    memop = if opc&lt;0&gt; == '1' then <a link="MemOp_LOAD" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a> else <a link="MemOp_STORE" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_STORE</a>;
+    regsize = if size == '11' then 64 else 32;
+    signed = FALSE;
+else
+    if size == '11' then
+        memop = <a link="MemOp_PREFETCH" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_PREFETCH</a>;
+        if opc&lt;0&gt; == '1' then UNDEFINED;
+    else
+        // sign-extending load
+        memop = <a link="MemOp_LOAD" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a>;
+        if size == '10' &amp;&amp; opc&lt;0&gt; == '1' then UNDEFINED;
+        regsize = if opc&lt;0&gt; == '1' then 32 else 64;
+        signed = TRUE;
+
+integer datasize = 8 &lt;&lt; scale;
+boolean tagchecked = memop != <a link="MemOp_PREFETCH" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_PREFETCH</a> &amp;&amp; (wback || n != 31);
+
+boolean wb_unknown = FALSE;
+boolean rt_unknown = FALSE;
+<a link="Constraint" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint</a> c;
+
+if memop == <a link="MemOp_LOAD" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a> &amp;&amp; wback &amp;&amp; n == t &amp;&amp; n != 31 then
+    c = <a link="impl-shared.ConstrainUnpredictable.1" file="shared_pseudocode.xml" hover="function: Constraint ConstrainUnpredictable(Unpredictable which)">ConstrainUnpredictable</a>(<a link="Unpredictable_WBOVERLAPLD" file="shared_pseudocode.xml" hover="enumeration Unpredictable {  Unpredictable_VMSR,  Unpredictable_WBOVERLAPLD,  Unpredictable_WBOVERLAPST,  Unpredictable_LDPOVERLAP,  Unpredictable_BASEOVERLAP,  Unpredictable_DATAOVERLAP,  Unpredictable_DEVPAGE2,  Unpredictable_INSTRDEVICE,  Unpredictable_RESCPACR,  Unpredictable_RESMAIR,  Unpredictable_S1CTAGGED,  Unpredictable_S2RESMEMATTR,  Unpredictable_RESTEXCB,  Unpredictable_RESPRRR,  Unpredictable_RESDACR,  Unpredictable_RESVTCRS,  Unpredictable_RESTnSZ,  Unpredictable_RESTCF,  Unpredictable_DEVICETAGSTORE,  Unpredictable_OORTnSZ,  Unpredictable_LARGEIPA,  Unpredictable_ESRCONDPASS,  Unpredictable_ILZEROIT,  Unpredictable_ILZEROT,  Unpredictable_BPVECTORCATCHPRI,  Unpredictable_VCMATCHHALF,   Unpredictable_VCMATCHDAPA,  Unpredictable_WPMASKANDBAS,  Unpredictable_WPBASCONTIGUOUS,  Unpredictable_RESWPMASK,  Unpredictable_WPMASKEDBITS,  Unpredictable_RESBPWPCTRL,  Unpredictable_BPNOTIMPL,  Unpredictable_RESBPTYPE,  Unpredictable_BPNOTCTXCMP,  Unpredictable_BPMATCHHALF,  Unpredictable_BPMISMATCHHALF,  Unpredictable_RESTARTALIGNPC,  Unpredictable_RESTARTZEROUPPERPC,  Unpredictable_ZEROUPPER,   Unpredictable_ERETZEROUPPERPC,   Unpredictable_A32FORCEALIGNPC,  Unpredictable_SMD,  Unpredictable_NONFAULT,  Unpredictable_SVEZEROUPPER,  Unpredictable_SVELDNFDATA,  Unpredictable_SVELDNFZERO,  Unpredictable_CHECKSPNONEACTIVE,  Unpredictable_SMEZEROUPPER,  Unpredictable_NVNV1,  Unpredictable_Shareability,  Unpredictable_AFUPDATE,  Unpredictable_DBUPDATE,  Unpredictable_IESBinDebug,  Unpredictable_BADPMSFCR,  Unpredictable_ZEROBTYPE,  Unpredictable_EL2TIMESTAMP, Unpredictable_EL1TIMESTAMP,  Unpredictable_RESERVEDNSxB,  Unpredictable_WFxTDEBUG,  Unpredictable_LS64UNSUPPORTED,   Unpredictable_MISALIGNEDATOMIC,  Unpredictable_CLEARERRITEZERO,   Unpredictable_ALUEXCEPTIONRETURN,  Unpredictable_IGNORETRAPINDEBUG,  Unpredictable_DBGxVR_RESS,  Unpredictable_PMUEVENTCOUNTER,  Unpredictable_PMSCR_PCT,   Unpredictable_CounterReservedForEL2,  Unpredictable_BRBFILTRATE,   Unpredictable_MOPSOVERLAP31,  Unpredictable_STOREONLYTAGCHECKEDCAS,  Unpredictable_RESTC }">Unpredictable_WBOVERLAPLD</a>);
+    assert c IN {<a link="Constraint_WBSUPPRESS" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_WBSUPPRESS</a>, <a link="Constraint_UNKNOWN" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNKNOWN</a>, <a link="Constraint_UNDEF" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNDEF</a>, <a link="Constraint_NOP" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NOP</a>};
+    case c of
+        when <a link="Constraint_WBSUPPRESS" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_WBSUPPRESS</a> wback = FALSE;       // writeback is suppressed
+        when <a link="Constraint_UNKNOWN" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNKNOWN</a>    wb_unknown = TRUE;   // writeback is UNKNOWN
+        when <a link="Constraint_UNDEF" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNDEF</a>      UNDEFINED;
+        when <a link="Constraint_NOP" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NOP</a>        <a link="impl-shared.EndOfInstruction.0" file="shared_pseudocode.xml" hover="function: EndOfInstruction()">EndOfInstruction</a>();
+
+if memop == <a link="MemOp_STORE" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_STORE</a> &amp;&amp; wback &amp;&amp; n == t &amp;&amp; n != 31 then
+    c = <a link="impl-shared.ConstrainUnpredictable.1" file="shared_pseudocode.xml" hover="function: Constraint ConstrainUnpredictable(Unpredictable which)">ConstrainUnpredictable</a>(<a link="Unpredictable_WBOVERLAPST" file="shared_pseudocode.xml" hover="enumeration Unpredictable {  Unpredictable_VMSR,  Unpredictable_WBOVERLAPLD,  Unpredictable_WBOVERLAPST,  Unpredictable_LDPOVERLAP,  Unpredictable_BASEOVERLAP,  Unpredictable_DATAOVERLAP,  Unpredictable_DEVPAGE2,  Unpredictable_INSTRDEVICE,  Unpredictable_RESCPACR,  Unpredictable_RESMAIR,  Unpredictable_S1CTAGGED,  Unpredictable_S2RESMEMATTR,  Unpredictable_RESTEXCB,  Unpredictable_RESPRRR,  Unpredictable_RESDACR,  Unpredictable_RESVTCRS,  Unpredictable_RESTnSZ,  Unpredictable_RESTCF,  Unpredictable_DEVICETAGSTORE,  Unpredictable_OORTnSZ,  Unpredictable_LARGEIPA,  Unpredictable_ESRCONDPASS,  Unpredictable_ILZEROIT,  Unpredictable_ILZEROT,  Unpredictable_BPVECTORCATCHPRI,  Unpredictable_VCMATCHHALF,   Unpredictable_VCMATCHDAPA,  Unpredictable_WPMASKANDBAS,  Unpredictable_WPBASCONTIGUOUS,  Unpredictable_RESWPMASK,  Unpredictable_WPMASKEDBITS,  Unpredictable_RESBPWPCTRL,  Unpredictable_BPNOTIMPL,  Unpredictable_RESBPTYPE,  Unpredictable_BPNOTCTXCMP,  Unpredictable_BPMATCHHALF,  Unpredictable_BPMISMATCHHALF,  Unpredictable_RESTARTALIGNPC,  Unpredictable_RESTARTZEROUPPERPC,  Unpredictable_ZEROUPPER,   Unpredictable_ERETZEROUPPERPC,   Unpredictable_A32FORCEALIGNPC,  Unpredictable_SMD,  Unpredictable_NONFAULT,  Unpredictable_SVEZEROUPPER,  Unpredictable_SVELDNFDATA,  Unpredictable_SVELDNFZERO,  Unpredictable_CHECKSPNONEACTIVE,  Unpredictable_SMEZEROUPPER,  Unpredictable_NVNV1,  Unpredictable_Shareability,  Unpredictable_AFUPDATE,  Unpredictable_DBUPDATE,  Unpredictable_IESBinDebug,  Unpredictable_BADPMSFCR,  Unpredictable_ZEROBTYPE,  Unpredictable_EL2TIMESTAMP, Unpredictable_EL1TIMESTAMP,  Unpredictable_RESERVEDNSxB,  Unpredictable_WFxTDEBUG,  Unpredictable_LS64UNSUPPORTED,   Unpredictable_MISALIGNEDATOMIC,  Unpredictable_CLEARERRITEZERO,   Unpredictable_ALUEXCEPTIONRETURN,  Unpredictable_IGNORETRAPINDEBUG,  Unpredictable_DBGxVR_RESS,  Unpredictable_PMUEVENTCOUNTER,  Unpredictable_PMSCR_PCT,   Unpredictable_CounterReservedForEL2,  Unpredictable_BRBFILTRATE,   Unpredictable_MOPSOVERLAP31,  Unpredictable_STOREONLYTAGCHECKEDCAS,  Unpredictable_RESTC }">Unpredictable_WBOVERLAPST</a>);
+    assert c IN {<a link="Constraint_NONE" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NONE</a>, <a link="Constraint_UNKNOWN" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNKNOWN</a>, <a link="Constraint_UNDEF" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNDEF</a>, <a link="Constraint_NOP" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NOP</a>};
+    case c of
+        when <a link="Constraint_NONE" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NONE</a>       rt_unknown = FALSE;  // value stored is original value
+        when <a link="Constraint_UNKNOWN" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNKNOWN</a>    rt_unknown = TRUE;   // value stored is UNKNOWN
+        when <a link="Constraint_UNDEF" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_UNDEF</a>      UNDEFINED;
+        when <a link="Constraint_NOP" file="shared_pseudocode.xml" hover="enumeration Constraint    { Constraint_NONE,   Constraint_UNKNOWN,  Constraint_UNDEF, Constraint_UNDEFEL0, Constraint_NOP, Constraint_TRUE, Constraint_FALSE, Constraint_DISABLED, Constraint_UNCOND, Constraint_COND, Constraint_ADDITIONAL_DECODE,   Constraint_WBSUPPRESS, Constraint_FAULT, Constraint_LIMITED_ATOMICITY,   Constraint_NVNV1_00, Constraint_NVNV1_01, Constraint_NVNV1_11, Constraint_EL1TIMESTAMP, Constraint_EL2TIMESTAMP, Constraint_OSH, Constraint_ISH, Constraint_NSH,  Constraint_NC, Constraint_WT, Constraint_WB,   Constraint_FORCE, Constraint_FORCENOSLCHECK,  Constraint_MAPTOALLOCATED,  Constraint_PMSCR_PCT_VIRT }">Constraint_NOP</a>        <a link="impl-shared.EndOfInstruction.0" file="shared_pseudocode.xml" hover="function: EndOfInstruction()">EndOfInstruction</a>();</pstext>
+    </ps>
+  </ps_section>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/memory/single/general/immediate/signed/offset/normal" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">bits(64) address;
+bits(datasize) data;
+
+<a link="AccessDescriptor" file="shared_pseudocode.xml" hover="type AccessDescriptor is ( AccessType acctype, bits(2) el, SecurityState ss, boolean acqsc, boolean acqpc, boolean relsc, boolean limitedordered, boolean exclusive, boolean atomicop, MemAtomicOp modop, boolean nontemporal, boolean read, boolean write, CacheOp cacheop, CacheOpScope opscope, CacheType cachetype, boolean pan, boolean transactional, boolean nonfault, boolean firstfault, boolean first, boolean contiguous, boolean streamingsve, boolean ls64, boolean mops, boolean rcw, boolean rcws, boolean toplevel, VARange varange, boolean a32lsmd, boolean tagchecked, boolean tagaccess, MPAMinfo mpam )">AccessDescriptor</a> accdesc = <a link="impl-shared.CreateAccDescGPR.4" file="shared_pseudocode.xml" hover="function: AccessDescriptor CreateAccDescGPR(MemOp memop, boolean nontemporal, boolean privileged, boolean tagchecked)">CreateAccDescGPR</a>(memop, nontemporal, privileged, tagchecked);
+
+if n == 31 then
+    if memop != <a link="MemOp_PREFETCH" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_PREFETCH</a> then <a link="impl-aarch64.CheckSPAlignment.0" file="shared_pseudocode.xml" hover="function: CheckSPAlignment()">CheckSPAlignment</a>();
+    address = <a link="impl-aarch64.SP.read.0" file="shared_pseudocode.xml" hover="accessor: bits(64) SP[]">SP</a>[];
+else
+    address = <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[n, 64];
+
+if ! postindex then
+    address = address + offset;
+
+case memop of
+    when <a link="MemOp_STORE" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_STORE</a>
+        if rt_unknown then
+            data = bits(datasize) UNKNOWN;
+        else
+            data = <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[t, datasize];
+        Mem[address, datasize DIV 8, accdesc] = data;
+
+    when <a link="MemOp_LOAD" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_LOAD</a>
+        data = <a link="impl-aarch64.Mem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size*8) Mem[bits(64) address, integer size, AccessDescriptor accdesc]">Mem</a>[address, datasize DIV 8, accdesc];
+        if signed then
+            <a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[t, regsize] = <a link="impl-shared.SignExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) SignExtend(bits(M) x, integer N)">SignExtend</a>(data, regsize);
+        else
+            <a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[t, regsize] = <a link="impl-shared.ZeroExtend.2" file="shared_pseudocode.xml" hover="function: bits(N) ZeroExtend(bits(M) x, integer N)">ZeroExtend</a>(data, regsize);
+
+    when <a link="MemOp_PREFETCH" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_PREFETCH</a>
+        <a link="impl-aarch64.Prefetch.2" file="shared_pseudocode.xml" hover="function: Prefetch(bits(64) address, bits(5) prfop)">Prefetch</a>(address, t&lt;4:0&gt;);
+
+if wback then
+    if wb_unknown then
+        address = bits(64) UNKNOWN;
+    elsif postindex then
+        address = address + offset;
+    if n == 31 then
+        <a link="impl-aarch64.SP.write.0" file="shared_pseudocode.xml" hover="accessor: SP[] = bits(64) value">SP</a>[] = address;
+    else
+        <a link="impl-aarch64.X.write.2" file="shared_pseudocode.xml" hover="accessor: X[integer n, integer width] = bits(width) value">X</a>[n, 64] = address;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

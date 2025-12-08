@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>UCVTF</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">UCVTF</h2><p>Multi-vector unsigned integer convert to floating-point</p>
+      <p class="aml">Convert to single-precision from unsigned 32-bit integer, each element of the two or four source vectors, and place the results in the corresponding elements of the two or four destination vectors.</p>
+      <p class="aml">This instruction follows SME2 floating-point numerical behaviors corresponding to instructions that place their results in one or more SVE Z vectors.</p>
+      <p class="aml">This instruction is unpredicated.</p>
+    
+    <p class="desc">
+      It has encodings from 2 classes:
+      <a href="#iclass_to_2reg">Two registers</a>
+       and 
+      <a href="#iclass_to_4reg">Four registers</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_to_2reg"/>Two registers<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td class="r">0</td><td colspan="4" class="lr">Zn</td><td class="lr">1</td><td colspan="4" class="lr">Zd</td><td class="lr">0</td></tr><tr class="secondrow"><td colspan="22"/><td colspan="4"/><td class="droppedname">U</td><td colspan="4"/><td/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="ucvtf_mz_z_2"/><p class="asm-code">UCVTF   { <a href="#sa_zd1" title="First destination scalable vector register of a multi-vector sequence (field Zd)">&lt;Zd1&gt;</a>.S-<a href="#sa_zd2" title="Second destination scalable vector register of a multi-vector sequence (field Zd)">&lt;Zd2&gt;</a>.S }, { <a href="#sa_zn1" title="First scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn1&gt;</a>.S-<a href="#sa_zn2" title="Second scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn2&gt;</a>.S }</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn:'0');
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd:'0');
+constant integer nreg = 2;
+boolean unsigned = TRUE;
+<a href="shared_pseudocode.html#FPRounding" title="enumeration FPRounding  {FPRounding_TIEEVEN, FPRounding_POSINF, FPRounding_NEGINF,  FPRounding_ZERO, FPRounding_TIEAWAY, FPRounding_ODD}">FPRounding</a> rounding = <a href="shared_pseudocode.html#impl-shared.FPRoundingMode.1" title="function: FPRounding FPRoundingMode(FPCRType fpcr)">FPRoundingMode</a>(FPCR[]);</p>
+    <h3 class="classheading"><a id="iclass_to_4reg"/>Four registers<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td class="r">0</td><td colspan="3" class="lr">Zn</td><td class="lr">0</td><td class="lr">1</td><td colspan="3" class="lr">Zd</td><td class="l">0</td><td class="r">0</td></tr><tr class="secondrow"><td colspan="22"/><td colspan="3"/><td/><td class="droppedname">U</td><td colspan="3"/><td colspan="2"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="ucvtf_mz_z_4"/><p class="asm-code">UCVTF   { <a href="#sa_zd1_1" title="First destination scalable vector register of a multi-vector sequence (field Zd)">&lt;Zd1&gt;</a>.S-<a href="#sa_zd4" title="Fourth destination scalable vector register of a multi-vector sequence (field Zd)">&lt;Zd4&gt;</a>.S }, { <a href="#sa_zn1_1" title="First scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn1&gt;</a>.S-<a href="#sa_zn4" title="Fourth scalable vector register of a multi-vector sequence (field Zn)">&lt;Zn4&gt;</a>.S }</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+integer n = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zn:'00');
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd:'00');
+constant integer nreg = 4;
+boolean unsigned = TRUE;
+<a href="shared_pseudocode.html#FPRounding" title="enumeration FPRounding  {FPRounding_TIEEVEN, FPRounding_POSINF, FPRounding_NEGINF,  FPRounding_ZERO, FPRounding_TIEAWAY, FPRounding_ODD}">FPRounding</a> rounding = <a href="shared_pseudocode.html#impl-shared.FPRoundingMode.1" title="function: FPRounding FPRoundingMode(FPCRType fpcr)">FPRoundingMode</a>(FPCR[]);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd1&gt;</td><td><a id="sa_zd1"/>
+        
+          
+        
+        
+          <p class="aml">For the two registers variant: is the name of the first destination scalable vector register of a multi-vector sequence, encoded as "Zd" times 2.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zd1_1"/>
+        
+          
+        
+        
+          <p class="aml">For the four registers variant: is the name of the first destination scalable vector register of a multi-vector sequence, encoded as "Zd" times 4.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd4&gt;</td><td><a id="sa_zd4"/>
+        
+          <p class="aml">Is the name of the fourth destination scalable vector register of a multi-vector sequence, encoded as "Zd" times 4 plus 3.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd2&gt;</td><td><a id="sa_zd2"/>
+        
+          <p class="aml">Is the name of the second destination scalable vector register of a multi-vector sequence, encoded as "Zd" times 2 plus 1.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn1&gt;</td><td><a id="sa_zn1"/>
+        
+          
+        
+        
+          <p class="aml">For the two registers variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zn" times 2.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zn1_1"/>
+        
+          
+        
+        
+          <p class="aml">For the four registers variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zn" times 4.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn4&gt;</td><td><a id="sa_zn4"/>
+        
+          <p class="aml">Is the name of the fourth scalable vector register of a multi-vector sequence, encoded as "Zn" times 4 plus 3.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zn2&gt;</td><td><a id="sa_zn2"/>
+        
+          <p class="aml">Is the name of the second scalable vector register of a multi-vector sequence, encoded as "Zn" times 2 plus 1.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckStreamingSVEEnabled.0" title="function: CheckStreamingSVEEnabled()">CheckStreamingSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer elements = VL DIV 32;
+array [0..3] of bits(VL) results;
+
+for r = 0 to nreg-1
+    bits(VL) operand = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[n+r, VL];
+    for e = 0 to elements-1
+        bits(32) element = <a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand, e, 32];
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[results[r], e, 32] = <a href="shared_pseudocode.html#impl-shared.FixedToFP.6" title="function: bits(N) FixedToFP(bits(M) op, integer fbits, boolean unsigned, FPCRType fpcr, FPRounding rounding, integer N)">FixedToFP</a>(element, 0, unsigned, FPCR[], rounding, 32);
+
+for r = 0 to nreg-1
+    <a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[d+r, VL] = results[r];</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

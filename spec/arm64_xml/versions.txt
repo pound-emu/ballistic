@@ -1,0 +1,9 @@
+# 
+# Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved.
+# 
+# This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to.
+main_isa: 33.59
+advsimd_isa: 29.12
+pseudocode_commit: 2022-12_rel
+pseudocode_version: 2022-12_rel
+sve: 2022-12_relb

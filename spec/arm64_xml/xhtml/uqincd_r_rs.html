@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>UQINCD (scalar)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">UQINCD (scalar)</h2><p>Unsigned saturating increment scalar by multiple of 64-bit predicate constraint element count</p>
+      <p class="aml">Determines the number of active 64-bit elements implied by the named predicate constraint, multiplies that by an immediate in the range 1 to 16 inclusive, and then uses the result to increment the scalar destination. The result is saturated to the general-purpose register's unsigned integer range.</p>
+      <p class="aml">The named predicate constraint limits the number of active elements in a single predicate to:</p>
+      <ul>
+        <li>
+          A fixed number (VL1 to VL256)
+        </li>
+        <li>
+          The largest power of two (POW2)
+        </li>
+        <li>
+          The largest multiple of three or four (MUL3 or MUL4)
+        </li>
+        <li>
+          All available, implicitly a multiple of two (ALL).
+        </li>
+      </ul>
+      <p class="aml">Unspecified or out of range constraint encodings generate an empty predicate or zero element count rather than Undefined Instruction exception.</p>
+    
+    <p class="desc">
+      It has encodings from 2 classes:
+      <a href="#iclass_32_fsreg">32-bit</a>
+       and 
+      <a href="#iclass_64_fsreg">64-bit</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_32_fsreg"/>32-bit</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">1</td><td class="lr">1</td><td class="lr">1</td><td class="lr">0</td><td colspan="4" class="lr">imm4</td><td class="l">1</td><td>1</td><td>1</td><td class="r">1</td><td class="lr">0</td><td class="lr">1</td><td colspan="5" class="lr">pattern</td><td colspan="5" class="lr">Rdn</td></tr><tr class="secondrow"><td colspan="8"/><td class="droppedname">size&lt;1&gt;</td><td class="droppedname">size&lt;0&gt;</td><td/><td class="droppedname">sf</td><td colspan="4"/><td colspan="4"/><td class="droppedname">D</td><td class="droppedname">U</td><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="uqincd_r_rs_uw"/><p class="asm-code">UQINCD  <a href="#sa_wdn" title="32-bit source and destination general-purpose register (field &quot;Rdn&quot;)">&lt;Wdn&gt;</a>{, <a href="#sa_pattern" title="Optional pattern specifier, default ALL (field &quot;pattern&quot;) [#uimm5,ALL,MUL3,MUL4,POW2,VL1,VL2,VL3,VL4,VL5,VL6,VL7,VL8,VL16,VL32,VL64,VL128,VL256]">&lt;pattern&gt;</a>{, MUL #<a href="#sa_imm" title="Immediate multiplier [1-16], default 1 (field &quot;imm4&quot;)">&lt;imm&gt;</a>}}</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 64;
+integer dn = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rdn);
+bits(5) pat = pattern;
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm4) + 1;
+boolean unsigned = TRUE;
+integer ssize = 32;</p>
+    <h3 class="classheading"><a id="iclass_64_fsreg"/>64-bit</h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">0</td><td class="lr">1</td><td class="lr">1</td><td class="lr">1</td><td class="lr">1</td><td colspan="4" class="lr">imm4</td><td class="l">1</td><td>1</td><td>1</td><td class="r">1</td><td class="lr">0</td><td class="lr">1</td><td colspan="5" class="lr">pattern</td><td colspan="5" class="lr">Rdn</td></tr><tr class="secondrow"><td colspan="8"/><td class="droppedname">size&lt;1&gt;</td><td class="droppedname">size&lt;0&gt;</td><td/><td class="droppedname">sf</td><td colspan="4"/><td colspan="4"/><td class="droppedname">D</td><td class="droppedname">U</td><td colspan="5"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="uqincd_r_rs_x"/><p class="asm-code">UQINCD  <a href="#sa_xdn" title="64-bit source and destination general-purpose register (field &quot;Rdn&quot;)">&lt;Xdn&gt;</a>{, <a href="#sa_pattern" title="Optional pattern specifier, default ALL (field &quot;pattern&quot;) [#uimm5,ALL,MUL3,MUL4,POW2,VL1,VL2,VL3,VL4,VL5,VL6,VL7,VL8,VL16,VL32,VL64,VL128,VL256]">&lt;pattern&gt;</a>{, MUL #<a href="#sa_imm" title="Immediate multiplier [1-16], default 1 (field &quot;imm4&quot;)">&lt;imm&gt;</a>}}</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 64;
+integer dn = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Rdn);
+bits(5) pat = pattern;
+integer imm = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(imm4) + 1;
+boolean unsigned = TRUE;
+integer ssize = 64;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wdn&gt;</td><td><a id="sa_wdn"/>
+        
+          <p class="aml">Is the 32-bit name of the source and destination general-purpose register, encoded in the "Rdn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xdn&gt;</td><td><a id="sa_xdn"/>
+        
+          <p class="aml">Is the 64-bit name of the source and destination general-purpose register, encoded in the "Rdn" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;pattern&gt;</td><td><a id="sa_pattern"/>
+        <p>Is the optional pattern specifier, defaulting to ALL, 
+      encoded in
+      <q>pattern</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">pattern</th>
+                <th class="symbol">&lt;pattern&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00000</td>
+                <td class="symbol">POW2</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00001</td>
+                <td class="symbol">VL1</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00010</td>
+                <td class="symbol">VL2</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00011</td>
+                <td class="symbol">VL3</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00100</td>
+                <td class="symbol">VL4</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00101</td>
+                <td class="symbol">VL5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00110</td>
+                <td class="symbol">VL6</td>
+              </tr>
+              <tr>
+                <td class="bitfield">00111</td>
+                <td class="symbol">VL7</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01000</td>
+                <td class="symbol">VL8</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01001</td>
+                <td class="symbol">VL16</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01010</td>
+                <td class="symbol">VL32</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01011</td>
+                <td class="symbol">VL64</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01100</td>
+                <td class="symbol">VL128</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01101</td>
+                <td class="symbol">VL256</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0111x</td>
+                <td class="symbol">#uimm5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">101x1</td>
+                <td class="symbol">#uimm5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10110</td>
+                <td class="symbol">#uimm5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1x0x1</td>
+                <td class="symbol">#uimm5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1x010</td>
+                <td class="symbol">#uimm5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1xx00</td>
+                <td class="symbol">#uimm5</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11101</td>
+                <td class="symbol">MUL4</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11110</td>
+                <td class="symbol">MUL3</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11111</td>
+                <td class="symbol">ALL</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm"/>
+        
+          <p class="aml">Is the immediate multiplier, in the range 1 to 16, defaulting to 1, encoded in the "imm4" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSVEEnabled.0" title="function: CheckSVEEnabled()">CheckSVEEnabled</a>();
+integer count = <a href="shared_pseudocode.html#impl-aarch64.DecodePredCount.2" title="function: integer DecodePredCount(bits(5) pattern, integer esize)">DecodePredCount</a>(pat, esize);
+bits(ssize) operand1 = <a href="shared_pseudocode.html#impl-aarch64.X.read.2" title="accessor: bits(width) X[integer n, integer width]">X</a>[dn, ssize];
+bits(ssize) result;
+
+integer element1 = <a href="shared_pseudocode.html#impl-shared.Int.2" title="function: integer Int(bits(N) x, boolean unsigned)">Int</a>(operand1, unsigned);
+(result, -) = <a href="shared_pseudocode.html#impl-shared.SatQ.3" title="function: (bits(N), boolean) SatQ(integer i, integer N, boolean unsigned)">SatQ</a>(element1 + (count * imm), ssize, unsigned);
+<a href="shared_pseudocode.html#impl-aarch64.X.write.2" title="accessor: X[integer n, integer width] = bits(width) value">X</a>[dn, 64] = <a href="shared_pseudocode.html#impl-shared.Extend.3" title="function: bits(N) Extend(bits(M) x, integer N, boolean unsigned)">Extend</a>(result, 64, unsigned);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

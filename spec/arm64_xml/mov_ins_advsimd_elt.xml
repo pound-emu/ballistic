@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="MOV_INS_advsimd_elt" title="MOV (element) -- A64" type="alias">
+  <docvars>
+    <docvar key="alias_mnemonic" value="MOV" />
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="INS" />
+    <docvar key="vector-xfer-type" value="element-from-element" />
+  </docvars>
+  <heading>MOV (element)</heading>
+  <desc>
+    <brief>
+      <para>Move vector element to another vector element</para>
+    </brief>
+    <authored>
+      <para>Move vector element to another vector element. This instruction copies the vector element of the source SIMD&amp;FP register to the specified vector element of the destination SIMD&amp;FP register.</para>
+      <para>This instruction can insert data into individual elements within a SIMD&amp;FP register without clearing the remaining bits to zero.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <aliasto refiform="ins_advsimd_elt.xml" iformid="INS_advsimd_elt">INS (element)</aliasto>
+  <classes>
+    <iclass name="Advanced SIMD" oneof="1" id="iclass_advsimd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="INS" />
+        <docvar key="vector-xfer-type" value="vector-from-element" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/transfer/vector/insert">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="29" name="op" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="28" width="8" settings="8">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="20" width="5" name="imm5" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="15" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="14" width="4" name="imm4" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="10" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="MOV_INS_asimdins_IV_v" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="alias_mnemonic" value="MOV" />
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="INS" />
+          <docvar key="vector-xfer-type" value="element-from-element" />
+        </docvars>
+        <asmtemplate><text>MOV  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ts" hover="Element size specifier (field &quot;imm5&quot;) [B,D,H,S]">&lt;Ts&gt;</a><text>[</text><a link="sa_index1" hover="Destination element index (field &quot;imm5&quot;)">&lt;index1&gt;</a><text>], </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_ts" hover="Element size specifier (field &quot;imm5&quot;) [B,D,H,S]">&lt;Ts&gt;</a><text>[</text><a link="sa_index2" hover="Source element index (field &quot;imm5:imm4&quot;)">&lt;index2&gt;</a><text>]</text></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="ins_advsimd_elt.xml#INS_asimdins_IV_v">INS</a><text>  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ts" hover="Element size specifier (field &quot;imm5&quot;) [B,D,H,S]">&lt;Ts&gt;</a><text>[</text><a link="sa_index1" hover="Destination element index (field &quot;imm5&quot;)">&lt;index1&gt;</a><text>], </text><a link="sa_vn" hover="SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.</text><a link="sa_ts" hover="Element size specifier (field &quot;imm5&quot;) [B,D,H,S]">&lt;Ts&gt;</a><text>[</text><a link="sa_index2" hover="Source element index (field &quot;imm5:imm4&quot;)">&lt;index2&gt;</a><text>]</text></asmtemplate>
+          <aliascond>Unconditionally</aliascond>
+        </equivalent_to>
+      </encoding>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="MOV_INS_asimdins_IV_v" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MOV_INS_asimdins_IV_v" symboldefcount="1">
+      <symbol link="sa_ts">&lt;Ts&gt;</symbol>
+      <definition encodedin="imm5">
+        <intro>Is an element size specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">imm5</entry>
+                <entry class="symbol">&lt;Ts&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">x0000</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xxxx1</entry>
+                <entry class="symbol">B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xxx10</entry>
+                <entry class="symbol">H</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xx100</entry>
+                <entry class="symbol">S</entry>
+              </row>
+              <row>
+                <entry class="bitfield">x1000</entry>
+                <entry class="symbol">D</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="MOV_INS_asimdins_IV_v" symboldefcount="1">
+      <symbol link="sa_index1">&lt;index1&gt;</symbol>
+      <definition encodedin="imm5">
+        <intro>Is the destination element index </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">imm5</entry>
+                <entry class="symbol">&lt;index1&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">x0000</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xxxx1</entry>
+                <entry class="symbol">imm5&lt;4:1&gt;</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xxx10</entry>
+                <entry class="symbol">imm5&lt;4:2&gt;</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xx100</entry>
+                <entry class="symbol">imm5&lt;4:3&gt;</entry>
+              </row>
+              <row>
+                <entry class="bitfield">x1000</entry>
+                <entry class="symbol">imm5&lt;4&gt;</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="MOV_INS_asimdins_IV_v" symboldefcount="1">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MOV_INS_asimdins_IV_v" symboldefcount="1">
+      <symbol link="sa_index2">&lt;index2&gt;</symbol>
+      <definition encodedin="imm5:imm4">
+        <intro>Is the source element index </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">imm5</entry>
+                <entry class="symbol">&lt;index2&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">x0000</entry>
+                <entry class="symbol">RESERVED</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xxxx1</entry>
+                <entry class="symbol">imm4&lt;3:0&gt;</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xxx10</entry>
+                <entry class="symbol">imm4&lt;3:1&gt;</entry>
+              </row>
+              <row>
+                <entry class="bitfield">xx100</entry>
+                <entry class="symbol">imm4&lt;3:2&gt;</entry>
+              </row>
+              <row>
+                <entry class="bitfield">x1000</entry>
+                <entry class="symbol">imm4&lt;3&gt;</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+        <after> Unspecified bits in "imm4" are ignored but should be set to zero by an assembler.</after>
+      </definition>
+    </explanation>
+  </explanations>
+</instructionsection>

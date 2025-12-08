@@ -1,0 +1,889 @@
+<!--
+
+Instruction Form (iform) Description XML language
+Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved.
+This document is Non-Confidential.
+
+-->
+
+<!--
+  Docvars: many elements have a child element 'docvars' enclosing a
+  list of 'docvar', each defining a key and value  pairs (perhaps
+  implying instr-class=advsimd and isa=a64).
+
+  They provide information defined by the source material
+  authors (perhaps architects defining instruction encodings and
+  aliases in spreadsheet pages).  This information is intended to be
+  helpful for those filtering or grouping instructions: they
+  frequently correlate with encoding or assembler template, but use
+  those more 'precise' things when precision is required.
+
+  In many cases larger containing objects have docvars which
+  contains whatever key/value pairs are common to all descendant
+  encodings.
+
+  Values are not free text: they are symbolic.  However, somewhere
+  there will be a 'docvars.txt' (or similar name) file, and that also
+  defines usable-in-documentation phrases associated with each
+  symbolic value.
+
+  The same sort of job used to be done with tags:
+
+  Each tag was a word or short phrase expressing something about the
+  object concerned.
+-->
+<!ELEMENT docvars (docvar+)>
+<!ELEMENT docvar EMPTY>
+<!ATTLIST docvar key CDATA #REQUIRED value CDATA #REQUIRED>
+
+<!ENTITY % simpleinline "#PCDATA">
+<!ENTITY % inline "#PCDATA | a | anchor | txt">
+
+<!--
+  Formatted text is a block of AML formatted text.
+-->
+<!ENTITY % formatted_words "asm-code|instruction|literal|xref|b|arm-defined-word|parameter|sup|sub|binarynumber|hexnumber|syntax|field|value|function|enum|enumvalue|url">
+
+<!--
+  Formatted text is a block of AML formatted text.
+-->
+<!ENTITY % formatted_text
+    "(#PCDATA|para|note|list|%formatted_words;)*">
+
+<!--
+  <para>: A paragraph of text.
+
+  A paragraph is a line of text that may or may not be
+  formatted. The <para> tag itself is *not* generated as a result of
+  AML. The generator should use this tag when emitting multiple
+  paragraphs.
+-->
+<!ELEMENT para (#PCDATA|%formatted_words;|image)*>
+
+<!--
+  <para>: Non-architectural information.
+
+  A note contains non-architectural explanatory content.
+-->
+<!ELEMENT note (para|list|%formatted_words;)*>
+
+<!--
+  <image>: an image
+-->
+<!ELEMENT image EMPTY>
+<!ATTLIST image file CDATA #REQUIRED label CDATA #REQUIRED>
+
+
+<!--
+This is the list of AML constructs that have been introduced in the A32/T32
+doc files. Expect them to change until we stabilize which ones we actually want.
+-->
+
+<!ELEMENT instruction (#PCDATA)*>
+<!ATTLIST instruction param0 CDATA #IMPLIED>
+
+<!ELEMENT list (listitem+)>
+<!ATTLIST list
+          type (ordered|unordered|var|param) #REQUIRED
+          role (standard|compressed|break|wide) #IMPLIED
+          language CDATA #IMPLIED>
+
+<!ELEMENT listitem ((term*|param*), content)>
+
+<!ELEMENT term (#PCDATA|%formatted_words;)*>
+
+<!ELEMENT param (#PCDATA|%formatted_words;)*>
+
+<!ELEMENT content (#PCDATA|list|para|%formatted_words;)*>
+
+<!ELEMENT arm-defined-word (#PCDATA)*>
+<!ELEMENT asm-code (#PCDATA)*>
+
+<!ELEMENT code (#PCDATA)*>
+
+<!ELEMENT sup (#PCDATA)*>
+<!ELEMENT sub (#PCDATA)*>
+
+<!ELEMENT binarynumber (#PCDATA)*>
+<!ELEMENT hexnumber (#PCDATA)*>
+
+<!ELEMENT syntax (#PCDATA)*>
+<!ELEMENT field (#PCDATA)*>
+<!ELEMENT value (#PCDATA)*>
+
+<!ELEMENT parameter (#PCDATA)*> <!-- TO BE REMOVED -->
+<!ELEMENT literal (#PCDATA)*> <!-- TO BE REMOVED -->
+
+<!ELEMENT function (#PCDATA)*>
+<!ELEMENT enum (#PCDATA)*>
+<!ELEMENT enumvalue (#PCDATA)*>
+
+<!ELEMENT b (#PCDATA)*> <!-- TO BE REMOVED -->
+
+<!ELEMENT xref (#PCDATA)*>
+<!ATTLIST xref linkend CDATA #REQUIRED>
+
+<!ELEMENT url (#PCDATA)*>
+
+
+<!--
+  <textsection>: a page of formatted text.
+    This is simply a formatted page of text.
+    -->
+<!ELEMENT textsection (para|list)*>
+<!ATTLIST textsection title CDATA #REQUIRED>
+
+
+<!--
+  <instructionsection>: the whole instruction page.
+    Pseudocode is optional because it isn't typically present on
+    alias pages.
+
+  Attributes:
+    id: an ID for the collection in this file, unique across the
+      files.
+    title: an overall title, used as the top-title for a web page.
+-->
+<!-- There can acually be 0, 1 or 2 ps_section elements inside the
+     <instructionsection>, but that can't be represented here.
+     ps_section elements may also have constrained_unpredictables
+     after them. -->
+<!ELEMENT instructionsection (docvars, heading, desc, affected_by_sme*, operationalnotes?,
+                              (alias_list | aliasto)?,
+                              classes, aliasmnem*, explanations?,
+                              aliastablehook?,
+                              (ps_section | constrained_unpredictables)*, exceptions?)>
+<!ATTLIST instructionsection id CDATA #REQUIRED
+                             title CDATA #REQUIRED
+                             tags CDATA #IMPLIED
+                             type (alias|instruction) #IMPLIED>
+
+<!--
+  <a>: generally a hotlink (<anchor> used for definitions).
+
+  Attributes:
+    href: HTML-style in-file reference for links between items on the
+      page.
+    link: in-file reference for other files, used in conjunction with
+    file: file part of a reference.  You can form an HTML reference
+      from @file#@link
+    hover: recommended hover text, where implemented (like HTML
+      'title').  A very short description of the thing linked to.
+-->
+<!ELEMENT a (%simpleinline;)*>
+<!ATTLIST a href CDATA #IMPLIED
+            link CDATA #IMPLIED file CDATA #IMPLIED
+            hover CDATA #IMPLIED>
+
+<!--
+  <anchor>: like HTML <a name="xx">, a target for a hotlink.
+
+  Attributes:
+    link: the hotlink ID.
+    file: obsolete, always empty.  Deprecated
+    hover: hover text.  Filled in for pseudocode definitions,
+      where it might reasonably be suggesting the text to be used
+      by linkers, though this is not in fact used.
+-->
+
+<!ELEMENT anchor (#PCDATA)>
+<!ATTLIST anchor link CDATA #REQUIRED
+                 file CDATA #IMPLIED
+                 hover CDATA #IMPLIED>
+
+<!--
+  <heading>: title for top of file and as used in alphabetic indexes
+-->
+<!ELEMENT heading (%inline;)*>
+
+<!--
+  <desc>: descriptive text for the top of the instruction page
+    Comes in three parts, and only 'brief' is required.
+-->
+<!ELEMENT desc (brief, authored?, description?, encodingnotes?, syntaxnotes?, alg*, (longer, alg*)?, status?, predicated?, uses_dit?, takes_movprfx?, takes_pred_movprfx?, is_wide_zm?, affected_by_sme?)>
+
+<!--
+  <brief>: wraps first sentence summary of the instructions on this
+    page.  Suitable for use in an index.
+
+  Attributes are related to the generation of this data:
+    synth = 'single' this text might have been the result of a merge,
+      but in this case there was only one choice of input text, so
+      it's reliable
+    checked = 'yes': autogenerated as 'checked="no"', should be
+      cleaned by a human editor.
+    enclist: rarely conserved, but legal.  A comma-separated list of
+      the names of encodings whose descriptions were originally merged
+      to create this description.
+-->
+<!ELEMENT brief %formatted_text;>
+<!ATTLIST brief synth (single) #IMPLIED
+                checked (yes) #IMPLIED
+                enclist CDATA #IMPLIED>
+
+<!ELEMENT description (#PCDATA|list|para|%formatted_words;)*>
+<!ELEMENT status (#PCDATA)>
+<!ELEMENT predicated (#PCDATA)>
+<!--
+    <uses_dit>: instruction timing is data-insensitive if PSTATE.DIT is 1.
+    
+    Attributes:
+      condition: when present, instruction timing is only data-independent
+        if PSTATE.DIT is 1 AND this condition is satisfied.
+-->
+<!ELEMENT uses_dit (#PCDATA)>
+<!ATTLIST uses_dit condition CDATA #IMPLIED>
+
+<!ELEMENT takes_movprfx (#PCDATA)>
+<!ELEMENT takes_pred_movprfx (#PCDATA)>
+<!ELEMENT is_wide_zm (#PCDATA)>
+
+
+
+<!--
+  <alg>: algebraic description of instruction
+
+  Attributes:
+    howmany: counts the number of <alg> elements, if
+      there are more than one.
+-->
+<!ELEMENT alg (#PCDATA)>
+<!ATTLIST alg howmany CDATA #IMPLIED>
+
+<!--
+  <longer>: more description text than <brief>, where required
+-->
+<!ELEMENT longer %formatted_text;>
+
+<!--
+  <authored>:
+-->
+<!ELEMENT authored %formatted_text;>
+
+<!--
+  <encodingnotes>:
+-->
+<!ELEMENT encodingnotes %formatted_text;>
+
+
+<!--
+  <affected_by_sme>: are subsequent instructions which depend on this
+                     instruction's output delayed by FEAT_SME and Streaming
+                     mode? Absent if no.
+  Attributes:
+    output: the output of this instruction.
+-->
+<!ELEMENT affected_by_sme EMPTY>
+<!ATTLIST affected_by_sme output CDATA #REQUIRED>
+<!--
+  <operationalnotes>:
+-->
+<!ELEMENT operationalnotes %formatted_text;>
+
+<!--
+  <syntaxnotes>:
+-->
+<!ELEMENT syntaxnotes %formatted_text;>
+
+<!-- Alias pages and their cross references -->
+
+<!--
+ <alias_list>: list of aliases made from this instruction.
+               Present even if empty.
+ Attributes:
+   howmany: counts the number of <aliasref> elements, zero if none.
+-->
+
+<!ELEMENT alias_list (alias_list_intro?, aliasref*, alias_list_outro?)>
+<!ATTLIST alias_list howmany CDATA #REQUIRED>
+
+<!--
+ <alias_list_intro>: introductory text to a paragraph listing dependent
+               aliases.
+-->
+<!ELEMENT alias_list_intro (#PCDATA)>
+
+<!--
+  <aliasref>: a dependent alias, whose contents are the title of the
+              alias page.
+  Attributes:
+    aliaspageid: the unique ID of the alias' page.
+    aliasfile: the filename, relative to this one, of the alias' file.
+    hover: the description of the alias' page (as it might appear in
+           an index), a useful source for browser hover text.
+    punct: (purely for constructing list text), what to append to the
+           text when forming a list, usually a comma or full-stop.
+-->
+<!ELEMENT aliasref (text, aliaspref+)>
+<!ATTLIST aliasref aliaspageid CDATA #REQUIRED
+                   aliasfile CDATA #REQUIRED
+                   hover CDATA #IMPLIED
+                   punct CDATA #REQUIRED>
+
+<!--
+  <aliaspref>: this element contains the conditions under which this alias
+              is the preferred disassembly.
+  Attributes:
+    labels: textual label mapping to the encoding this alias applies to.
+-->
+<!ELEMENT aliaspref (%inline;)*>
+<!ATTLIST aliaspref labels CDATA #IMPLIED>
+
+<!--
+  <alias_list_outro>: additional text that appears following the list
+                     of aliases that appears after the <alias_list_intro>.
+-->
+<!ELEMENT alias_list_outro (#PCDATA | text | aliastablelink)*>
+
+<!--
+  <aliastablelink>: this element specifies where to insert a link to the
+                    alias table.
+-->
+<!ELEMENT aliastablelink EMPTY>
+
+<!--
+  <aliasto>: this element appears on a page describing one or more
+             aliases, and references the instruction page which
+             contains the instructions to which these are aliases.
+  Attributes:
+    refiform: the file name (relative to this one) of the instruction
+              iform page
+    iformid: the unique ID of the instruction iform page
+-->
+<!ELEMENT aliasto (#PCDATA)>
+<!ATTLIST aliasto refiform CDATA #REQUIRED
+                  iformid CDATA #REQUIRED>
+
+<!--
+  <asmtemplate>: assembler template line
+
+  Attributes:
+    role: distinguishes asmtemplate lines provided for aliases (both
+      as a prototype, and as a description of what the alias maps to).
+-->
+<!ELEMENT asmtemplate (%inline; | text)*>
+<!ATTLIST asmtemplate role (alias_prototype | alias_equivalent_to) #IMPLIED
+                      comment CDATA #IMPLIED>
+
+<!--
+  <aliasmnem>: alias section relating to one mnemonic which aliases to
+    instructions on this page.
+
+  Attributes:
+    mnemonic: the instruction mnemonic concerned.
+    id: a unique ID for this section across all the files in the 'site'
+    heading: text distinguishing this from other alias sections on
+      this page (so it is usable as a heading to the aliast description).
+    iformqual: any parenthetical part of the instruction page header,
+      which might be a good way to distinguish the aliases here from others.
+-->
+<!ELEMENT aliasmnem (desc?, (docvars?, (alias+ | aliases+)))>
+<!ATTLIST aliasmnem mnemonic CDATA #REQUIRED
+                    id CDATA #REQUIRED
+                    iformqual CDATA #IMPLIED
+                    heading CDATA #IMPLIED>
+
+<!--
+  <aliases>: wraps around a possible list of different aliases,
+    alternative ways to write an instruction which corresponds to an
+    encoding on this page.
+
+  Attributes:
+    conditions: where the interpretation of an alias depends on
+      parameter values, this explains when this particular
+      interpretation applies. "conditions" also appears in each
+       alias, but use of the value from here is preferred.
+-->
+<!ELEMENT aliases (alias+)>
+<!ATTLIST aliases conditions CDATA #IMPLIED>
+
+<!--
+  <alias>: an alias is an instruction which expands to another (probably
+    more complex) one.  They're expressed as a couple of assembler
+    templates: how you write it, and how it comes out.
+
+  Attributes:
+    encname: the unique encoding name of the related encoding.
+    assembler_prototype, equivalent_to: plain text of the alias
+      prototype and the assembler version of the equivalent
+      instruction.  If you want plain text, these versions are
+      preferred: the text in the content of the following
+      <asmtemplate>s should be identical (but is littered with
+      cross-reference and decoration tags).
+    enctag: tag list from relevant encoding (no obsolete: see "tags"
+      comment above)
+    conditions: repeats information from 'aliases' for backward
+      compatibility reasons.  Please use the value from the parent
+      'aliases' element.
+    description: a brief description of this particular form of
+      alias.  These descriptions are merged into the <desc>
+      description components at the top of the <aliasmnem>.
+-->
+<!ELEMENT alias (docvars?, asmtemplate, asmtemplate, conditionexpr?)>
+<!ATTLIST alias encname CDATA #REQUIRED
+                equivalent_to CDATA #REQUIRED
+                assembler_prototype CDATA #REQUIRED
+                enctag CDATA #IMPLIED
+                conditions CDATA #IMPLIED
+                description CDATA #IMPLIED>
+
+<!ELEMENT conditionexpr (pstext)>
+
+<!--
+  <c>: one element of a <box>
+
+  Attributes:
+    colspan: how many bit-positions this element takes up.  It's
+      omitted when it just occupies one bit position.
+-->
+<!ELEMENT c (#PCDATA)>
+<!ATTLIST c colspan CDATA #IMPLIED>
+
+<!--
+  <box>: defines an instruction bitfield
+     If the bitfield defines a binary value, it will be recorded
+     bit-by-bit in the content of <c> child elements.
+
+  Attributes:
+     name: optional field name
+     hibit: highest bit number
+     width: field width in bits, can be omitted if it's just one bit.
+     usename: is a hint that a field name ought to be
+       displayed, even if a bit-value is also specified.
+     settings: integer attribute counts the number of bit-values specified,
+       so also tells you whether the bit-values need to be displayed.
+     psbits: contains any bit-setting relevant to the
+       pseudocode encoding (named by <regdiagram psname="xxx"...>, but
+       which has been overwritten to help present this page's
+       instruction encodings.  If present, it will most often just be
+       'x's, indicating that the field wasn't set at all by the
+       'psname'd encoding.  But it could be a multibit setting ("100x")
+       or even a not-equal-to condition "!= 1x1".
+     constraint: a complex condition (typically !=).
+ -->
+<!ELEMENT box (c*)>
+<!ATTLIST box hibit CDATA #REQUIRED
+              name CDATA #IMPLIED
+              width CDATA #IMPLIED
+              usename (1) #IMPLIED
+              settings CDATA #IMPLIED
+              psbits CDATA #IMPLIED
+              constraint CDATA #IMPLIED
+              comp CDATA #IMPLIED>
+
+<!--
+  <regdiagram>: describes the field breakdown of an encoding,
+    as a series of boxes in high-first, left-to-right order.  The
+    regdiagram found on a page corresponds to the encoding node
+    associated with the operation pseudocode.  A particular
+    encoding's bit-encoding is defined by both the <regdiagram> and
+    the encoding's own <box>es
+
+    Attributes:
+      form: selects 16-bit, 2 x 16-bit or 32-bit organisation
+      tworows: alerts you if any box has both a name and bit-values,
+        which are likely to have to be rendered in two rows.
+      encname: obsolete field for compatibility only.
+      psname: the unique name of the associated pseudocode.  Always
+        present (marked as '#IMPLIED' for compatibility reasons).
+      constraint: any additional constraints that have not been
+        described in the diagram.
+ -->
+<!ELEMENT regdiagram (box*)>
+<!ATTLIST regdiagram form (16 | 16x2 | 32) #REQUIRED
+                     tworows (1) #IMPLIED
+                     encname CDATA #IMPLIED
+                     psname CDATA #IMPLIED
+                     constraint CDATA #IMPLIED>
+
+<!--
+  <encoding>: defines an instruction encoding, the basic unit of the
+    instruction set.  It contains information to refine the encoding
+    (starting from the regdiagram in the same class, above) and an
+    assembler template
+
+  Attributes:
+    name: encoding ID, unique across the whole directory of XML files.
+    oneofinclass: how many encodings are sharing this <iclass>
+    oneof: how many encodings are to be found in this whole file
+    label: text which differentiates this encoding from others in the
+      class, generated from the tags.
+    bitdiffs: an encoding may be a refinement of the generic encoding
+      shown in the <iclass>'s <regdiagram>.  This encoding is formally
+      presented in <box> elements, but this attribute provides a
+      human-friendly description of any extra encoding.
+    tags: a comma-separated list of tags (with tags common to all
+      elements in the class omitted).
+-->
+<!ELEMENT encoding (docvars?, arch_variants?, box*, asmtemplate+, equivalent_to?)>
+<!ATTLIST encoding name CDATA #REQUIRED oneofinclass CDATA #REQUIRED
+                   oneof CDATA #REQUIRED label CDATA #REQUIRED
+                   bitdiffs CDATA #IMPLIED
+                   tags CDATA #IMPLIED>
+
+<!--
+  <equivalent_to>: assembler templates on alias pages are mapped to
+    encodings on the associate instruction page, with a condition.
+-->
+<!ELEMENT equivalent_to (asmtemplate, aliascond)>
+<!ELEMENT aliascond (%inline;)*>
+
+<!--
+  <classes>: wraps around a set of iclasses, but first of all you get a
+    <classintro> paragraph (to be in the same <iclass> two
+    encodings need to share decode pseudocode and an encoding diagram).
+    Many pages have just one iclass, but when they don't
+    there is some text in <classintro> which explains what the
+    iclasses are.
+
+  Attributes:
+    count: at least 2
+-->
+<!ELEMENT classesintro (%inline;)*>
+<!ATTLIST classesintro count CDATA #IMPLIED>
+<!ELEMENT classes (classesintro?, iclass+)>
+
+<!--
+  <iclassintro>: currently unused.  May vanish.  But it is a place one
+    could put any introductory text applying to all instruction
+    encodings in the <iclass>
+
+  Attributes:
+    count: number of encodings but the same information (the number
+      of encodings in the iclass) is available in
+      <iclass ... no_encodings="xx"..>
+-->
+<!ELEMENT iclassintro (txt | a)*>
+<!ATTLIST iclassintro count CDATA #IMPLIED>
+
+<!--
+  <iclass>: a class of instructions sharing a register diagram.
+    Unless they're aliases, they'll also have some decode pseudocode.
+    The building block of the page.
+
+  Attributes:
+    oneof: how many <iclass>es are in the <class>.
+    name: when oneof is > 1, this will be a distinctive heading for
+      this iclass among all the iclasses.
+    no_encodings: how many <encoding> sections are to be found herein.
+    id: a name which is unique among the <iclass>es in this file.
+    isa: instruction set name (same as the unique ID of the
+      instruction set root in the encoding hierarchy).
+-->
+<!ELEMENT iclass (docvars?, iclassintro?, arch_variants?, regdiagram, encoding+, ps_section?, constrained_unpredictables?)>
+<!ATTLIST iclass name CDATA #REQUIRED
+          id CDATA #REQUIRED
+          oneof CDATA #REQUIRED
+          no_encodings CDATA #REQUIRED
+          isa CDATA #REQUIRED>
+
+<!--
+ <arch_variants>: wrapping multiple <arch_variant>s
+-->
+
+<!ELEMENT arch_variants (arch_variant*)>
+
+<!--
+ <arch_variant>: a variant of the Arm architecture
+   that this instruction encoding is defined for. e.g. "Armv8-M".
+
+ Attributes:
+   name: text describing the variant.
+-->
+
+<!ELEMENT arch_variant EMPTY>
+<!ATTLIST arch_variant name CDATA #IMPLIED
+                       feature CDATA #IMPLIED>
+
+<!--
+ <explanations>: wrapping multiple symbol <explanation>s
+
+ Attributes:
+   scope: historical, earlier layouts had explanations in different places
+-->
+<!ELEMENT explanations (explanation*)>
+<!ATTLIST explanations scope (all) #REQUIRED>
+
+<!--
+  <explanation>: an explanation for a single symbol.  This can be
+     provided as simple unstructured text (<account>) or as a table of
+     values (<definition>).
+
+  Attributes:
+    enclist: is a comma-separated list of encoding IDs to which this
+      explanation applies;
+    symboldefcount: when a symbol is defined more than once
+      (different explanations apply to different encodings or aliases)
+      this counts up through the definitions starting at number 1.
+      Useful to renderers which choose not to repeat the symbol with
+      the different definitions.
+    tags: a comma-separated taglist (see top of file), which can be
+      used to produce meaningful differentiating text between
+      multiple appearances of the symbol.  Optional, but always
+      provided if symboldefcount > 1).
+-->
+<!ELEMENT explanation (symbol, (account | definition), arch_variants?)>
+<!ATTLIST explanation enclist CDATA #REQUIRED
+                      tags CDATA #IMPLIED
+                      symboldefcount CDATA #REQUIRED>
+
+<!--
+  <symbol>: defines the assembler-language variable 'symbol' being
+     explained.
+
+  Attributes:
+    link: defines the anchor text used by references to
+      this symbol on the same page (why isn't it called 'anchor'?
+      would have been better).
+-->
+<!ELEMENT symbol (%inline;)*>
+<!ATTLIST symbol link CDATA #IMPLIED>
+
+<!--
+  <account>: used for an unstructured-text explanation of the
+     symbol.  For historical reasons, the text is wrapped inside a
+     redundant <intro> sub-element.
+
+  Attributes:
+    encodedin: instruction bit-field specifier which says exactly
+      which bits are involved in this account (same as field in
+      <definition> below)
+ -->
+<!ELEMENT intro %formatted_text;>
+<!ELEMENT account (docvars?, intro)>
+<!ATTLIST account encodedin CDATA #IMPLIED>
+
+<!--
+  <definition>: a tabulated description relating to a symbol.
+    Introduced by some unstructured text, optionally followed by
+     some too.
+
+  Attributes:
+    encodedin: instruction bit-field specifier which says exactly
+      which bits are involved in this definition (same as in
+      <account>, above).
+    tabulatedwith: seems to be historical, but will be kept for now.
+-->
+<!ELEMENT definition (intro, table, after?)>
+<!ATTLIST definition encodedin CDATA #REQUIRED
+                     tabulatedwith CDATA #IMPLIED>
+<!ELEMENT after (%inline;)*>
+
+<!--
+  <table>: table used to provide a symbol description by
+    listing off possible bitfield values against the text to
+    substitute for the symbol.  The table may have a 'class', which
+    in this case is always 'valuetable'
+
+    However, this table is deliberately (which may mean imperfectly)
+    modelled on a "standard" XML table recommendation for DocBook
+    or some such.
+-->
+<!ELEMENT table (tgroup+)>
+<!ATTLIST table class (valuetable) #REQUIRED>
+
+<!ELEMENT tgroup (thead, tbody)>
+<!ATTLIST tgroup cols CDATA #REQUIRED>
+
+<!ELEMENT thead (row+)>
+<!ELEMENT tbody (row+)>
+
+<!ELEMENT row (entry+)>
+
+<!--
+  <entry>: table cell, required to have a 'class'
+
+  Attributes:
+    iclasslink, iclassfile: used to generate a hotlink
+      around the entry's text, typically back to the encoding index.
+    bitwidth: (only for the header row of bitfield classes), the
+      bitwidth of the field.
+-->
+<!ELEMENT entry (%inline; | arch_variants)*>
+<!ATTLIST entry class (symbol | bitfield | feature) #REQUIRED
+                bitwidth CDATA #IMPLIED
+                iclasslink CDATA #IMPLIED
+                iclasslinkfile CDATA #IMPLIED>
+
+<!--
+  <aliastablehook>: anchor used to position the table of aliases on browsable
+                    XML pages.
+
+  Attributes:
+    anchor: the name of the anchor for the table
+-->
+<!ELEMENT aliastablehook (#PCDATA)>
+<!ATTLIST aliastablehook anchor CDATA #REQUIRED>
+
+
+<!--
+  <ps_section>: a number of pieces of related pseudocode.
+
+  Attributes:
+    howmany: how many <ps> sections are underneath:
+      may be useful to XSL scripts. Will always be "1"
+      except in the 'shared_pseudocode' page.
+-->
+<!ELEMENT ps_section (ps+)>
+<!ATTLIST ps_section howmany CDATA #REQUIRED>
+
+<!--
+  <ps>: piece of pseudocode consisting of (in theory) multiple
+    <pstext>s, each being the pseudocode for that particular
+    repository section (In practice, there is only going to be one
+    <pstext> per <ps>.
+
+  Attributes:
+    name: a name which uniquely identifies this piece of
+      pseudocode within the pseudocode source repository.
+      When multiple encodings share identical "postdecode"
+      and/or "encoding" pseudocode, the shared name will
+      be chosen randomly from one of the encodings, but
+      by construction they must all contain identical text.
+    mylink: decode pseudocode gets a link anchor
+      which is in fact just the name with '.' substituted for '/',
+      so it can be used as legal link text (probably useless)
+    enclabels: obsolete, I think.  Never set to anything
+      sections: the number of <pstext> sections wrapped here.  Should
+      always be "1" (separate sections, eg 'postdecode' and 'execute')
+      get their own ps_section
+    secttype: what sort of pseudocode is this, usable for
+      a browsable/printable section heading.
+-->
+<!ELEMENT ps (pstext)>
+<!ATTLIST ps name CDATA #REQUIRED
+          mylink CDATA #IMPLIED
+          enclabels CDATA #IMPLIED
+          sections CDATA #REQUIRED
+          secttype CDATA #IMPLIED>
+
+<!ELEMENT psdoc (#PCDATA)>
+
+<!--
+  <pstext>: a chunk of pseudocode.  Pseudocode is text in which
+      line-endings and indentation matter.
+
+  Attributes:
+    section: suitable for use as a title, if ever there was a need
+      for one (XXX though see <ps secttype>)
+    rep_section: the name for this pseudocode repository subsection
+        "decode" - per-encoding decode, at least one per file
+        "postdecode" - common/shared decode, at most one per file
+        "execute" - common execute/operation, exactly one per file
+      So to identify a piece of pseudocode look at
+      <ps name="xx"> and <pstext rep_section="xxx">).
+    mayhavelinks: in general pseudocode text is full of links to
+      definitions and stuff.  This warns the renderer.
+-->
+<!ELEMENT pstext (%inline;)*>
+<!ATTLIST pstext section CDATA #REQUIRED
+                 rep_section CDATA #IMPLIED
+                 mayhavelinks (1) #IMPLIED>
+
+<!--
+  <constrained_unpredictables>: describes what happens in CONSTRAINED
+  UNPREDICTABLE situations.
+
+  Attributes:
+    encoding: The encoding with which the UNPREDICTABLE situations are
+      associated, e.g. "T1".
+    ps_block: The pseudocode block with which the UNPREDICTABLE situations are
+      associated, e.g. "Operation".
+-->
+<!ELEMENT constrained_unpredictables (cu_case+)>
+<!ATTLIST constrained_unpredictables encoding CDATA #IMPLIED
+                                     ps_block CDATA #IMPLIED>
+
+<!--
+  <cu_case>: describes what happens in a CONSTRAINED
+  UNPREDICTABLE situation with a particular condition.
+-->
+<!ELEMENT cu_case (cu_cause, cu_type+, arch_variants?)>
+
+<!--
+  <cu_cause>: describes the condition under which a CONSTRAINED
+  UNPREDICTABLE situation occurs. This is expressed using pseudocode.
+-->
+<!ELEMENT cu_cause (pstext)>
+
+<!--
+  <cu_type>: describes a possible outcome of a CONSTRAINED
+  UNPREDICTABLE situation.
+
+  Attributes:
+    constraint: the ID of an outcome, e.g. "Constraint_UNKNOWN".
+    constraint_text: text description for an outcome. Not recommended,
+      but made available for those cases where no ID has been assigned.
+-->
+<!ELEMENT cu_type (cu_type_variable*,cu_type_text*)>
+<!ATTLIST cu_type constraint CDATA #IMPLIED>
+
+<!--
+  <cu_type_variable>: describes a variable used in a constraint.
+
+  Attributes:
+    name: the name of the variable, e.g. "bitstring".
+    value: the value of the variable, e.g. "hw1[3:0]".
+-->
+<!ATTLIST cu_type_variable name CDATA #REQUIRED
+                           value CDATA #REQUIRED>
+
+<!--
+  <cu_type_text>: Free text describing a constraint.
+-->
+<!ELEMENT cu_type_text (#PCDATA)*>
+
+<!--
+  <exceptions>: a list of exceptions that this instruction can cause.
+
+  Exceptions are grouped together in <exception_group> elements.
+  <exception_group> elements contain <exception> elements.
+
+  Attributes:
+    group_name: this group of exceptions only applies in certain
+      circumstances.
+-->
+<!ELEMENT exceptions (exception_group*)>
+
+<!ELEMENT exception_group (exception+)>
+<!ATTLIST exception_group group_name CDATA #IMPLIED>
+
+<!--
+  <exception>: data about a particular exception this instruction
+      can cause.
+
+  Attributes:
+    register: the system register in which a bit or bits are set
+      when this particular exception is caused.
+    field: the field in @register which is set to a value when
+      this particular exception is caused. (If not present,
+      assume that any of the register fields in the register
+      being set indicates this exception has been caused.)
+    value: the value that @field in @register is set to when
+      this particular exception is caused. (If not present,
+      assume that the field is set to 1.)
+    name: if @register is not present, the exception will instead
+      be described using the name it has in the source pseudocode.
+      This is a fallback and so will only be present in few cases.
+-->
+
+<!ELEMENT exception EMPTY>
+<!ATTLIST exception register CDATA #IMPLIED
+                    field CDATA #IMPLIED
+                    value CDATA #IMPLIED
+                    name CDATA #IMPLIED>
+
+<!--
+  <txt>: used to wrap text in sections and avoid mixed
+    mode. Probably a mistake and no longer required.
+
+  Attributes:
+    class: can be used to mark substrings for markup purposes.
+-->
+<!ELEMENT txt (%inline;)*>
+<!ATTLIST txt class CDATA #IMPLIED>
+
+<!--
+  <text>: wrap PCDATA to avoid mixed mode.  Historical... deprecated
+-->
+<!ELEMENT text (#PCDATA)>

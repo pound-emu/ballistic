@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>MOV (inverted wide immediate) -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">MOV (inverted wide immediate)</h2>
+      <p class="aml">Move (inverted wide immediate) moves an inverted 16-bit immediate value to a register.</p>
+    <p>
+        This is an alias of
+        <a href="movn.html">MOVN</a>.
+        This means:
+      </p><ul><li>
+          The encodings in this description are named to match the encodings of
+          <a href="movn.html">MOVN</a>.
+        </li><li>The description of <a href="movn.html">MOVN</a> gives the operational pseudocode, any <span class="arm-defined-word">constrained unpredictable</span> behavior, and any operational information for this instruction.</li></ul>
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="lr">sf</td><td class="l">0</td><td class="r">0</td><td class="l">1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">hw</td><td colspan="16" class="lr">imm16</td><td colspan="5" class="lr">Rd</td></tr><tr class="secondrow"><td/><td colspan="2" class="droppedname">opc</td><td colspan="6"/><td colspan="2"/><td colspan="16"/><td colspan="5"/></tr></tbody></table></div><div class="encoding"><h4 class="encoding">32-bit<span class="bitdiff"> (sf == 0 &amp;&amp; hw == 0x)</span></h4><a id="MOV_MOVN_32_movewide"/><p class="asm-code">MOV  <a href="#sa_wd" title="32-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Wd&gt;</a>, #<a href="#sa_imm_1" title="32-bit immediate, the bitwise inverse of which can be (field &quot;imm16:hw&quot;)">&lt;imm&gt;</a></p><p class="equivto">
+      is equivalent to
+    </p>
+          <p class="asm-code"><a href="movn.html#MOVN_32_movewide">MOVN</a> <a href="#sa_wd" title="32-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Wd&gt;</a>, #&lt;imm16&gt;, LSL #<a href="#sa_shift" title="Amount by which to shift the immediate left (field &quot;hw&quot;)">&lt;shift&gt;</a></p>
+          <p class="equivto">
+          and is the preferred disassembly when
+          <span class="pseudocode">! (IsZero(imm16) &amp;&amp; hw != '00') &amp;&amp; ! IsOnes(imm16)</span>.
+        </p>
+        </div><div class="encoding"><h4 class="encoding">64-bit<span class="bitdiff"> (sf == 1)</span></h4><a id="MOV_MOVN_64_movewide"/><p class="asm-code">MOV  <a href="#sa_xd" title="64-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Xd&gt;</a>, #<a href="#sa_imm_2" title="64-bit immediate, the bitwise inverse of which can be (field &quot;imm16:hw&quot;)">&lt;imm&gt;</a></p><p class="equivto">
+      is equivalent to
+    </p>
+          <p class="asm-code"><a href="movn.html#MOVN_64_movewide">MOVN</a> <a href="#sa_xd" title="64-bit general-purpose destination register (field &quot;Rd&quot;)">&lt;Xd&gt;</a>, #&lt;imm16&gt;, LSL #<a href="#sa_shift_1" title="Amount by which to shift the immediate left (field &quot;hw&quot;)">&lt;shift&gt;</a></p>
+          <p class="equivto">
+          and is the preferred disassembly when
+          <span class="pseudocode">! (IsZero(imm16) &amp;&amp; hw != '00')</span>.
+        </p>
+        </div>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Wd&gt;</td><td><a id="sa_wd"/>
+        
+          <p class="aml">Is the 32-bit name of the general-purpose destination register, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Xd&gt;</td><td><a id="sa_xd"/>
+        
+          <p class="aml">Is the 64-bit name of the general-purpose destination register, encoded in the "Rd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;imm&gt;</td><td><a id="sa_imm_1"/>
+        
+          
+        
+        
+          <p class="aml">For the 32-bit variant: is a 32-bit immediate, the bitwise inverse of which can be encoded in "imm16:hw", but excluding 0xffff0000 and 0x0000ffff</p>
+        
+      </td></tr><tr><td/><td><a id="sa_imm_2"/>
+        
+          
+        
+        
+          <p class="aml">For the 64-bit variant: is a 64-bit immediate, the bitwise inverse of which can be encoded in "imm16:hw".</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;shift&gt;</td><td><a id="sa_shift"/>
+        
+          
+        
+        
+          <p class="aml">For the 32-bit variant: is the amount by which to shift the immediate left, either 0 (the default) or 16, encoded in the "hw" field as &lt;shift&gt;/16.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_shift_1"/>
+        
+          
+        
+        
+          <p class="aml">For the 64-bit variant: is the amount by which to shift the immediate left, either 0 (the default), 16, 32 or 48, encoded in the "hw" field as &lt;shift&gt;/16.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/><div class="alias_ps_section"><h3 class="pseudocode">Operation</h3><p>The description of <a href="movn.html">MOVN</a> gives the operational pseudocode for this instruction.</p></div><h3>Operational information</h3>
+    <p class="aml">If PSTATE.DIT is 1:</p>
+    <ul>
+      <li>The execution time of this instruction is independent of:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+      <li>The response of this instruction to asynchronous exceptions does not vary based on:<ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li>
+    </ul>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

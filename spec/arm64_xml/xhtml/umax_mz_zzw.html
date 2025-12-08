@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>UMAX (multiple vectors)</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">UMAX (multiple vectors)</h2><p>Multi-vector unsigned maximum</p>
+      <p class="aml">Determine the unsigned maximum of elements of the two or four second source vectors and the corresponding elements of the two or four first source vectors and destructively place the results in the corresponding elements of the two or four first source vectors.</p>
+      <p class="aml">This instruction is unpredicated.</p>
+    
+    <p class="desc">
+      It has encodings from 2 classes:
+      <a href="#iclass_to_2reg">Two registers</a>
+       and 
+      <a href="#iclass_to_4reg">Four registers</a>
+    </p>
+    <h3 class="classheading"><a id="iclass_to_2reg"/>Two registers<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">1</td><td colspan="4" class="lr">Zm</td><td class="l">0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="r">0</td><td class="l">0</td><td>0</td><td>0</td><td class="r">0</td><td class="lr">0</td><td colspan="4" class="lr">Zdn</td><td class="lr">1</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="4"/><td colspan="7"/><td colspan="4"/><td/><td colspan="4"/><td class="droppedname">U</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="umax_mz_zzw_2x2"/><p class="asm-code">UMAX    { <a href="#sa_zdn1" title="First scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>-<a href="#sa_zdn2" title="Second scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn2&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a> }, { <a href="#sa_zdn1" title="First scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>-<a href="#sa_zdn2" title="Second scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn2&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a> }, { <a href="#sa_zm1" title="First scalable vector register of a multi-vector sequence (field Zm)">&lt;Zm1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>-<a href="#sa_zm2" title="Second scalable vector register of a multi-vector sequence (field Zm)">&lt;Zm2&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a> }</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer dn = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zdn:'0');
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zm:'0');
+constant integer nreg = 2;
+boolean unsigned = TRUE;</p>
+    <h3 class="classheading"><a id="iclass_to_4reg"/>Four registers<span style="font-size:smaller;"><br/>(FEAT_SME2)
+          </span></h3><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="r">1</td><td colspan="2" class="lr">size</td><td class="lr">1</td><td colspan="3" class="lr">Zm</td><td class="l">0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="r">0</td><td class="l">0</td><td>0</td><td>0</td><td class="r">0</td><td class="lr">0</td><td colspan="3" class="lr">Zdn</td><td class="lr">0</td><td class="lr">1</td></tr><tr class="secondrow"><td colspan="8"/><td colspan="2"/><td/><td colspan="3"/><td colspan="8"/><td colspan="4"/><td/><td colspan="3"/><td/><td class="droppedname">U</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="umax_mz_zzw_4x4"/><p class="asm-code">UMAX    { <a href="#sa_zdn1_1" title="First scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>-<a href="#sa_zdn4" title="Fourth scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn4&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a> }, { <a href="#sa_zdn1_1" title="First scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>-<a href="#sa_zdn4" title="Fourth scalable vector register of a multi-vector sequence (field Zdn)">&lt;Zdn4&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a> }, { <a href="#sa_zm1_1" title="First scalable vector register of a multi-vector sequence (field Zm)">&lt;Zm1&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a>-<a href="#sa_zm4" title="Fourth scalable vector register of a multi-vector sequence (field Zm)">&lt;Zm4&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;size&quot;) [B,D,H,S]">&lt;T&gt;</a> }</p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSME2.0" title="function: boolean HaveSME2()">HaveSME2</a>() then UNDEFINED;
+constant integer esize = 8 &lt;&lt; <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(size);
+integer dn = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zdn:'00');
+integer m = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zm:'00');
+constant integer nreg = 4;
+boolean unsigned = TRUE;</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zdn1&gt;</td><td><a id="sa_zdn1"/>
+        
+          
+        
+        
+          <p class="aml">For the two registers variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zdn" times 2.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zdn1_1"/>
+        
+          
+        
+        
+          <p class="aml">For the four registers variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zdn" times 4.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;T&gt;</td><td><a id="sa_t"/>
+        <p>Is the size specifier, 
+      encoded in
+      <q>size</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">size</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">00</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">01</td>
+                <td class="symbol">H</td>
+              </tr>
+              <tr>
+                <td class="bitfield">10</td>
+                <td class="symbol">S</td>
+              </tr>
+              <tr>
+                <td class="bitfield">11</td>
+                <td class="symbol">D</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zdn4&gt;</td><td><a id="sa_zdn4"/>
+        
+          <p class="aml">Is the name of the fourth scalable vector register of a multi-vector sequence, encoded as "Zdn" times 4 plus 3.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zdn2&gt;</td><td><a id="sa_zdn2"/>
+        
+          <p class="aml">Is the name of the second scalable vector register of a multi-vector sequence, encoded as "Zdn" times 2 plus 1.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zm1&gt;</td><td><a id="sa_zm1"/>
+        
+          
+        
+        
+          <p class="aml">For the two registers variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zm" times 2.</p>
+        
+      </td></tr><tr><td/><td><a id="sa_zm1_1"/>
+        
+          
+        
+        
+          <p class="aml">For the four registers variant: is the name of the first scalable vector register of a multi-vector sequence, encoded as "Zm" times 4.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zm4&gt;</td><td><a id="sa_zm4"/>
+        
+          <p class="aml">Is the name of the fourth scalable vector register of a multi-vector sequence, encoded as "Zm" times 4 plus 3.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zm2&gt;</td><td><a id="sa_zm2"/>
+        
+          <p class="aml">Is the name of the second scalable vector register of a multi-vector sequence, encoded as "Zm" times 2 plus 1.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckStreamingSVEEnabled.0" title="function: CheckStreamingSVEEnabled()">CheckStreamingSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+constant integer elements = VL DIV esize;
+array [0..3] of bits(VL) results;
+
+for r = 0 to nreg-1
+    bits(VL) operand1 = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[dn+r, VL];
+    bits(VL) operand2 = <a href="shared_pseudocode.html#impl-aarch64.Z.read.2" title="accessor: bits(width) Z[integer n, integer width]">Z</a>[m+r, VL];
+    for e = 0 to elements-1
+        integer element1 = <a href="shared_pseudocode.html#impl-shared.Int.2" title="function: integer Int(bits(N) x, boolean unsigned)">Int</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand1, e, esize], unsigned);
+        integer element2 = <a href="shared_pseudocode.html#impl-shared.Int.2" title="function: integer Int(bits(N) x, boolean unsigned)">Int</a>(<a href="shared_pseudocode.html#impl-shared.Elem.read.3" title="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[operand2, e, esize], unsigned);
+        integer res = <a href="shared_pseudocode.html#impl-shared.Max.2" title="function: integer Max(integer a, integer b)">Max</a>(element1, element2);
+        <a href="shared_pseudocode.html#impl-shared.Elem.write.3" title="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[results[r], e, esize] = res&lt;esize-1:0&gt;;
+
+for r = 0 to nreg-1
+    <a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[dn+r, VL] = results[r];</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

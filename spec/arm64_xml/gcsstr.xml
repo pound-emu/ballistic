@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="GCSSTR" title="GCSSTR -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="GCSSTR" />
+  </docvars>
+  <heading>GCSSTR</heading>
+  <desc>
+    <brief>
+      <para>Guarded Control Stack Store</para>
+    </brief>
+    <authored>
+      <para>Guarded Control Stack Store stores a doubleword from a register to memory. The address that is used for the store is calculated from a base register.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Integer" oneof="1" id="iclass_general" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="GCSSTR" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="FEAT_GCS" feature="FEAT_GCS" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/memory/gcs/general/register" tworows="1">
+        <box hibit="31" width="5" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="26" name="V" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="25" width="11" settings="11">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="14" width="3" name="opc" usename="1" settings="3" psbits="xxx">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rt" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="GCSSTR_64_ldst_gcs" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="GCSSTR" />
+        </docvars>
+        <asmtemplate><text>GCSSTR  </text><a link="sa_xt" hover="64-bit general-purpose register to be transferred (field &quot;Rt&quot;)">&lt;Xt&gt;</a><text>, [</text><a link="sa_xn_sp" hover="64-bit general-purpose base register or SP (field &quot;Rn&quot;)">&lt;Xn|SP&gt;</a><text>]</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/memory/gcs/general/register" mylink="aarch64.instrs.memory.gcs.general.register" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">if !<a link="impl-shared.HaveGCS.0" file="shared_pseudocode.xml" hover="function: boolean HaveGCS()">HaveGCS</a>() then UNDEFINED;
+bits(2) effective_el;
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer t = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rt);
+boolean is_gcssttr = (opc == '001');
+
+if is_gcssttr then
+    boolean privileged;
+    case PSTATE.EL of
+        when <a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a> privileged = FALSE;
+        when <a link="EL1" file="shared_pseudocode.xml" hover="constant bits(2) EL1 = '01'">EL1</a> privileged = <a link="impl-shared.EL2Enabled.0" file="shared_pseudocode.xml" hover="function: boolean EL2Enabled()">EL2Enabled</a>() &amp;&amp; <a link="impl-shared.HaveNVExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveNVExt()">HaveNVExt</a>() &amp;&amp; HCR_EL2.&lt;NV,NV1&gt; == '11';
+        when <a link="EL2" file="shared_pseudocode.xml" hover="constant bits(2) EL2 = '10'">EL2</a> privileged = !(<a link="impl-shared.HaveVirtHostExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveVirtHostExt()">HaveVirtHostExt</a>() &amp;&amp; HCR_EL2.&lt;E2H,TGE&gt; == '11');
+        when <a link="EL3" file="shared_pseudocode.xml" hover="constant bits(2) EL3 = '11'">EL3</a> privileged = TRUE;
+    if <a link="impl-shared.HaveUAOExt.0" file="shared_pseudocode.xml" hover="function: boolean HaveUAOExt()">HaveUAOExt</a>() &amp;&amp; PSTATE.UAO == '1' then
+        privileged = PSTATE.EL != <a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a>;
+    if privileged then
+        effective_el = PSTATE.EL;
+    else
+        effective_el = <a link="EL0" file="shared_pseudocode.xml" hover="constant bits(2) EL0 = '00'">EL0</a>;
+else
+    effective_el = PSTATE.EL;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="GCSSTR_64_ldst_gcs" symboldefcount="1">
+      <symbol link="sa_xt">&lt;Xt&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose register to be transferred, encoded in the "Rt" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="GCSSTR_64_ldst_gcs" symboldefcount="1">
+      <symbol link="sa_xn_sp">&lt;Xn|SP&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose base register or stack pointer, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/memory/gcs/general/register" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">bits(64) address;
+bits(64) data;
+
+if effective_el == PSTATE.EL then
+    <a link="impl-aarch64.CheckGCSSTRTrap.0" file="shared_pseudocode.xml" hover="function: CheckGCSSTRTrap()">CheckGCSSTRTrap</a>();
+
+<a link="AccessDescriptor" file="shared_pseudocode.xml" hover="type AccessDescriptor is ( AccessType acctype, bits(2) el, SecurityState ss, boolean acqsc, boolean acqpc, boolean relsc, boolean limitedordered, boolean exclusive, boolean atomicop, MemAtomicOp modop, boolean nontemporal, boolean read, boolean write, CacheOp cacheop, CacheOpScope opscope, CacheType cachetype, boolean pan, boolean transactional, boolean nonfault, boolean firstfault, boolean first, boolean contiguous, boolean streamingsve, boolean ls64, boolean mops, boolean rcw, boolean rcws, boolean toplevel, VARange varange, boolean a32lsmd, boolean tagchecked, boolean tagaccess, MPAMinfo mpam )">AccessDescriptor</a> accdesc = <a link="impl-shared.CreateAccDescGCS.2" file="shared_pseudocode.xml" hover="function: AccessDescriptor CreateAccDescGCS(bits(2) el, MemOp memop)">CreateAccDescGCS</a>(effective_el, <a link="MemOp_STORE" file="shared_pseudocode.xml" hover="enumeration MemOp {MemOp_LOAD, MemOp_STORE, MemOp_PREFETCH}">MemOp_STORE</a>);
+
+if n == 31 then
+    <a link="impl-aarch64.CheckSPAlignment.0" file="shared_pseudocode.xml" hover="function: CheckSPAlignment()">CheckSPAlignment</a>();
+    address = <a link="impl-aarch64.SP.read.0" file="shared_pseudocode.xml" hover="accessor: bits(64) SP[]">SP</a>[];
+else
+    address = <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[n, 64];
+
+data = <a link="impl-aarch64.X.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) X[integer n, integer width]">X</a>[t, 64];
+Mem[address, 8, accdesc] = data;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

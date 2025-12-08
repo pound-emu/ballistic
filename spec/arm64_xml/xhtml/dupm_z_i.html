@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>DUPM</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">DUPM</h2><p>Broadcast logical bitmask immediate to vector (unpredicated)</p>
+      <p class="aml">Unconditionally broadcast the logical bitmask immediate into each element of the destination vector. This instruction is unpredicated. The immediate is a 64-bit value consisting of a single run of ones or zeros repeating every 2, 4, 8, 16, 32 or 64 bits.</p>
+    <p class="desc">This instruction is used by the alias <a href="mov_dupm_z_i.html" title="Move logical bitmask immediate to vector (unpredicated)">MOV</a>.</p>
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="r">0</td><td colspan="13" class="lr">imm13</td><td colspan="5" class="lr">Zd</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="dupm_z_i_"/><p class="asm-code">DUPM    <a href="#sa_zd" title="Destination scalable vector register (field &quot;Zd&quot;)">&lt;Zd&gt;</a>.<a href="#sa_t" title="Size specifier (field &quot;imm13&lt;12&gt;:imm13&lt;5:0&gt;&quot;) [B,D,H,S]">&lt;T&gt;</a>, #<a href="#sa_const" title="64, 32, 16 or 8-bit bitmask consisting of replicated 2, 4, 8, 16, 32 or 64 bit fields, each field containing a rotated run of non-zero bits (field &quot;imm13&quot;)">&lt;const&gt;</a></p></div><p class="pseudocode">if !<a href="shared_pseudocode.html#impl-aarch64.HaveSVE.0" title="function: boolean HaveSVE()">HaveSVE</a>() &amp;&amp; !<a href="shared_pseudocode.html#impl-aarch64.HaveSME.0" title="function: boolean HaveSME()">HaveSME</a>() then UNDEFINED;
+constant integer esize = 64;
+integer d = <a href="shared_pseudocode.html#impl-shared.UInt.1" title="function: integer UInt(bits(N) x)">UInt</a>(Zd);
+bits(esize) imm;
+(imm, -) = <a href="shared_pseudocode.html#impl-aarch64.DecodeBitMasks.5" title="function: (bits(M), bits(M)) DecodeBitMasks(bit immN, bits(6) imms, bits(6) immr, boolean immediate, integer M)">DecodeBitMasks</a>(imm13&lt;12&gt;, imm13&lt;5:0&gt;, imm13&lt;11:6&gt;, TRUE, esize);</p>
+  <div class="encoding-notes"/><h3 class="explanations">Assembler Symbols</h3><div class="explanations"><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;Zd&gt;</td><td><a id="sa_zd"/>
+        
+          <p class="aml">Is the name of the destination scalable vector register, encoded in the "Zd" field.</p>
+        
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;T&gt;</td><td><a id="sa_t"/>
+        <p>Is the size specifier, 
+      encoded in
+      <q>imm13&lt;12&gt;:imm13&lt;5:0&gt;</q>:
+        </p>
+        <table class="valuetable">
+          
+            <thead>
+              <tr>
+                <th class="bitfield">imm13&lt;12&gt;</th>
+                <th class="bitfield">imm13&lt;5:0&gt;</th>
+                <th class="symbol">&lt;T&gt;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">0xxxxx</td>
+                <td class="symbol">S</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">10xxxx</td>
+                <td class="symbol">H</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">110xxx</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">1110xx</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">11110x</td>
+                <td class="symbol">B</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">111110</td>
+                <td class="symbol">RESERVED</td>
+              </tr>
+              <tr>
+                <td class="bitfield">0</td>
+                <td class="bitfield">111111</td>
+                <td class="symbol">RESERVED</td>
+              </tr>
+              <tr>
+                <td class="bitfield">1</td>
+                <td class="bitfield">xxxxxx</td>
+                <td class="symbol">D</td>
+              </tr>
+            </tbody>
+          
+        </table>
+      </td></tr></table><table><col class="asyn-l"/><col class="asyn-r"/><tr><td>&lt;const&gt;</td><td><a id="sa_const"/>
+        
+          <p class="aml">Is a 64, 32, 16 or 8-bit bitmask consisting of replicated 2, 4, 8, 16, 32 or 64 bit fields, each field containing a rotated run of non-zero bits, encoded in the "imm13" field.</p>
+        
+      </td></tr></table></div><div class="syntax-notes"/><h3 class="aliastable" id="">Alias Conditions</h3><table class="aliastable"><thead><tr><th>Alias</th><th>Is preferred when</th></tr></thead><tbody><tr><td><a href="mov_dupm_z_i.html" title="Move logical bitmask immediate to vector (unpredicated)">MOV</a></td><td class="notfirst"><span class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.SVEMoveMaskPreferred.1" title="function: boolean SVEMoveMaskPreferred(bits(13) imm13)">SVEMoveMaskPreferred</a>(imm13)</span></td></tr></tbody></table>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#impl-aarch64.CheckSVEEnabled.0" title="function: CheckSVEEnabled()">CheckSVEEnabled</a>();
+constant integer VL = <a href="shared_pseudocode.html#impl-aarch64.CurrentVL.read.none" title="accessor: integer CurrentVL">CurrentVL</a>;
+bits(VL) result = <a href="shared_pseudocode.html#impl-shared.Replicate.2" title="function: bits(M*N) Replicate(bits(M) x, integer N)">Replicate</a>(imm, VL DIV esize);
+<a href="shared_pseudocode.html#impl-aarch64.Z.write.2" title="accessor: Z[integer n, integer width] = bits(width) value">Z</a>[d, VL] = result;</p>
+    </div>
+  <h3>Operational information</h3><p class="aml">If FEAT_SVE2 is implemented or FEAT_SME is implemented, then if PSTATE.DIT is 1:</p><ul><li>The execution time of this instruction is independent of:
+            <ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li><li>The response of this instruction to asynchronous exceptions does not vary based on:
+            <ul><li>The values of the data supplied in any of its registers.</li><li>The values of the NZCV flags.</li></ul></li></ul><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

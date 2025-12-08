@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="SHA256H2_advsimd" title="SHA256H2 -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="SHA256H2" />
+  </docvars>
+  <heading>SHA256H2</heading>
+  <desc>
+    <brief>
+      <para>SHA256 hash update (part 2)</para>
+    </brief>
+    <authored>
+      <para>SHA256 hash update (part 2).</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Advanced SIMD" oneof="1" id="iclass_advsimd" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="SHA256H2" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <arch_variants>
+        <arch_variant name="ARMv8.0" feature="FEAT_SHA256" />
+      </arch_variants>
+      <regdiagram form="32" psname="aarch64/instrs/vector/crypto/sha3op/sha256-hash" tworows="1">
+        <box hibit="31" width="8" settings="8">
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="size" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="5" name="Rm" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="15" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="14" width="2" name="opcode[2:1]" settings="2">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="12" name="P" usename="1" settings="1" psbits="x">
+          <c>1</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="SHA256H2_QQV_cryptosha3" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="SHA256H2" />
+        </docvars>
+        <asmtemplate><text>SHA256H2  </text><a link="sa_qd" hover="128-bit SIMD&amp;FP source and destination (field &quot;Rd&quot;)">&lt;Qd&gt;</a><text>, </text><a link="sa_qn" hover="Second 128-bit SIMD&amp;FP source register (field &quot;Rn&quot;)">&lt;Qn&gt;</a><text>, </text><a link="sa_vm" hover="Third SIMD&amp;FP source register (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.4S</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/crypto/sha3op/sha256-hash" mylink="aarch64.instrs.vector.crypto.sha3op.sha256-hash" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rm);
+if !<a link="impl-shared.HaveSHA256Ext.0" file="shared_pseudocode.xml" hover="function: boolean HaveSHA256Ext()">HaveSHA256Ext</a>() then UNDEFINED;
+boolean part1 = (P == '0');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="SHA256H2_QQV_cryptosha3" symboldefcount="1">
+      <symbol link="sa_qd">&lt;Qd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 128-bit name of the SIMD&amp;FP source and destination, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SHA256H2_QQV_cryptosha3" symboldefcount="1">
+      <symbol link="sa_qn">&lt;Qn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 128-bit name of the second SIMD&amp;FP source register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="SHA256H2_QQV_cryptosha3" symboldefcount="1">
+      <symbol link="sa_vm">&lt;Vm&gt;</symbol>
+      <account encodedin="Rm">
+        <intro>
+          <para>Is the name of the third SIMD&amp;FP source register, encoded in the "Rm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/crypto/sha3op/sha256-hash" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="AArch64.CheckFPAdvSIMDEnabled.0" file="shared_pseudocode.xml" hover="function: AArch64.CheckFPAdvSIMDEnabled()">AArch64.CheckFPAdvSIMDEnabled</a>();
+
+bits(128) result;
+if part1 then
+    result = SHA256hash(V[d, 128], V[n, 128], V[m, 128], TRUE);
+else
+    result = SHA256hash(V[n, 128], V[d, 128], V[m, 128], FALSE);
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, 128] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

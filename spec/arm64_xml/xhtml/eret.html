@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="insn.css"/><meta name="generator" content="iform.xsl"/><title>ERET -- A64</title></head><body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h2 class="instruction-section">ERET</h2>
+      <p class="aml">Exception Return using the ELR and SPSR for the current Exception level. When executed, the PE restores <a class="armarm-xref" title="Reference to Armv8 ARM section">PSTATE</a> from the SPSR, and branches to the address held in the ELR.</p>
+      <p class="aml">The PE checks the SPSR for the current Exception level for an illegal return event. See <a class="armarm-xref" title="Reference to Armv8 ARM section">Illegal return events from AArch64 state</a>.</p>
+      <p class="aml"><span class="asm-code">ERET</span> is <span class="arm-defined-word">undefined</span> at EL0.</p>
+    
+    <p class="desc"/><div class="regdiagram-32"><table class="regdiagram"><thead><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></thead><tbody><tr class="firstrow"><td class="l">1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="r">1</td><td class="lr">0</td><td class="l">1</td><td>0</td><td class="r">0</td><td class="l">1</td><td>1</td><td>1</td><td>1</td><td class="r">1</td><td class="l">0</td><td>0</td><td>0</td><td class="r">0</td><td class="lr">0</td><td class="lr">0</td><td class="l">1</td><td>1</td><td>1</td><td>1</td><td class="r">1</td><td class="l">0</td><td>0</td><td>0</td><td>0</td><td class="r">0</td></tr><tr class="secondrow"><td colspan="7"/><td/><td colspan="3"/><td colspan="5"/><td colspan="4"/><td class="droppedname">A</td><td class="droppedname">M</td><td colspan="5" class="droppedname">Rn</td><td colspan="5" class="droppedname">op4</td></tr></tbody></table></div><div class="encoding"><h4 class="encoding"/><a id="ERET_64E_branch_reg"/><p class="asm-code">ERET</p></div><p class="pseudocode">if PSTATE.EL == <a href="shared_pseudocode.html#EL0" title="constant bits(2) EL0 = '00'">EL0</a> then UNDEFINED;
+boolean pac = (A == '1');
+boolean use_key_a = (M == '0');
+
+if !pac &amp;&amp; op4 != '00000' then
+    UNDEFINED;
+elsif pac &amp;&amp; (!<a href="shared_pseudocode.html#impl-aarch64.HavePACExt.0" title="function: boolean HavePACExt()">HavePACExt</a>() || op4 != '11111') then
+    UNDEFINED;
+
+if Rn != '11111' then 
+    UNDEFINED;</p>
+  <div class="encoding-notes"/>
+    <div class="ps"><a id="execute"/><h3 class="pseudocode">Operation</h3>
+      <p class="pseudocode"><a href="shared_pseudocode.html#AArch64.CheckForERetTrap.2" title="function: AArch64.CheckForERetTrap(boolean eret_with_pac, boolean pac_uses_key_a)">AArch64.CheckForERetTrap</a>(pac, use_key_a);
+bits(64) target = <a href="shared_pseudocode.html#impl-aarch64.ELR.read.0" title="accessor: bits(64) ELR[]">ELR</a>[];
+bits(64) modifier = <a href="shared_pseudocode.html#impl-aarch64.SP.read.0" title="accessor: bits(64) SP[]">SP</a>[];
+boolean auth_then_branch = TRUE;
+
+if pac then
+    if use_key_a then
+        target = <a href="shared_pseudocode.html#impl-aarch64.AuthIA.3" title="function: bits(64) AuthIA(bits(64) x, bits(64) y, boolean is_combined)">AuthIA</a>(target, modifier, auth_then_branch);
+    else
+        target = <a href="shared_pseudocode.html#impl-aarch64.AuthIB.3" title="function: bits(64) AuthIB(bits(64) x, bits(64) y, boolean is_combined)">AuthIB</a>(target, modifier, auth_then_branch);
+
+<a href="shared_pseudocode.html#AArch64.ExceptionReturn.2" title="function: AArch64.ExceptionReturn(bits(64) new_pc_in, bits(64) spsr)">AArch64.ExceptionReturn</a>(target, <a href="shared_pseudocode.html#impl-shared.SPSR.read.0" title="accessor: bits(N) SPSR[]">SPSR</a>[]);</p>
+    </div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+      Internal version only: isa v33.59, AdvSIMD v29.12, pseudocode v2022-12_rel, sve v2022-12_relb
+      ; Build timestamp: 2022-12-14T22:29
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body></html>

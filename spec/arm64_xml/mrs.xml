@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="MRS" title="MRS -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="MRS" />
+  </docvars>
+  <heading>MRS</heading>
+  <desc>
+    <brief>
+      <para>Move System Register to general-purpose register</para>
+    </brief>
+    <authored>
+      <para>Move System Register to general-purpose register allows the PE to read an AArch64 System register into a general-purpose register.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="MRS" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/system/register/system" tworows="1">
+        <box hibit="31" width="10" settings="10">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" name="L" usename="1" settings="1" psbits="x">
+          <c>1</c>
+        </box>
+        <box hibit="20" name="op0[1]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="19" name="o0" usename="1">
+          <c></c>
+        </box>
+        <box hibit="18" width="3" name="op1" usename="1">
+          <c colspan="3"></c>
+        </box>
+        <box hibit="15" width="4" name="CRn" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="11" width="4" name="CRm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="7" width="3" name="op2" usename="1">
+          <c colspan="3"></c>
+        </box>
+        <box hibit="4" width="5" name="Rt" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="MRS_RS_systemmove" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="MRS" />
+        </docvars>
+        <asmtemplate><text>MRS  </text><a link="sa_xt" hover="64-bit general-purpose destination register (field &quot;Rt&quot;)">&lt;Xt&gt;</a><text>, (</text><a link="sa_systemreg" hover="System register name (field &quot;o0:op1:CRn:CRm:op2&quot;)">&lt;systemreg&gt;</a><text>|S</text><a link="sa_op0" hover="Unsigned immediate (field &quot;o0&quot;) [2,3]">&lt;op0&gt;</a><text>_</text><a link="sa_op1" hover="3-bit unsigned immediate [0-7] (field &quot;op1&quot;)">&lt;op1&gt;</a><text>_</text><a link="sa_cn" hover="Name 'Cn', with 'n' [0-15] (field &quot;CRn&quot;)">&lt;Cn&gt;</a><text>_</text><a link="sa_cm" hover="Name 'Cm', with 'm' [0-15] (field &quot;CRm&quot;)">&lt;Cm&gt;</a><text>_</text><a link="sa_op2" hover="3-bit unsigned immediate [0-7] (field &quot;op2&quot;)">&lt;op2&gt;</a><text>)</text></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/register/system" mylink="aarch64.instrs.system.register.system" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode"><a link="AArch64.CheckSystemAccess.7" file="shared_pseudocode.xml" hover="function: AArch64.CheckSystemAccess(bits(2) op0, bits(3) op1, bits(4) crn, bits(4) crm, bits(3) op2, bits(5) rt, bit read)">AArch64.CheckSystemAccess</a>('1':o0, op1, CRn, CRm, op2, Rt, L);
+
+integer t = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rt);
+
+integer sys_op0 = 2 + <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(o0);
+integer sys_op1 = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(op1);
+integer sys_op2 = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(op2);
+integer sys_crn = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(CRn);
+integer sys_crm = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(CRm);
+boolean read = (L == '1');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_xt">&lt;Xt&gt;</symbol>
+      <account encodedin="Rt">
+        <intro>
+          <para>Is the 64-bit name of the general-purpose destination register, encoded in the "Rt" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_systemreg">&lt;systemreg&gt;</symbol>
+      <account encodedin="CRm:CRn:o0:op1:op2">
+        <intro>
+          <para>Is a System register name, encoded in the "o0:op1:CRn:CRm:op2".</para>
+          <para>The System register names are defined in <xref linkend="autogen.registers.AArch64">'AArch64 System Registers' in the System Register XML</xref>.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_op0">&lt;op0&gt;</symbol>
+      <definition encodedin="o0">
+        <intro>Is an unsigned immediate, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">o0</entry>
+                <entry class="symbol">&lt;op0&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">2</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">3</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_op1">&lt;op1&gt;</symbol>
+      <account encodedin="op1">
+        <intro>
+          <para>Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op1" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_cn">&lt;Cn&gt;</symbol>
+      <account encodedin="CRn">
+        <intro>
+          <para>Is a name 'Cn', with 'n' in the range 0 to 15, encoded in the "CRn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_cm">&lt;Cm&gt;</symbol>
+      <account encodedin="CRm">
+        <intro>
+          <para>Is a name 'Cm', with 'm' in the range 0 to 15, encoded in the "CRm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MRS_RS_systemmove" symboldefcount="1">
+      <symbol link="sa_op2">&lt;op2&gt;</symbol>
+      <account encodedin="op2">
+        <intro>
+          <para>Is a 3-bit unsigned immediate, in the range 0 to 7, encoded in the "op2" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/system/register/system" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute">if read then
+    <a link="AArch64.SysRegRead.6" file="shared_pseudocode.xml" hover="function: AArch64.SysRegRead(integer op0, integer op1, integer crn, integer crm, integer op2, integer t)">AArch64.SysRegRead</a>(sys_op0, sys_op1, sys_crn, sys_crm, sys_op2, t);
+else
+    <a link="AArch64.SysRegWrite.6" file="shared_pseudocode.xml" hover="function: AArch64.SysRegWrite(integer op0, integer op1, integer crn, integer crm, integer op2, integer t)">AArch64.SysRegWrite</a>(sys_op0, sys_op1, sys_crn, sys_crm, sys_op2, t);</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

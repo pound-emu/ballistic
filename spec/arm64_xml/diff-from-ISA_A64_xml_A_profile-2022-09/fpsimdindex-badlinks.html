@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>A64</title><link href="insn.css" rel="stylesheet" type="text/css"/></head><body><div align="center" class="htmldiff_header"><table><tbody><tr><td class="old">(old) </td><td class="explain">htmldiff from-</td><td class="new">(new) </td></tr></tbody></table></div><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h1 class="alphindextitle">A64 -- SIMD and Floating-point Instructions (alphabetic order)</h1><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="abs_advsimd.html">ABS</a>:
+        Absolute value (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_advsimd.html">ADD (vector)</a>:
+        Add (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="addhn_advsimd.html">ADDHN, ADDHN2</a>:
+        Add returning High Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="addp_advsimd_pair.html">ADDP (scalar)</a>:
+        Add Pair of elements (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="addp_advsimd_vec.html">ADDP (vector)</a>:
+        Add Pairwise (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="addv_advsimd.html">ADDV</a>:
+        Add across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="aesd_advsimd.html">AESD</a>:
+        AES single round decryption.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="aese_advsimd.html">AESE</a>:
+        AES single round encryption.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="aesimc_advsimd.html">AESIMC</a>:
+        AES inverse mix columns.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="aesmc_advsimd.html">AESMC</a>:
+        AES mix columns.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="and_advsimd.html">AND (vector)</a>:
+        Bitwise AND (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bcax_advsimd.html">BCAX</a>:
+        Bit Clear and exclusive-OR.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfcvt_float.html">BFCVT</a>:
+        Floating-point convert from single-precision to BFloat16 format (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfcvtn_advsimd.html">BFCVTN, BFCVTN2</a>:
+        Floating-point convert from single-precision to BFloat16 format (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfdot_advsimd_elt.html">BFDOT (by element)</a>:
+        BFloat16 floating-point dot product (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfdot_advsimd_vec.html">BFDOT (vector)</a>:
+        BFloat16 floating-point dot product (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfmlal_advsimd_elt.html">BFMLALB, BFMLALT (by element)</a>:
+        BFloat16 floating-point widening multiply-add long (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfmlal_advsimd_vec.html">BFMLALB, BFMLALT (vector)</a>:
+        BFloat16 floating-point widening multiply-add long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfmmla_advsimd.html">BFMMLA</a>:
+        BFloat16 floating-point matrix multiply-accumulate into 2x2 matrix.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bic_advsimd_imm.html">BIC (vector, immediate)</a>:
+        Bitwise bit Clear (vector, immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bic_advsimd_reg.html">BIC (vector, register)</a>:
+        Bitwise bit Clear (vector, register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bif_advsimd.html">BIF</a>:
+        Bitwise Insert if False.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bit_advsimd.html">BIT</a>:
+        Bitwise Insert if True.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bsl_advsimd.html">BSL</a>:
+        Bitwise Select.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cls_advsimd.html">CLS (vector)</a>:
+        Count Leading Sign bits (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clz_advsimd.html">CLZ (vector)</a>:
+        Count Leading Zero bits (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmeq_advsimd_reg.html">CMEQ (register)</a>:
+        Compare bitwise Equal (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmeq_advsimd_zero.html">CMEQ (zero)</a>:
+        Compare bitwise Equal to zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmge_advsimd_reg.html">CMGE (register)</a>:
+        Compare signed Greater than or Equal (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmge_advsimd_zero.html">CMGE (zero)</a>:
+        Compare signed Greater than or Equal to zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmgt_advsimd_reg.html">CMGT (register)</a>:
+        Compare signed Greater than (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmgt_advsimd_zero.html">CMGT (zero)</a>:
+        Compare signed Greater than zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmhi_advsimd.html">CMHI (register)</a>:
+        Compare unsigned Higher (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmhs_advsimd.html">CMHS (register)</a>:
+        Compare unsigned Higher or Same (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmle_advsimd.html">CMLE (zero)</a>:
+        Compare signed Less than or Equal to zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmlt_advsimd.html">CMLT (zero)</a>:
+        Compare signed Less than zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmtst_advsimd.html">CMTST</a>:
+        Compare bitwise Test bits nonzero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cnt_advsimd.html">CNT</a>:
+        Population Count per byte.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dup_advsimd_elt.html">DUP (element)</a>:
+        Duplicate vector element to vector or scalar.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dup_advsimd_gen.html">DUP (general)</a>:
+        Duplicate general-purpose register to vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor_advsimd.html">EOR (vector)</a>:
+        Bitwise Exclusive-OR (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor3_advsimd.html">EOR3</a>:
+        Three-way Exclusive-OR.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ext_advsimd.html">EXT</a>:
+        Extract vector from pair of vectors.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fabd_advsimd.html">FABD</a>:
+        Floating-point Absolute Difference (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fabs_float.html">FABS (scalar)</a>:
+        Floating-point Absolute value (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fabs_advsimd.html">FABS (vector)</a>:
+        Floating-point Absolute value (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="facge_advsimd.html">FACGE</a>:
+        Floating-point Absolute Compare Greater than or Equal (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="facgt_advsimd.html">FACGT</a>:
+        Floating-point Absolute Compare Greater than (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fadd_float.html">FADD (scalar)</a>:
+        Floating-point Add (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fadd_advsimd.html">FADD (vector)</a>:
+        Floating-point Add (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="faddp_advsimd_pair.html">FADDP (scalar)</a>:
+        Floating-point Add Pair of elements (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="faddp_advsimd_vec.html">FADDP (vector)</a>:
+        Floating-point Add Pairwise (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcadd_advsimd_vec.html">FCADD</a>:
+        Floating-point Complex Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fccmp_float.html">FCCMP</a>:
+        Floating-point Conditional quiet Compare (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fccmpe_float.html">FCCMPE</a>:
+        Floating-point Conditional signaling Compare (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmeq_advsimd_reg.html">FCMEQ (register)</a>:
+        Floating-point Compare Equal (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmeq_advsimd_zero.html">FCMEQ (zero)</a>:
+        Floating-point Compare Equal to zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmge_advsimd_reg.html">FCMGE (register)</a>:
+        Floating-point Compare Greater than or Equal (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmge_advsimd_zero.html">FCMGE (zero)</a>:
+        Floating-point Compare Greater than or Equal to zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmgt_advsimd_reg.html">FCMGT (register)</a>:
+        Floating-point Compare Greater than (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmgt_advsimd_zero.html">FCMGT (zero)</a>:
+        Floating-point Compare Greater than zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmla_advsimd_vec.html">FCMLA</a>:
+        Floating-point Complex Multiply Accumulate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmla_advsimd_elt.html">FCMLA (by element)</a>:
+        Floating-point Complex Multiply Accumulate (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmle_advsimd.html">FCMLE (zero)</a>:
+        Floating-point Compare Less than or Equal to zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmlt_advsimd.html">FCMLT (zero)</a>:
+        Floating-point Compare Less than zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmp_float.html">FCMP</a>:
+        Floating-point quiet Compare (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcmpe_float.html">FCMPE</a>:
+        Floating-point signaling Compare (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcsel_float.html">FCSEL</a>:
+        Floating-point Conditional Select (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvt_float.html">FCVT</a>:
+        Floating-point Convert precision (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtas_float.html">FCVTAS (scalar)</a>:
+        Floating-point Convert to Signed integer, rounding to nearest with ties to Away (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtas_advsimd.html">FCVTAS (vector)</a>:
+        Floating-point Convert to Signed integer, rounding to nearest with ties to Away (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtau_float.html">FCVTAU (scalar)</a>:
+        Floating-point Convert to Unsigned integer, rounding to nearest with ties to Away (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtau_advsimd.html">FCVTAU (vector)</a>:
+        Floating-point Convert to Unsigned integer, rounding to nearest with ties to Away (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtl_advsimd.html">FCVTL, FCVTL2</a>:
+        Floating-point Convert to higher precision Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtms_float.html">FCVTMS (scalar)</a>:
+        Floating-point Convert to Signed integer, rounding toward Minus infinity (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtms_advsimd.html">FCVTMS (vector)</a>:
+        Floating-point Convert to Signed integer, rounding toward Minus infinity (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtmu_float.html">FCVTMU (scalar)</a>:
+        Floating-point Convert to Unsigned integer, rounding toward Minus infinity (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtmu_advsimd.html">FCVTMU (vector)</a>:
+        Floating-point Convert to Unsigned integer, rounding toward Minus infinity (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtn_advsimd.html">FCVTN, FCVTN2</a>:
+        Floating-point Convert to lower precision Narrow (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtns_float.html">FCVTNS (scalar)</a>:
+        Floating-point Convert to Signed integer, rounding to nearest with ties to even (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtns_advsimd.html">FCVTNS (vector)</a>:
+        Floating-point Convert to Signed integer, rounding to nearest with ties to even (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtnu_float.html">FCVTNU (scalar)</a>:
+        Floating-point Convert to Unsigned integer, rounding to nearest with ties to even (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtnu_advsimd.html">FCVTNU (vector)</a>:
+        Floating-point Convert to Unsigned integer, rounding to nearest with ties to even (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtps_float.html">FCVTPS (scalar)</a>:
+        Floating-point Convert to Signed integer, rounding toward Plus infinity (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtps_advsimd.html">FCVTPS (vector)</a>:
+        Floating-point Convert to Signed integer, rounding toward Plus infinity (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtpu_float.html">FCVTPU (scalar)</a>:
+        Floating-point Convert to Unsigned integer, rounding toward Plus infinity (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtpu_advsimd.html">FCVTPU (vector)</a>:
+        Floating-point Convert to Unsigned integer, rounding toward Plus infinity (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtxn_advsimd.html">FCVTXN, FCVTXN2</a>:
+        Floating-point Convert to lower precision Narrow, rounding to odd (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzs_float_fix.html">FCVTZS (scalar, fixed-point)</a>:
+        Floating-point Convert to Signed fixed-point, rounding toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzs_float_int.html">FCVTZS (scalar, integer)</a>:
+        Floating-point Convert to Signed integer, rounding toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzs_advsimd_fix.html">FCVTZS (vector, fixed-point)</a>:
+        Floating-point Convert to Signed fixed-point, rounding toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzs_advsimd_int.html">FCVTZS (vector, integer)</a>:
+        Floating-point Convert to Signed integer, rounding toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzu_float_fix.html">FCVTZU (scalar, fixed-point)</a>:
+        Floating-point Convert to Unsigned fixed-point, rounding toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzu_float_int.html">FCVTZU (scalar, integer)</a>:
+        Floating-point Convert to Unsigned integer, rounding toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzu_advsimd_fix.html">FCVTZU (vector, fixed-point)</a>:
+        Floating-point Convert to Unsigned fixed-point, rounding toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fcvtzu_advsimd_int.html">FCVTZU (vector, integer)</a>:
+        Floating-point Convert to Unsigned integer, rounding toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fdiv_float.html">FDIV (scalar)</a>:
+        Floating-point Divide (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fdiv_advsimd.html">FDIV (vector)</a>:
+        Floating-point Divide (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fjcvtzs.html">FJCVTZS</a>:
+        Floating-point Javascript Convert to Signed fixed-point, rounding toward Zero.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmadd_float.html">FMADD</a>:
+        Floating-point fused Multiply-Add (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmax_float.html">FMAX (scalar)</a>:
+        Floating-point Maximum (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmax_advsimd.html">FMAX (vector)</a>:
+        Floating-point Maximum (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxnm_float.html">FMAXNM (scalar)</a>:
+        Floating-point Maximum Number (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxnm_advsimd.html">FMAXNM (vector)</a>:
+        Floating-point Maximum Number (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxnmp_advsimd_pair.html">FMAXNMP (scalar)</a>:
+        Floating-point Maximum Number of Pair of elements (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxnmp_advsimd_vec.html">FMAXNMP (vector)</a>:
+        Floating-point Maximum Number Pairwise (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxnmv_advsimd.html">FMAXNMV</a>:
+        Floating-point Maximum Number across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxp_advsimd_pair.html">FMAXP (scalar)</a>:
+        Floating-point Maximum of Pair of elements (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxp_advsimd_vec.html">FMAXP (vector)</a>:
+        Floating-point Maximum Pairwise (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmaxv_advsimd.html">FMAXV</a>:
+        Floating-point Maximum across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmin_float.html">FMIN (scalar)</a>:
+        Floating-point Minimum (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmin_advsimd.html">FMIN (vector)</a>:
+        Floating-point minimum (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminnm_float.html">FMINNM (scalar)</a>:
+        Floating-point Minimum Number (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminnm_advsimd.html">FMINNM (vector)</a>:
+        Floating-point Minimum Number (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminnmp_advsimd_pair.html">FMINNMP (scalar)</a>:
+        Floating-point Minimum Number of Pair of elements (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminnmp_advsimd_vec.html">FMINNMP (vector)</a>:
+        Floating-point Minimum Number Pairwise (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminnmv_advsimd.html">FMINNMV</a>:
+        Floating-point Minimum Number across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminp_advsimd_pair.html">FMINP (scalar)</a>:
+        Floating-point Minimum of Pair of elements (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminp_advsimd_vec.html">FMINP (vector)</a>:
+        Floating-point Minimum Pairwise (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fminv_advsimd.html">FMINV</a>:
+        Floating-point Minimum across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmla_advsimd_elt.html">FMLA (by element)</a>:
+        Floating-point fused Multiply-Add to accumulator (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmla_advsimd_vec.html">FMLA (vector)</a>:
+        Floating-point fused Multiply-Add to accumulator (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmlal_advsimd_elt.html">FMLAL, FMLAL2 (by element)</a>:
+        Floating-point fused Multiply-Add Long to accumulator (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmlal_advsimd_vec.html">FMLAL, FMLAL2 (vector)</a>:
+        Floating-point fused Multiply-Add Long to accumulator (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmls_advsimd_elt.html">FMLS (by element)</a>:
+        Floating-point fused Multiply-Subtract from accumulator (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmls_advsimd_vec.html">FMLS (vector)</a>:
+        Floating-point fused Multiply-Subtract from accumulator (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmlsl_advsimd_elt.html">FMLSL, FMLSL2 (by element)</a>:
+        Floating-point fused Multiply-Subtract Long from accumulator (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmlsl_advsimd_vec.html">FMLSL, FMLSL2 (vector)</a>:
+        Floating-point fused Multiply-Subtract Long from accumulator (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmov_float_gen.html">FMOV (general)</a>:
+        Floating-point Move to or from general-purpose register without conversion.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmov_float.html">FMOV (register)</a>:
+        Floating-point Move register without conversion.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmov_float_imm.html">FMOV (scalar, immediate)</a>:
+        Floating-point move immediate (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmov_advsimd.html">FMOV (vector, immediate)</a>:
+        Floating-point move immediate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmsub_float.html">FMSUB</a>:
+        Floating-point Fused Multiply-Subtract (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmul_advsimd_elt.html">FMUL (by element)</a>:
+        Floating-point Multiply (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmul_float.html">FMUL (scalar)</a>:
+        Floating-point Multiply (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmul_advsimd_vec.html">FMUL (vector)</a>:
+        Floating-point Multiply (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmulx_advsimd_vec.html">FMULX</a>:
+        Floating-point Multiply extended.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fmulx_advsimd_elt.html">FMULX (by element)</a>:
+        Floating-point Multiply extended (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fneg_float.html">FNEG (scalar)</a>:
+        Floating-point Negate (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fneg_advsimd.html">FNEG (vector)</a>:
+        Floating-point Negate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fnmadd_float.html">FNMADD</a>:
+        Floating-point Negated fused Multiply-Add (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fnmsub_float.html">FNMSUB</a>:
+        Floating-point Negated fused Multiply-Subtract (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fnmul_float.html">FNMUL (scalar)</a>:
+        Floating-point Multiply-Negate (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frecpe_advsimd.html">FRECPE</a>:
+        Floating-point Reciprocal Estimate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frecps_advsimd.html">FRECPS</a>:
+        Floating-point Reciprocal Step.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frecpx_advsimd.html">FRECPX</a>:
+        Floating-point Reciprocal exponent (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint32x_float.html">FRINT32X (scalar)</a>:
+        Floating-point Round to 32-bit Integer, using current rounding mode (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint32x_advsimd.html">FRINT32X (vector)</a>:
+        Floating-point Round to 32-bit Integer, using current rounding mode (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint32z_float.html">FRINT32Z (scalar)</a>:
+        Floating-point Round to 32-bit Integer toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint32z_advsimd.html">FRINT32Z (vector)</a>:
+        Floating-point Round to 32-bit Integer toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint64x_float.html">FRINT64X (scalar)</a>:
+        Floating-point Round to 64-bit Integer, using current rounding mode (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint64x_advsimd.html">FRINT64X (vector)</a>:
+        Floating-point Round to 64-bit Integer, using current rounding mode (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint64z_float.html">FRINT64Z (scalar)</a>:
+        Floating-point Round to 64-bit Integer toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frint64z_advsimd.html">FRINT64Z (vector)</a>:
+        Floating-point Round to 64-bit Integer toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frinta_float.html">FRINTA (scalar)</a>:
+        Floating-point Round to Integral, to nearest with ties to Away (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frinta_advsimd.html">FRINTA (vector)</a>:
+        Floating-point Round to Integral, to nearest with ties to Away (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frinti_float.html">FRINTI (scalar)</a>:
+        Floating-point Round to Integral, using current rounding mode (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frinti_advsimd.html">FRINTI (vector)</a>:
+        Floating-point Round to Integral, using current rounding mode (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintm_float.html">FRINTM (scalar)</a>:
+        Floating-point Round to Integral, toward Minus infinity (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintm_advsimd.html">FRINTM (vector)</a>:
+        Floating-point Round to Integral, toward Minus infinity (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintn_float.html">FRINTN (scalar)</a>:
+        Floating-point Round to Integral, to nearest with ties to even (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintn_advsimd.html">FRINTN (vector)</a>:
+        Floating-point Round to Integral, to nearest with ties to even (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintp_float.html">FRINTP (scalar)</a>:
+        Floating-point Round to Integral, toward Plus infinity (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintp_advsimd.html">FRINTP (vector)</a>:
+        Floating-point Round to Integral, toward Plus infinity (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintx_float.html">FRINTX (scalar)</a>:
+        Floating-point Round to Integral exact, using current rounding mode (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintx_advsimd.html">FRINTX (vector)</a>:
+        Floating-point Round to Integral exact, using current rounding mode (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintz_float.html">FRINTZ (scalar)</a>:
+        Floating-point Round to Integral, toward Zero (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frintz_advsimd.html">FRINTZ (vector)</a>:
+        Floating-point Round to Integral, toward Zero (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frsqrte_advsimd.html">FRSQRTE</a>:
+        Floating-point Reciprocal Square Root Estimate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="frsqrts_advsimd.html">FRSQRTS</a>:
+        Floating-point Reciprocal Square Root Step.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fsqrt_float.html">FSQRT (scalar)</a>:
+        Floating-point Square Root (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fsqrt_advsimd.html">FSQRT (vector)</a>:
+        Floating-point Square Root (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fsub_float.html">FSUB (scalar)</a>:
+        Floating-point Subtract (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="fsub_advsimd.html">FSUB (vector)</a>:
+        Floating-point Subtract (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ins_advsimd_elt.html">INS (element)</a>:
+        Insert vector element from another vector element.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ins_advsimd_gen.html">INS (general)</a>:
+        Insert vector element from general-purpose register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld1_advsimd_mult.html">LD1 (multiple structures)</a>:
+        Load multiple single-element structures to one, two, three, or four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld1_advsimd_sngl.html">LD1 (single structure)</a>:
+        Load one single-element structure to one lane of one register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld1r_advsimd.html">LD1R</a>:
+        Load one single-element structure and Replicate to all lanes (of one register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld2_advsimd_mult.html">LD2 (multiple structures)</a>:
+        Load multiple 2-element structures to two registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld2_advsimd_sngl.html">LD2 (single structure)</a>:
+        Load single 2-element structure to one lane of two registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld2r_advsimd.html">LD2R</a>:
+        Load single 2-element structure and Replicate to all lanes of two registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld3_advsimd_mult.html">LD3 (multiple structures)</a>:
+        Load multiple 3-element structures to three registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld3_advsimd_sngl.html">LD3 (single structure)</a>:
+        Load single 3-element structure to one lane of three registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld3r_advsimd.html">LD3R</a>:
+        Load single 3-element structure and Replicate to all lanes of three registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld4_advsimd_mult.html">LD4 (multiple structures)</a>:
+        Load multiple 4-element structures to four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld4_advsimd_sngl.html">LD4 (single structure)</a>:
+        Load single 4-element structure to one lane of four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ld4r_advsimd.html">LD4R</a>:
+        Load single 4-element structure and Replicate to all lanes of four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldap1_advsimd_sngl.html">LDAP1 (SIMD&amp;FP)</a>:
+        Load-Acquire RCpc one single-element structure to one lane of one register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldapur_fpsimd.html">LDAPUR (SIMD&amp;FP)</a>:
+        Load-Acquire RCpc SIMD&amp;FP Register (unscaled offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldnp_fpsimd.html">LDNP (SIMD&amp;FP)</a>:
+        Load Pair of SIMD&amp;FP registers, with Non-temporal hint.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldp_fpsimd.html">LDP (SIMD&amp;FP)</a>:
+        Load Pair of SIMD&amp;FP registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_imm_fpsimd.html">LDR (immediate, SIMD&amp;FP)</a>:
+        Load SIMD&amp;FP Register (immediate offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_lit_fpsimd.html">LDR (literal, SIMD&amp;FP)</a>:
+        Load SIMD&amp;FP Register (PC-relative literal).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_reg_fpsimd.html">LDR (register, SIMD&amp;FP)</a>:
+        Load SIMD&amp;FP Register (register offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldur_fpsimd.html">LDUR (SIMD&amp;FP)</a>:
+        Load SIMD&amp;FP Register (unscaled offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mla_advsimd_elt.html">MLA (by element)</a>:
+        Multiply-Add to accumulator (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mla_advsimd_vec.html">MLA (vector)</a>:
+        Multiply-Add to accumulator (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mls_advsimd_elt.html">MLS (by element)</a>:
+        Multiply-Subtract from accumulator (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mls_advsimd_vec.html">MLS (vector)</a>:
+        Multiply-Subtract from accumulator (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_ins_advsimd_elt.html">MOV (element)</a>:
+        Move vector element to another vector element: an alias of INS (element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_ins_advsimd_gen.html">MOV (from general)</a>:
+        Move general-purpose register to a vector element: an alias of INS (general).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_dup_advsimd_elt.html">MOV (scalar)</a>:
+        Move vector element to scalar: an alias of DUP (element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_umov_advsimd.html">MOV (to general)</a>:
+        Move vector element to general-purpose register: an alias of UMOV.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_orr_advsimd_reg.html">MOV (vector)</a>:
+        Move vector: an alias of ORR (vector, register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="movi_advsimd.html">MOVI</a>:
+        Move Immediate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mul_advsimd_elt.html">MUL (by element)</a>:
+        Multiply (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mul_advsimd_vec.html">MUL (vector)</a>:
+        Multiply (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mvn_not_advsimd.html">MVN</a>:
+        Bitwise NOT (vector): an alias of NOT.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mvni_advsimd.html">MVNI</a>:
+        Move inverted Immediate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="neg_advsimd.html">NEG (vector)</a>:
+        Negate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="not_advsimd.html">NOT</a>:
+        Bitwise NOT (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orn_advsimd.html">ORN (vector)</a>:
+        Bitwise inclusive OR NOT (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_advsimd_imm.html">ORR (vector, immediate)</a>:
+        Bitwise inclusive OR (vector, immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_advsimd_reg.html">ORR (vector, register)</a>:
+        Bitwise inclusive OR (vector, register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pmul_advsimd.html">PMUL</a>:
+        Polynomial Multiply.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pmull_advsimd.html">PMULL, PMULL2</a>:
+        Polynomial Multiply Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="raddhn_advsimd.html">RADDHN, RADDHN2</a>:
+        Rounding Add returning High Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rax1_advsimd.html">RAX1</a>:
+        Rotate and Exclusive-OR.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rbit_advsimd.html">RBIT (vector)</a>:
+        Reverse Bit order (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev16_advsimd.html">REV16 (vector)</a>:
+        Reverse elements in 16-bit halfwords (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev32_advsimd.html">REV32 (vector)</a>:
+        Reverse elements in 32-bit words (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev64_advsimd.html">REV64</a>:
+        Reverse elements in 64-bit doublewords (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rshrn_advsimd.html">RSHRN, RSHRN2</a>:
+        Rounding Shift Right Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsubhn_advsimd.html">RSUBHN, RSUBHN2</a>:
+        Rounding Subtract returning High Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="saba_advsimd.html">SABA</a>:
+        Signed Absolute difference and Accumulate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sabal_advsimd.html">SABAL, SABAL2</a>:
+        Signed Absolute difference and Accumulate Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sabd_advsimd.html">SABD</a>:
+        Signed Absolute Difference.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sabdl_advsimd.html">SABDL, SABDL2</a>:
+        Signed Absolute Difference Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sadalp_advsimd.html">SADALP</a>:
+        Signed Add and Accumulate Long Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="saddl_advsimd.html">SADDL, SADDL2</a>:
+        Signed Add Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="saddlp_advsimd.html">SADDLP</a>:
+        Signed Add Long Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="saddlv_advsimd.html">SADDLV</a>:
+        Signed Add Long across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="saddw_advsimd.html">SADDW, SADDW2</a>:
+        Signed Add Wide.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="scvtf_float_fix.html">SCVTF (scalar, fixed-point)</a>:
+        Signed fixed-point Convert to Floating-point (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="scvtf_float_int.html">SCVTF (scalar, integer)</a>:
+        Signed integer Convert to Floating-point (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="scvtf_advsimd_fix.html">SCVTF (vector, fixed-point)</a>:
+        Signed fixed-point Convert to Floating-point (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="scvtf_advsimd_int.html">SCVTF (vector, integer)</a>:
+        Signed integer Convert to Floating-point (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sdot_advsimd_elt.html">SDOT (by element)</a>:
+        Dot Product signed arithmetic (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sdot_advsimd_vec.html">SDOT (vector)</a>:
+        Dot Product signed arithmetic (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha1c_advsimd.html">SHA1C</a>:
+        SHA1 hash update (choose).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha1h_advsimd.html">SHA1H</a>:
+        SHA1 fixed rotate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha1m_advsimd.html">SHA1M</a>:
+        SHA1 hash update (majority).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha1p_advsimd.html">SHA1P</a>:
+        SHA1 hash update (parity).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha1su0_advsimd.html">SHA1SU0</a>:
+        SHA1 schedule update 0.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha1su1_advsimd.html">SHA1SU1</a>:
+        SHA1 schedule update 1.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha256h_advsimd.html">SHA256H</a>:
+        SHA256 hash update (part 1).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha256h2_advsimd.html">SHA256H2</a>:
+        SHA256 hash update (part 2).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha256su0_advsimd.html">SHA256SU0</a>:
+        SHA256 schedule update 0.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha256su1_advsimd.html">SHA256SU1</a>:
+        SHA256 schedule update 1.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha512h_advsimd.html">SHA512H</a>:
+        SHA512 Hash update part 1.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha512h2_advsimd.html">SHA512H2</a>:
+        SHA512 Hash update part 2.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha512su0_advsimd.html">SHA512SU0</a>:
+        SHA512 Schedule Update 0.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sha512su1_advsimd.html">SHA512SU1</a>:
+        SHA512 Schedule Update 1.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shadd_advsimd.html">SHADD</a>:
+        Signed Halving Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shl_advsimd.html">SHL</a>:
+        Shift Left (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shll_advsimd.html">SHLL, SHLL2</a>:
+        Shift Left Long (by element size).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shrn_advsimd.html">SHRN, SHRN2</a>:
+        Shift Right Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shsub_advsimd.html">SHSUB</a>:
+        Signed Halving Subtract.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sli_advsimd.html">SLI</a>:
+        Shift Left and Insert (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3partw1_advsimd.html">SM3PARTW1</a>:
+        SM3PARTW1.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3partw2_advsimd.html">SM3PARTW2</a>:
+        SM3PARTW2.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3ss1_advsimd.html">SM3SS1</a>:
+        SM3SS1.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3tt1a_advsimd.html">SM3TT1A</a>:
+        SM3TT1A.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3tt1b_advsimd.html">SM3TT1B</a>:
+        SM3TT1B.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3tt2a_advsimd.html">SM3TT2A</a>:
+        SM3TT2A.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm3tt2b_advsimd.html">SM3TT2B</a>:
+        SM3TT2B.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm4e_advsimd.html">SM4E</a>:
+        SM4 Encode.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sm4ekey_advsimd.html">SM4EKEY</a>:
+        SM4 Key.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smax_advsimd.html">SMAX</a>:
+        Signed Maximum (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smaxp_advsimd.html">SMAXP</a>:
+        Signed Maximum Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smaxv_advsimd.html">SMAXV</a>:
+        Signed Maximum across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smin_advsimd.html">SMIN</a>:
+        Signed Minimum (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sminp_advsimd.html">SMINP</a>:
+        Signed Minimum Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sminv_advsimd.html">SMINV</a>:
+        Signed Minimum across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlal_advsimd_elt.html">SMLAL, SMLAL2 (by element)</a>:
+        Signed Multiply-Add Long (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlal_advsimd_vec.html">SMLAL, SMLAL2 (vector)</a>:
+        Signed Multiply-Add Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlsl_advsimd_elt.html">SMLSL, SMLSL2 (by element)</a>:
+        Signed Multiply-Subtract Long (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlsl_advsimd_vec.html">SMLSL, SMLSL2 (vector)</a>:
+        Signed Multiply-Subtract Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smmla_advsimd_vec.html">SMMLA (vector)</a>:
+        Signed 8-bit integer matrix multiply-accumulate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smov_advsimd.html">SMOV</a>:
+        Signed Move vector element to general-purpose register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smull_advsimd_elt.html">SMULL, SMULL2 (by element)</a>:
+        Signed Multiply Long (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smull_advsimd_vec.html">SMULL, SMULL2 (vector)</a>:
+        Signed Multiply Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqabs_advsimd.html">SQABS</a>:
+        Signed saturating Absolute value.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqadd_advsimd.html">SQADD</a>:
+        Signed saturating Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmlal_advsimd_elt.html">SQDMLAL, SQDMLAL2 (by element)</a>:
+        Signed saturating Doubling Multiply-Add Long (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmlal_advsimd_vec.html">SQDMLAL, SQDMLAL2 (vector)</a>:
+        Signed saturating Doubling Multiply-Add Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmlsl_advsimd_elt.html">SQDMLSL, SQDMLSL2 (by element)</a>:
+        Signed saturating Doubling Multiply-Subtract Long (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmlsl_advsimd_vec.html">SQDMLSL, SQDMLSL2 (vector)</a>:
+        Signed saturating Doubling Multiply-Subtract Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmulh_advsimd_elt.html">SQDMULH (by element)</a>:
+        Signed saturating Doubling Multiply returning High half (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmulh_advsimd_vec.html">SQDMULH (vector)</a>:
+        Signed saturating Doubling Multiply returning High half.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmull_advsimd_elt.html">SQDMULL, SQDMULL2 (by element)</a>:
+        Signed saturating Doubling Multiply Long (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqdmull_advsimd_vec.html">SQDMULL, SQDMULL2 (vector)</a>:
+        Signed saturating Doubling Multiply Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqneg_advsimd.html">SQNEG</a>:
+        Signed saturating Negate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrdmlah_advsimd_elt.html">SQRDMLAH (by element)</a>:
+        Signed Saturating Rounding Doubling Multiply Accumulate returning High Half (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrdmlah_advsimd_vec.html">SQRDMLAH (vector)</a>:
+        Signed Saturating Rounding Doubling Multiply Accumulate returning High Half (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrdmlsh_advsimd_elt.html">SQRDMLSH (by element)</a>:
+        Signed Saturating Rounding Doubling Multiply Subtract returning High Half (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrdmlsh_advsimd_vec.html">SQRDMLSH (vector)</a>:
+        Signed Saturating Rounding Doubling Multiply Subtract returning High Half (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrdmulh_advsimd_elt.html">SQRDMULH (by element)</a>:
+        Signed saturating Rounding Doubling Multiply returning High half (by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrdmulh_advsimd_vec.html">SQRDMULH (vector)</a>:
+        Signed saturating Rounding Doubling Multiply returning High half.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrshl_advsimd.html">SQRSHL</a>:
+        Signed saturating Rounding Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrshrn_advsimd.html">SQRSHRN, SQRSHRN2</a>:
+        Signed saturating Rounded Shift Right Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqrshrun_advsimd.html">SQRSHRUN, SQRSHRUN2</a>:
+        Signed saturating Rounded Shift Right Unsigned Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqshl_advsimd_imm.html">SQSHL (immediate)</a>:
+        Signed saturating Shift Left (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqshl_advsimd_reg.html">SQSHL (register)</a>:
+        Signed saturating Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqshlu_advsimd.html">SQSHLU</a>:
+        Signed saturating Shift Left Unsigned (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqshrn_advsimd.html">SQSHRN, SQSHRN2</a>:
+        Signed saturating Shift Right Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqshrun_advsimd.html">SQSHRUN, SQSHRUN2</a>:
+        Signed saturating Shift Right Unsigned Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqsub_advsimd.html">SQSUB</a>:
+        Signed saturating Subtract.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqxtn_advsimd.html">SQXTN, SQXTN2</a>:
+        Signed saturating extract Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sqxtun_advsimd.html">SQXTUN, SQXTUN2</a>:
+        Signed saturating extract Unsigned Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="srhadd_advsimd.html">SRHADD</a>:
+        Signed Rounding Halving Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sri_advsimd.html">SRI</a>:
+        Shift Right and Insert (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="srshl_advsimd.html">SRSHL</a>:
+        Signed Rounding Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="srshr_advsimd.html">SRSHR</a>:
+        Signed Rounding Shift Right (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="srsra_advsimd.html">SRSRA</a>:
+        Signed Rounding Shift Right and Accumulate (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sshl_advsimd.html">SSHL</a>:
+        Signed Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sshll_advsimd.html">SSHLL, SSHLL2</a>:
+        Signed Shift Left Long (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sshr_advsimd.html">SSHR</a>:
+        Signed Shift Right (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssra_advsimd.html">SSRA</a>:
+        Signed Shift Right and Accumulate (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssubl_advsimd.html">SSUBL, SSUBL2</a>:
+        Signed Subtract Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssubw_advsimd.html">SSUBW, SSUBW2</a>:
+        Signed Subtract Wide.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st1_advsimd_mult.html">ST1 (multiple structures)</a>:
+        Store multiple single-element structures from one, two, three, or four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st1_advsimd_sngl.html">ST1 (single structure)</a>:
+        Store a single-element structure from one lane of one register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st2_advsimd_mult.html">ST2 (multiple structures)</a>:
+        Store multiple 2-element structures from two registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st2_advsimd_sngl.html">ST2 (single structure)</a>:
+        Store single 2-element structure from one lane of two registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st3_advsimd_mult.html">ST3 (multiple structures)</a>:
+        Store multiple 3-element structures from three registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st3_advsimd_sngl.html">ST3 (single structure)</a>:
+        Store single 3-element structure from one lane of three registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st4_advsimd_mult.html">ST4 (multiple structures)</a>:
+        Store multiple 4-element structures from four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="st4_advsimd_sngl.html">ST4 (single structure)</a>:
+        Store single 4-element structure from one lane of four registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stl1_advsimd_sngl.html">STL1 (SIMD&amp;FP)</a>:
+        Store-Release a single-element structure from one lane of one register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlur_fpsimd.html">STLUR (SIMD&amp;FP)</a>:
+        Store-Release SIMD&amp;FP Register (unscaled offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stnp_fpsimd.html">STNP (SIMD&amp;FP)</a>:
+        Store Pair of SIMD&amp;FP registers, with Non-temporal hint.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stp_fpsimd.html">STP (SIMD&amp;FP)</a>:
+        Store Pair of SIMD&amp;FP registers.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="str_imm_fpsimd.html">STR (immediate, SIMD&amp;FP)</a>:
+        Store SIMD&amp;FP register (immediate offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="str_reg_fpsimd.html">STR (register, SIMD&amp;FP)</a>:
+        Store SIMD&amp;FP register (register offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stur_fpsimd.html">STUR (SIMD&amp;FP)</a>:
+        Store SIMD&amp;FP register (unscaled offset).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_advsimd.html">SUB (vector)</a>:
+        Subtract (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="subhn_advsimd.html">SUBHN, SUBHN2</a>:
+        Subtract returning High Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sudot_advsimd_elt.html">SUDOT (by element)</a>:
+        Dot product with signed and unsigned integers (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="suqadd_advsimd.html">SUQADD</a>:
+        Signed saturating Accumulate of Unsigned value.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtl_sshll_advsimd.html">SXTL, SXTL2</a>:
+        Signed extend Long: an alias of SSHLL, SSHLL2.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tbl_advsimd.html">TBL</a>:
+        Table vector Lookup.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tbx_advsimd.html">TBX</a>:
+        Table vector lookup extension.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="trn1_advsimd.html">TRN1</a>:
+        Transpose vectors (primary).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="trn2_advsimd.html">TRN2</a>:
+        Transpose vectors (secondary).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uaba_advsimd.html">UABA</a>:
+        Unsigned Absolute difference and Accumulate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uabal_advsimd.html">UABAL, UABAL2</a>:
+        Unsigned Absolute difference and Accumulate Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uabd_advsimd.html">UABD</a>:
+        Unsigned Absolute Difference (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uabdl_advsimd.html">UABDL, UABDL2</a>:
+        Unsigned Absolute Difference Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uadalp_advsimd.html">UADALP</a>:
+        Unsigned Add and Accumulate Long Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uaddl_advsimd.html">UADDL, UADDL2</a>:
+        Unsigned Add Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uaddlp_advsimd.html">UADDLP</a>:
+        Unsigned Add Long Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uaddlv_advsimd.html">UADDLV</a>:
+        Unsigned sum Long across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uaddw_advsimd.html">UADDW, UADDW2</a>:
+        Unsigned Add Wide.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ucvtf_float_fix.html">UCVTF (scalar, fixed-point)</a>:
+        Unsigned fixed-point Convert to Floating-point (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ucvtf_float_int.html">UCVTF (scalar, integer)</a>:
+        Unsigned integer Convert to Floating-point (scalar).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ucvtf_advsimd_fix.html">UCVTF (vector, fixed-point)</a>:
+        Unsigned fixed-point Convert to Floating-point (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ucvtf_advsimd_int.html">UCVTF (vector, integer)</a>:
+        Unsigned integer Convert to Floating-point (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="udot_advsimd_elt.html">UDOT (by element)</a>:
+        Dot Product unsigned arithmetic (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="udot_advsimd_vec.html">UDOT (vector)</a>:
+        Dot Product unsigned arithmetic (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhadd_advsimd.html">UHADD</a>:
+        Unsigned Halving Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhsub_advsimd.html">UHSUB</a>:
+        Unsigned Halving Subtract.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umax_advsimd.html">UMAX</a>:
+        Unsigned Maximum (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umaxp_advsimd.html">UMAXP</a>:
+        Unsigned Maximum Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umaxv_advsimd.html">UMAXV</a>:
+        Unsigned Maximum across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umin_advsimd.html">UMIN</a>:
+        Unsigned Minimum (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uminp_advsimd.html">UMINP</a>:
+        Unsigned Minimum Pairwise.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uminv_advsimd.html">UMINV</a>:
+        Unsigned Minimum across Vector.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umlal_advsimd_elt.html">UMLAL, UMLAL2 (by element)</a>:
+        Unsigned Multiply-Add Long (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umlal_advsimd_vec.html">UMLAL, UMLAL2 (vector)</a>:
+        Unsigned Multiply-Add Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umlsl_advsimd_elt.html">UMLSL, UMLSL2 (by element)</a>:
+        Unsigned Multiply-Subtract Long (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umlsl_advsimd_vec.html">UMLSL, UMLSL2 (vector)</a>:
+        Unsigned Multiply-Subtract Long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ummla_advsimd_vec.html">UMMLA (vector)</a>:
+        Unsigned 8-bit integer matrix multiply-accumulate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umov_advsimd.html">UMOV</a>:
+        Unsigned Move vector element to general-purpose register.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umull_advsimd_elt.html">UMULL, UMULL2 (by element)</a>:
+        Unsigned Multiply Long (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umull_advsimd_vec.html">UMULL, UMULL2 (vector)</a>:
+        Unsigned Multiply long (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqadd_advsimd.html">UQADD</a>:
+        Unsigned saturating Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqrshl_advsimd.html">UQRSHL</a>:
+        Unsigned saturating Rounding Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqrshrn_advsimd.html">UQRSHRN, UQRSHRN2</a>:
+        Unsigned saturating Rounded Shift Right Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqshl_advsimd_imm.html">UQSHL (immediate)</a>:
+        Unsigned saturating Shift Left (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqshl_advsimd_reg.html">UQSHL (register)</a>:
+        Unsigned saturating Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqshrn_advsimd.html">UQSHRN, UQSHRN2</a>:
+        Unsigned saturating Shift Right Narrow (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqsub_advsimd.html">UQSUB</a>:
+        Unsigned saturating Subtract.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqxtn_advsimd.html">UQXTN, UQXTN2</a>:
+        Unsigned saturating extract Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="urecpe_advsimd.html">URECPE</a>:
+        Unsigned Reciprocal Estimate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="urhadd_advsimd.html">URHADD</a>:
+        Unsigned Rounding Halving Add.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="urshl_advsimd.html">URSHL</a>:
+        Unsigned Rounding Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="urshr_advsimd.html">URSHR</a>:
+        Unsigned Rounding Shift Right (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ursqrte_advsimd.html">URSQRTE</a>:
+        Unsigned Reciprocal Square Root Estimate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ursra_advsimd.html">URSRA</a>:
+        Unsigned Rounding Shift Right and Accumulate (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usdot_advsimd_elt.html">USDOT (by element)</a>:
+        Dot Product with unsigned and signed integers (vector, by element).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usdot_advsimd_vec.html">USDOT (vector)</a>:
+        Dot Product with unsigned and signed integers (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ushl_advsimd.html">USHL</a>:
+        Unsigned Shift Left (register).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ushll_advsimd.html">USHLL, USHLL2</a>:
+        Unsigned Shift Left Long (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ushr_advsimd.html">USHR</a>:
+        Unsigned Shift Right (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usmmla_advsimd_vec.html">USMMLA (vector)</a>:
+        Unsigned and signed 8-bit integer matrix multiply-accumulate (vector).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usqadd_advsimd.html">USQADD</a>:
+        Unsigned saturating Accumulate of Signed value.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usra_advsimd.html">USRA</a>:
+        Unsigned Shift Right and Accumulate (immediate).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usubl_advsimd.html">USUBL, USUBL2</a>:
+        Unsigned Subtract Long.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usubw_advsimd.html">USUBW, USUBW2</a>:
+        Unsigned Subtract Wide.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtl_ushll_advsimd.html">UXTL, UXTL2</a>:
+        Unsigned extend Long: an alias of USHLL, USHLL2.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uzp1_advsimd.html">UZP1</a>:
+        Unzip vectors (primary).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uzp2_advsimd.html">UZP2</a>:
+        Unzip vectors (secondary).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="xar_advsimd.html">XAR</a>:
+        Exclusive-OR and Rotate.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="xtn_advsimd.html">XTN, XTN2</a>:
+        Extract Narrow.</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="zip1_advsimd.html">ZIP1</a>:
+        Zip vectors (primary).</span></p></div><div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="zip2_advsimd.html">ZIP2</a>:
+        Zip vectors (secondary).</span></p></div><hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="sveindex.html">SVE Instructions</a></div></td><td><div class="topbar"><a href="mortlachindex.html">SME Instructions</a></div></td><td><div class="topbar"><a href="encodingindex.html">Index by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+        Internal version only: isa <ins>v33.59</ins><del>v33.53</del>, AdvSIMD <ins>v29.12</ins><del>v29.11</del>, pseudocode <ins>v2022-12_rel</ins><del>no_diffs_2022_12_RC1_0</del>, sve <ins>v2022-12_relb</ins><del>shoji_no_diff_2022_12_rc1</del>      
+        ; Build timestamp: <ins>2022-12-14T22</ins><del>2022-11-21T13</del>:<ins>29</ins><del>57</del>
+    </p><p class="copyconf">
+      Copyright © 2010-2022 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p><div align="center" class="htmldiff_header"><table><tbody><tr><td class="old">(old) </td><td class="explain">htmldiff from-</td><td class="new">(new) </td></tr></tbody></table></div></body></html>

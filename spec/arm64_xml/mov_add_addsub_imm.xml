@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="MOV_ADD_addsub_imm" title="MOV (to/from SP) -- A64" type="alias">
+  <docvars>
+    <docvar key="alias_mnemonic" value="MOV" />
+    <docvar key="cond-setting" value="no-s" />
+    <docvar key="immediate-type" value="imm12u" />
+    <docvar key="instr-class" value="general" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="ADD" />
+    <docvar key="move-what" value="to-from-sp" />
+  </docvars>
+  <heading>MOV (to/from SP)</heading>
+  <desc>
+    <brief>Move between register and stack pointer</brief>
+    <alg>Rd = Rn</alg>
+  </desc>
+  <aliasto refiform="add_addsub_imm.xml" iformid="ADD_addsub_imm">ADD (immediate)</aliasto>
+  <classes>
+    <iclass name="Not setting the condition flags" oneof="1" id="iclass_no_s" no_encodings="2" isa="A64">
+      <docvars>
+        <docvar key="cond-setting" value="no-s" />
+        <docvar key="immediate-type" value="imm12u" />
+        <docvar key="instr-class" value="general" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="ADD" />
+      </docvars>
+      <iclassintro count="2"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/integer/arithmetic/add-sub/immediate" tworows="1">
+        <box hibit="31" name="sf" usename="1">
+          <c></c>
+        </box>
+        <box hibit="30" name="op" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="29" name="S" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="28" width="6" settings="6">
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="22" name="sh" usename="1" settings="1" psbits="x">
+          <c>0</c>
+        </box>
+        <box hibit="21" width="12" name="imm12" usename="1" settings="12" psbits="xxxxxxxxxxxx">
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="MOV_ADD_32_addsub_imm" oneofinclass="2" oneof="2" label="32-bit" bitdiffs="sf == 0">
+        <docvars>
+          <docvar key="alias_mnemonic" value="MOV" />
+          <docvar key="cond-setting" value="no-s" />
+          <docvar key="datatype" value="32" />
+          <docvar key="immediate-type" value="imm12u" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="ADD" />
+          <docvar key="move-what" value="to-from-sp" />
+        </docvars>
+        <box hibit="31" width="1" name="sf">
+          <c>0</c>
+        </box>
+        <asmtemplate><text>MOV  </text><a link="sa_wd_wsp" hover="32-bit destination general-purpose register or WSP (field &quot;Rd&quot;)">&lt;Wd|WSP&gt;</a><text>, </text><a link="sa_wn_wsp" hover="32-bit source general-purpose register or WSP (field &quot;Rn&quot;)">&lt;Wn|WSP&gt;</a></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="add_addsub_imm.xml#ADD_32_addsub_imm">ADD</a><text> </text><a link="sa_wd_wsp" hover="32-bit destination general-purpose register or WSP (field &quot;Rd&quot;)">&lt;Wd|WSP&gt;</a><text>, </text><a link="sa_wn_wsp" hover="32-bit source general-purpose register or WSP (field &quot;Rn&quot;)">&lt;Wn|WSP&gt;</a><text>, #0</text></asmtemplate>
+          <aliascond>(Rd == '11111' || Rn == '11111')</aliascond>
+        </equivalent_to>
+      </encoding>
+      <encoding name="MOV_ADD_64_addsub_imm" oneofinclass="2" oneof="2" label="64-bit" bitdiffs="sf == 1">
+        <docvars>
+          <docvar key="alias_mnemonic" value="MOV" />
+          <docvar key="cond-setting" value="no-s" />
+          <docvar key="datatype" value="64" />
+          <docvar key="immediate-type" value="imm12u" />
+          <docvar key="instr-class" value="general" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="ADD" />
+          <docvar key="move-what" value="to-from-sp" />
+        </docvars>
+        <box hibit="31" width="1" name="sf">
+          <c>1</c>
+        </box>
+        <asmtemplate><text>MOV  </text><a link="sa_xd_sp" hover="64-bit destination general-purpose register or SP (field &quot;Rd&quot;)">&lt;Xd|SP&gt;</a><text>, </text><a link="sa_xn_sp" hover="64-bit source general-purpose register or SP (field &quot;Rn&quot;)">&lt;Xn|SP&gt;</a></asmtemplate>
+        <equivalent_to>
+          <asmtemplate><a href="add_addsub_imm.xml#ADD_64_addsub_imm">ADD</a><text> </text><a link="sa_xd_sp" hover="64-bit destination general-purpose register or SP (field &quot;Rd&quot;)">&lt;Xd|SP&gt;</a><text>, </text><a link="sa_xn_sp" hover="64-bit source general-purpose register or SP (field &quot;Rn&quot;)">&lt;Xn|SP&gt;</a><text>, #0</text></asmtemplate>
+          <aliascond>(Rd == '11111' || Rn == '11111')</aliascond>
+        </equivalent_to>
+      </encoding>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="MOV_ADD_32_addsub_imm" symboldefcount="1">
+      <symbol link="sa_wd_wsp">&lt;Wd|WSP&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 32-bit name of the destination general-purpose register or stack pointer, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MOV_ADD_32_addsub_imm" symboldefcount="1">
+      <symbol link="sa_wn_wsp">&lt;Wn|WSP&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 32-bit name of the source general-purpose register or stack pointer, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MOV_ADD_64_addsub_imm" symboldefcount="1">
+      <symbol link="sa_xd_sp">&lt;Xd|SP&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the 64-bit name of the destination general-purpose register or stack pointer, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="MOV_ADD_64_addsub_imm" symboldefcount="1">
+      <symbol link="sa_xn_sp">&lt;Xn|SP&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the 64-bit name of the source general-purpose register or stack pointer, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+</instructionsection>

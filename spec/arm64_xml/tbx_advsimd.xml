@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="TBX_advsimd" title="TBX -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="advsimd" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="TBX" />
+  </docvars>
+  <heading>TBX</heading>
+  <desc>
+    <brief>
+      <para>Table vector lookup extension</para>
+    </brief>
+    <authored>
+      <para>Table vector lookup extension. This instruction reads each value from the vector elements in the index source SIMD&amp;FP register, uses each result as an index to perform a lookup in a table of bytes that is described by one to four source table SIMD&amp;FP registers, places the lookup result in a vector, and writes the vector to the destination SIMD&amp;FP register. If an index is out of range for the table, the existing value in the vector element of the destination register is left unchanged. If more than one source register is used to describe the table, the first source register describes the lowest bytes of the table.</para>
+      <para>Depending on the settings in the <xref linkend="AArch64.cpacr_el1">CPACR_EL1</xref>, <xref linkend="AArch64.cptr_el2">CPTR_EL2</xref>, and <xref linkend="AArch64.cptr_el3">CPTR_EL3</xref> registers, and the current Security state and Exception level, an attempt to execute the instruction might be trapped.</para>
+    </authored>
+  </desc>
+  <operationalnotes>
+    <para>If PSTATE.DIT is 1:</para>
+    <list type="unordered">
+      <listitem><content>The execution time of this instruction is independent of:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+      <listitem><content>The response of this instruction to asynchronous exceptions does not vary based on:<list type="unordered"><listitem><content>The values of the data supplied in any of its registers.</content></listitem><listitem><content>The values of the NZCV flags.</content></listitem></list></content></listitem>
+    </list>
+  </operationalnotes>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="Advanced SIMD" oneof="1" id="iclass_advsimd" no_encodings="4" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="advsimd" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="TBX" />
+      </docvars>
+      <iclassintro count="4"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/vector/transfer/vector/table" tworows="1">
+        <box hibit="31" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="30" name="Q" usename="1">
+          <c></c>
+        </box>
+        <box hibit="29" width="6" settings="6">
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <box hibit="23" width="2" name="op2" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="5" name="Rm" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="15" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="14" width="2" name="len" usename="1">
+          <c colspan="2"></c>
+        </box>
+        <box hibit="12" name="op" usename="1" settings="1" psbits="x">
+          <c>1</c>
+        </box>
+        <box hibit="11" width="2" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="9" width="5" name="Rn" usename="1">
+          <c colspan="5"></c>
+        </box>
+        <box hibit="4" width="5" name="Rd" usename="1">
+          <c colspan="5"></c>
+        </box>
+      </regdiagram>
+      <encoding name="TBX_asimdtbl_L2_2" oneofinclass="4" oneof="4" label="Two register table" bitdiffs="len == 01">
+        <docvars>
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="TBX" />
+          <docvar key="no-reg-for-table" value="tbl2" />
+        </docvars>
+        <box hibit="14" width="2" name="len">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <asmtemplate><text>TBX  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a><text>, </text><text>{</text><text> </text><a link="sa_vn_1" hover="First SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.16B, </text><a link="sa_vn_plus_1" hover="Second SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 1 modulo 32 (field Rn)">&lt;Vn+1&gt;</a><text>.16B </text><text>}</text><text>, </text><a link="sa_vm" hover="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></asmtemplate>
+      </encoding>
+      <encoding name="TBX_asimdtbl_L3_3" oneofinclass="4" oneof="4" label="Three register table" bitdiffs="len == 10">
+        <docvars>
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="TBX" />
+          <docvar key="no-reg-for-table" value="tbl3" />
+        </docvars>
+        <box hibit="14" width="2" name="len">
+          <c>1</c>
+          <c>0</c>
+        </box>
+        <asmtemplate><text>TBX  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a><text>, </text><text>{</text><text> </text><a link="sa_vn_1" hover="First SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.16B, </text><a link="sa_vn_plus_1" hover="Second SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 1 modulo 32 (field Rn)">&lt;Vn+1&gt;</a><text>.16B, </text><a link="sa_vn_plus_2" hover="Third SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 2 modulo 32 (field Rn)">&lt;Vn+2&gt;</a><text>.16B </text><text>}</text><text>, </text><a link="sa_vm" hover="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></asmtemplate>
+      </encoding>
+      <encoding name="TBX_asimdtbl_L4_4" oneofinclass="4" oneof="4" label="Four register table" bitdiffs="len == 11">
+        <docvars>
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="TBX" />
+          <docvar key="no-reg-for-table" value="tbl4" />
+        </docvars>
+        <box hibit="14" width="2" name="len">
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <asmtemplate><text>TBX  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a><text>, </text><text>{</text><text> </text><a link="sa_vn_1" hover="First SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.16B, </text><a link="sa_vn_plus_1" hover="Second SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 1 modulo 32 (field Rn)">&lt;Vn+1&gt;</a><text>.16B, </text><a link="sa_vn_plus_2" hover="Third SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 2 modulo 32 (field Rn)">&lt;Vn+2&gt;</a><text>.16B, </text><a link="sa_vn_plus_3" hover="Fourth SIMD&amp;FP table register, encoded as &quot;Rn&quot; plus 3 modulo 32 (field Rn)">&lt;Vn+3&gt;</a><text>.16B </text><text>}</text><text>, </text><a link="sa_vm" hover="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></asmtemplate>
+      </encoding>
+      <encoding name="TBX_asimdtbl_L1_1" oneofinclass="4" oneof="4" label="Single register table" bitdiffs="len == 00">
+        <docvars>
+          <docvar key="instr-class" value="advsimd" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="TBX" />
+          <docvar key="no-reg-for-table" value="tbl1" />
+        </docvars>
+        <box hibit="14" width="2" name="len">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <asmtemplate><text>TBX  </text><a link="sa_vd" hover="SIMD&amp;FP destination register (field &quot;Rd&quot;)">&lt;Vd&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a><text>, </text><text>{</text><text> </text><a link="sa_vn" hover="SIMD&amp;FP table register (field &quot;Rn&quot;)">&lt;Vn&gt;</a><text>.16B </text><text>}</text><text>, </text><a link="sa_vm" hover="SIMD&amp;FP index register (field &quot;Rm&quot;)">&lt;Vm&gt;</a><text>.</text><a link="sa_ta" hover="Arrangement specifier (field &quot;Q&quot;) [8B,16B]">&lt;Ta&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/vector/transfer/vector/table" mylink="aarch64.instrs.vector.transfer.vector.table" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode">integer d = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rd);
+integer n = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rn);
+integer m = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(Rm);
+
+integer datasize = if Q == '1' then 128 else 64;
+integer elements = datasize DIV 8;
+integer regs = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(len) + 1;
+boolean is_tbl = (op == '0');</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="TBX_asimdtbl_L1_1, TBX_asimdtbl_L2_2, TBX_asimdtbl_L3_3, TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_vd">&lt;Vd&gt;</symbol>
+      <account encodedin="Rd">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP destination register, encoded in the "Rd" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L1_1, TBX_asimdtbl_L2_2, TBX_asimdtbl_L3_3, TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_ta">&lt;Ta&gt;</symbol>
+      <definition encodedin="Q">
+        <intro>Is an arrangement specifier, </intro>
+        <table class="valuetable">
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry class="bitfield">Q</entry>
+                <entry class="symbol">&lt;Ta&gt;</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry class="bitfield">0</entry>
+                <entry class="symbol">8B</entry>
+              </row>
+              <row>
+                <entry class="bitfield">1</entry>
+                <entry class="symbol">16B</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </definition>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L2_2, TBX_asimdtbl_L3_3, TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_vn_1">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>For the four register table, three register table and two register table variant: is the name of the first SIMD&amp;FP table register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L1_1" symboldefcount="2">
+      <symbol link="sa_vn">&lt;Vn&gt;</symbol>
+      <account encodedin="Rn">
+        <docvars>
+          <docvar key="no-reg-for-table" value="tbl1" />
+        </docvars>
+        <intro>
+          <para>For the single register table variant: is the name of the SIMD&amp;FP table register, encoded in the "Rn" field.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L2_2, TBX_asimdtbl_L3_3, TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_vn_plus_1">&lt;Vn+1&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the second SIMD&amp;FP table register, encoded as "Rn" plus 1 modulo 32.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L3_3, TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_vn_plus_2">&lt;Vn+2&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the third SIMD&amp;FP table register, encoded as "Rn" plus 2 modulo 32.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_vn_plus_3">&lt;Vn+3&gt;</symbol>
+      <account encodedin="Rn">
+        <intro>
+          <para>Is the name of the fourth SIMD&amp;FP table register, encoded as "Rn" plus 3 modulo 32.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="TBX_asimdtbl_L1_1, TBX_asimdtbl_L2_2, TBX_asimdtbl_L3_3, TBX_asimdtbl_L4_4" symboldefcount="1">
+      <symbol link="sa_vm">&lt;Vm&gt;</symbol>
+      <account encodedin="Rm">
+        <intro>
+          <para>Is the name of the SIMD&amp;FP index register, encoded in the "Rm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/vector/transfer/vector/table" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-aarch64.CheckFPAdvSIMDEnabled64.0" file="shared_pseudocode.xml" hover="function: CheckFPAdvSIMDEnabled64()">CheckFPAdvSIMDEnabled64</a>();
+bits(datasize) indices = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[m, datasize];
+bits(128*regs) table = <a link="impl-shared.Zeros.1" file="shared_pseudocode.xml" hover="function: bits(N) Zeros(integer N)">Zeros</a>(128*regs);
+bits(datasize) result;
+integer index;
+
+// Create table from registers
+for i = 0 to regs - 1
+    table&lt;128*i+127:128*i&gt; = <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[n, 128];
+    n = (n + 1) MOD 32;
+
+result = if is_tbl then <a link="impl-shared.Zeros.1" file="shared_pseudocode.xml" hover="function: bits(N) Zeros(integer N)">Zeros</a>(datasize) else <a link="impl-aarch64.V.read.2" file="shared_pseudocode.xml" hover="accessor: bits(width) V[integer n, integer width]">V</a>[d, datasize];
+for i = 0 to elements - 1
+    index = <a link="impl-shared.UInt.1" file="shared_pseudocode.xml" hover="function: integer UInt(bits(N) x)">UInt</a>(<a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[indices, i, 8]);
+    if index &lt; 16 * regs then
+        <a link="impl-shared.Elem.write.3" file="shared_pseudocode.xml" hover="accessor: Elem[bits(N) &amp;vector, integer e, integer size] = bits(size) value">Elem</a>[result, i, 8] = <a link="impl-shared.Elem.read.3" file="shared_pseudocode.xml" hover="accessor: bits(size) Elem[bits(N) vector, integer e, integer size]">Elem</a>[table, index, 8];
+
+<a link="impl-aarch64.V.write.2" file="shared_pseudocode.xml" hover="accessor: V[integer n, integer width] = bits(width) value">V</a>[d, datasize] = result;</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>

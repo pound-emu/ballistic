@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" encoding="UTF-8" href="iform.xsl" version="1.0"?>
+<!DOCTYPE instructionsection PUBLIC "-//ARM//DTD instructionsection //EN" "iform-p.dtd">
+<!-- Copyright (c) 2010-2022 Arm Limited or its affiliates. All rights reserved. -->
+<!-- This document is Non-Confidential. This document may only be used and distributed in accordance with the terms of the agreement entered into by Arm and the party that Arm delivered this document to. -->
+
+<instructionsection id="DMB" title="DMB -- A64" type="instruction">
+  <docvars>
+    <docvar key="instr-class" value="system" />
+    <docvar key="isa" value="A64" />
+    <docvar key="mnemonic" value="DMB" />
+  </docvars>
+  <heading>DMB</heading>
+  <desc>
+    <brief>
+      <para>Data Memory Barrier</para>
+    </brief>
+    <authored>
+      <para>Data Memory Barrier is a memory barrier that ensures the ordering of observations of memory accesses, see <xref linkend="BEIIECBH">Data Memory Barrier</xref>.</para>
+    </authored>
+  </desc>
+  <alias_list howmany="0"></alias_list>
+  <classes>
+    <iclass name="System" oneof="1" id="iclass_system" no_encodings="1" isa="A64">
+      <docvars>
+        <docvar key="instr-class" value="system" />
+        <docvar key="isa" value="A64" />
+        <docvar key="mnemonic" value="DMB" />
+      </docvars>
+      <iclassintro count="1"></iclassintro>
+      <regdiagram form="32" psname="aarch64/instrs/system/barriers/dmb" tworows="1">
+        <box hibit="31" width="10" settings="10">
+          <c>1</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>1</c>
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="21" name="L" settings="1">
+          <c>0</c>
+        </box>
+        <box hibit="20" width="2" name="op0" settings="2">
+          <c>0</c>
+          <c>0</c>
+        </box>
+        <box hibit="18" width="3" name="op1" settings="3">
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="15" width="4" name="CRn" settings="4">
+          <c>0</c>
+          <c>0</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+        <box hibit="11" width="4" name="CRm" usename="1">
+          <c colspan="4"></c>
+        </box>
+        <box hibit="7" name="op2[2]" settings="1">
+          <c>1</c>
+        </box>
+        <box hibit="6" width="2" name="opc" usename="1" settings="2" psbits="xx">
+          <c>0</c>
+          <c>1</c>
+        </box>
+        <box hibit="4" width="5" name="Rt" settings="5">
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+          <c>1</c>
+        </box>
+      </regdiagram>
+      <encoding name="DMB_BO_barriers" oneofinclass="1" oneof="1" label="">
+        <docvars>
+          <docvar key="instr-class" value="system" />
+          <docvar key="isa" value="A64" />
+          <docvar key="mnemonic" value="DMB" />
+        </docvars>
+        <asmtemplate><text>DMB  </text><a link="sa_option" hover="Specifies the limitation on the barrier operation">&lt;option&gt;</a><text>|#</text><a link="sa_imm" hover="4-bit unsigned immediate [0-15] (field &quot;CRm&quot;)">&lt;imm&gt;</a></asmtemplate>
+      </encoding>
+      <ps_section howmany="1">
+        <ps name="aarch64/instrs/system/barriers/dmb" mylink="aarch64.instrs.system.barriers.dmb" enclabels="" sections="1" secttype="noheading">
+          <pstext mayhavelinks="1" section="Decode" rep_section="decode"><a link="MBReqDomain" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain</a> domain;
+<a link="MBReqTypes" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes</a> types;
+case CRm&lt;3:2&gt; of
+    when '00' domain = <a link="MBReqDomain_OuterShareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_OuterShareable</a>;
+    when '01' domain = <a link="MBReqDomain_Nonshareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_Nonshareable</a>;
+    when '10' domain = <a link="MBReqDomain_InnerShareable" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_InnerShareable</a>;
+    when '11' domain = <a link="MBReqDomain_FullSystem" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_FullSystem</a>;
+case CRm&lt;1:0&gt; of
+    when '00' types = <a link="MBReqTypes_All" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_All</a>; domain = <a link="MBReqDomain_FullSystem" file="shared_pseudocode.xml" hover="enumeration MBReqDomain    {MBReqDomain_Nonshareable, MBReqDomain_InnerShareable, MBReqDomain_OuterShareable, MBReqDomain_FullSystem}">MBReqDomain_FullSystem</a>;
+    when '01' types = <a link="MBReqTypes_Reads" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_Reads</a>;
+    when '10' types = <a link="MBReqTypes_Writes" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_Writes</a>;
+    when '11' types = <a link="MBReqTypes_All" file="shared_pseudocode.xml" hover="enumeration MBReqTypes     {MBReqTypes_Reads, MBReqTypes_Writes, MBReqTypes_All}">MBReqTypes_All</a>;</pstext>
+        </ps>
+      </ps_section>
+    </iclass>
+  </classes>
+  <explanations scope="all">
+    <explanation enclist="DMB_BO_barriers" symboldefcount="1">
+      <symbol link="sa_option">&lt;option&gt;</symbol>
+      <account encodedin="">
+        <intro>
+          <para>Specifies the limitation on the barrier operation. Values are:</para>
+          <list type="param">
+            <listitem>
+              <param>SY</param><content>Full system is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. This option is referred to as the full system barrier. Encoded as CRm = <binarynumber>0b1111</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ST</param><content>Full system is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b1110</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>LD</param><content>Full system is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b1101</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISH</param><content>Inner Shareable is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b1011</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISHST</param><content>Inner Shareable is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b1010</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>ISHLD</param><content>Inner Shareable is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b1001</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSH</param><content>Non-shareable is the required shareability domain, reads and writes are the required access, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0111</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSHST</param><content>Non-shareable is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0110</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>NSHLD</param><content>Non-shareable is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b0101</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSH</param><content>Outer Shareable is the required shareability domain, reads and writes are the required access types, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0011</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSHST</param><content>Outer Shareable is the required shareability domain, writes are the required access type, both before and after the barrier instruction. Encoded as CRm = <binarynumber>0b0010</binarynumber>.</content>
+            </listitem>
+            <listitem>
+              <param>OSHLD</param><content>Outer Shareable is the required shareability domain, reads are the required access type before the barrier instruction, and reads and writes are the required access types after the barrier instruction. Encoded as CRm = <binarynumber>0b0001</binarynumber>.</content>
+            </listitem>
+          </list>
+          <para>All other encodings of <field>CRm</field> that are not listed above are reserved, and can be encoded using the <syntax>#&lt;imm&gt;</syntax> syntax. All unsupported and reserved options must execute as a full system barrier operation, but software must not rely on this behavior. For more information on whether an access is before or after a barrier instruction, see <xref linkend="BEIIECBH">Data Memory Barrier (DMB)</xref> or see <xref linkend="BEICEFJH">Data Synchronization Barrier (DSB)</xref>.</para>
+        </intro>
+      </account>
+    </explanation>
+    <explanation enclist="DMB_BO_barriers" symboldefcount="1">
+      <symbol link="sa_imm">&lt;imm&gt;</symbol>
+      <account encodedin="CRm">
+        <intro>
+          <para>Is a 4-bit unsigned immediate, in the range 0 to 15, encoded in the "CRm" field.</para>
+        </intro>
+      </account>
+    </explanation>
+  </explanations>
+  <ps_section howmany="1">
+    <ps name="aarch64/instrs/system/barriers/dmb" mylink="execute" enclabels="" sections="1" secttype="Operation">
+      <pstext mayhavelinks="1" section="Execute" rep_section="execute"><a link="impl-shared.DataMemoryBarrier.2" file="shared_pseudocode.xml" hover="function: DataMemoryBarrier(MBReqDomain domain, MBReqTypes types)">DataMemoryBarrier</a>(domain, types);</pstext>
+    </ps>
+  </ps_section>
+</instructionsection>
