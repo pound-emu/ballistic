@@ -17,6 +17,7 @@ option(BALLISTIC_ENABLE_BUILD_TESTS "Enables Ballistic tests" OFF)
 
 add_library(Ballistic STATIC
     src/decoder.c
+    src/decoder_table_gen.c
 )
 
 target_include_directories(Ballistic PRIVATE src)
