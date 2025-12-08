@@ -32,13 +32,13 @@ extern "C"
          * @details 1 = significant bit, 0 = variable field (register,
          * immediate, etc.).
          */
-        uint64_t mask;
+        uint32_t mask;
 
         /*!
          * @brief The expected value of the instruction after applying the mask.
          * @details (instruction & mask) == expected.
          */
-        uint64_t expected;
+        uint32_t expected;
     } bal_decoder_instruction_metadata_t;
 
     /*!
@@ -56,7 +56,7 @@ extern "C"
      * @post The returned pointer (if not null) points to static read-only
      * memory.
      */
-    bal_decoder_instruction_metadata_t *bal_decoder_arm64_decode(
+    const bal_decoder_instruction_metadata_t *bal_decoder_arm64_decode(
         const uint32_t instruction);
 
 #ifdef __cplusplus

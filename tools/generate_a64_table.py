@@ -215,14 +215,11 @@ if __name__ == "__main__":
 
     with open(out_file_header, "w") as f:
         f.write(f"/* Generated header file */\n")
+        f.write(f'#include "decoder.h"\n')
         f.write("#include <stdint.h>\n\n")
         f.write(f"#define {arm64_instructions_size_name} {len(all_instructions)}\n\n")
         f.write(
-            "typedef struct \n{\n const char* mnemonic; \n uint32_t mask;\n uint32_t value;\n} bal_decoder_entry_t;\n\n"
-        )
-
-        f.write(
-            f"extern const bal_decoder_entry_t {arm64_global_instructions_array_name}[{arm64_instructions_size_name}];\n"
+            f"extern const bal_decoder_instruction_metadata_t {arm64_global_instructions_array_name}[{arm64_instructions_size_name}];\n"
         )
     print(f"Generated ARM decoder table header file -> {out_file_header}")
 
@@ -235,7 +232,7 @@ if __name__ == "__main__":
         f.write(f"/* Generated {len(all_instructions)} instructions */\n")
         f.write(f'#include "decoder_table_gen.h"\n\n')
         f.write(
-            f"const bal_decoder_entry_t {arm64_global_instructions_array_name}[{arm64_instructions_size_name}] = {{\n"
+            f"const bal_decoder_instruction_metadata_t {arm64_global_instructions_array_name}[{arm64_instructions_size_name}] = {{\n"
         )
         for inst in all_instructions:
             f.write(
