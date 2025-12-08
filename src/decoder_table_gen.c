@@ -1,7 +1,7 @@
 /* Generated 2807 instructions */
 #include "decoder_table_gen.h"
 
-const bal_decoder_entry_t TABLE[] = {
+const bal_decoder_entry_t g_bal_decoder_arm64_instructions[BAL_DECODER_ARM64_INSTRUCTIONS_SIZE] = {
     { "AUTIAZ", 0xFFFFFFFF, 0xD503239F }, 
     { "AUTIBZ", 0xFFFFFFFF, 0xD50323DF }, 
     { "DRPS", 0xFFFFFFFF, 0xD6BF03E0 }, 

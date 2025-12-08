@@ -205,19 +205,28 @@ if __name__ == "__main__":
     # Sort by priority
     all_instructions.sort(key=lambda x: x.priority, reverse=True)
 
+    # Generate Header
     out_file_header = DEFAULT_GENERATED_TABLE_H_PATH
     if args.output_header is not None:
         out_file_header = args.output_header
 
+    arm64_instructions_size_name: str = "BAL_DECODER_ARM64_INSTRUCTIONS_SIZE"
+    arm64_global_instructions_array_name: str = "g_bal_decoder_arm64_instructions"
+
     with open(out_file_header, "w") as f:
         f.write(f"/* Generated header file */\n")
         f.write("#include <stdint.h>\n\n")
-        f.write(f"#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE {len(all_instructions)}\n\n")
+        f.write(f"#define {arm64_instructions_size_name} {len(all_instructions)}\n\n")
         f.write(
-            "typedef struct \n{\n const char* mnemonic; \n uint32_t mask;\n uint32_t value;\n} bal_decoder_entry_t;\n"
+            "typedef struct \n{\n const char* mnemonic; \n uint32_t mask;\n uint32_t value;\n} bal_decoder_entry_t;\n\n"
+        )
+
+        f.write(
+            f"extern const bal_decoder_entry_t {arm64_global_instructions_array_name}[{arm64_instructions_size_name}];\n"
         )
     print(f"Generated ARM decoder table header file -> {out_file_header}")
 
+    # Generate Source
     out_file_source = DEFAULT_GENERATED_TABLE_C_PATH
     if args.output_source is not None:
         out_file_source = args.output_source
@@ -225,7 +234,9 @@ if __name__ == "__main__":
     with open(out_file_source, "w") as f:
         f.write(f"/* Generated {len(all_instructions)} instructions */\n")
         f.write(f'#include "decoder_table_gen.h"\n\n')
-        f.write("const bal_decoder_entry_t TABLE[] = {\n")
+        f.write(
+            f"const bal_decoder_entry_t {arm64_global_instructions_array_name}[{arm64_instructions_size_name}] = {{\n"
+        )
         for inst in all_instructions:
             f.write(
                 f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X} }}, \n'
