@@ -1,3 +1,8 @@
+/*
+ *GENERATED FILE - DO NOT EDIT
+ *Generated with tools/generate_a64_table.py
+ */
+
 /* Generated 2807 instructions */
 #include "decoder_table_gen.h"
 
