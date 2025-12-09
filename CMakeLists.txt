@@ -26,16 +26,16 @@ if(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 endif()
 
-# Defensive compiler flags
-add_compile_options(
-    -Wall -Wextra -Wpedantic -Werror
-    -Wconversion -Wsign-conversion -Wshadow
-    -Wstrict-prototypes -Wmissing-prototypes
-    -fno-strict-aliasing # Prevent common C aliasing UB
-)
-
-if (NOT WIN32)
-    add_compile_options(-fstack-protector-strong)
+if (MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(
+        -Wall -Wextra -Wpedantic -Werror
+        -Wconversion -Wsign-conversion -Wshadow
+        -Wstrict-prototypes -Wmissing-prototypes
+        -fno-strict-aliasing # Prevent common C aliasing UB
+        -fstack-protector-strong
+    )
 endif()
 
 # Debugging and Sanitizers (Catch UB/Segfaults early)
