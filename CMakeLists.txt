@@ -15,6 +15,9 @@ project(Ballistic LANGUAGES C VERSION 0.1.0)
 option(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION "Enables LTO for Ballistic (improves performance)" ON)
 option(BALLISTIC_ENABLE_BUILD_TESTS "Enables Ballistic tests" ON)
 
+# -----------------------------------------------------------------------------
+# Compile Ballistic
+# -----------------------------------------------------------------------------
 add_library(Ballistic STATIC
     src/decoder.c
     src/decoder_table_gen.c
@@ -49,6 +52,18 @@ if(WIN32)
     target_compile_definitions(Ballistic PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
+
+# -----------------------------------------------------------------------------
+# Compile Tools
+# -----------------------------------------------------------------------------
+set (DECODER_CLI_NAME "decoder_cli")
+add_executable(${DECODER_CLI_NAME} tools/decoder_cli.c)
+target_link_libraries(${DECODER_CLI_NAME} PRIVATE ${PROJECT_NAME})
+target_include_directories(${DECODER_CLI_NAME} PRIVATE src)
+
+# -----------------------------------------------------------------------------
+# Compile Tests
+# -----------------------------------------------------------------------------
 if (BALLISTIC_ENABLE_BUILD_TESTS)
 set(TESTS_NAME "ballistic_tests")
     enable_testing()
@@ -57,3 +72,5 @@ set(TESTS_NAME "ballistic_tests")
     target_include_directories(${TESTS_NAME} PRIVATE src)
     add_test(NAME DecoderTest COMMAND ${TESTS_NAME})
 endif()
+
+
