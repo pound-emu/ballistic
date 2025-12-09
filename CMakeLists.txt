@@ -13,7 +13,7 @@ project(Ballistic LANGUAGES C VERSION 0.1.0)
 
 # option(BALLISTIC_ENABLE_CPU_FEATURE_DETECTION "Makes Ballistic able to detect CPU features of the host" ON)
 option(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION "Enables LTO for Ballistic (improves performance)" ON)
-option(BALLISTIC_ENABLE_BUILD_TESTS "Enables Ballistic tests" OFF)
+option(BALLISTIC_ENABLE_BUILD_TESTS "Enables Ballistic tests" ON)
 
 add_library(Ballistic STATIC
     src/decoder.c
@@ -32,17 +32,28 @@ add_compile_options(
     -Wconversion -Wsign-conversion -Wshadow
     -Wstrict-prototypes -Wmissing-prototypes
     -fno-strict-aliasing # Prevent common C aliasing UB
-    -fstack-protector-strong
 )
+
+if (NOT WIN32)
+    add_compile_options(-fstack-protector-strong)
+endif()
 
 # Debugging and Sanitizers (Catch UB/Segfaults early)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_options(-g -fsanitize=address,undefined -fno-omit-frame-pointer)
-    add_link_options(-fsanitize=address,undefined)
+    add_compile_options(-g -fno-omit-frame-pointer)
 endif()
 
 if(WIN32)
     # Disable some Windows SDK deprecation warnings
     target_compile_options(Ballistic PRIVATE -DNOMINMAX -DWIN32_LEAN_AND_MEAN)
     target_compile_definitions(Ballistic PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
+if (BALLISTIC_ENABLE_BUILD_TESTS)
+set(TESTS_NAME "ballistic_tests")
+    enable_testing()
+    add_executable(${TESTS_NAME} tests/test_decoder.c)
+    target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
+    target_include_directories(${TESTS_NAME} PRIVATE src)
+    add_test(NAME DecoderTest COMMAND ${TESTS_NAME})
 endif()
