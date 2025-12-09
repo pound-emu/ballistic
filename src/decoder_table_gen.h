@@ -1,4 +1,8 @@
-/* Generated header file */
+/*
+ *GENERATED FILE - DO NOT EDIT
+ *Generated with tools/generate_a64_table.py
+ */
+
 #include "decoder.h"
 #include <stdint.h>
 
