@@ -34,6 +34,7 @@ GENERATED_FILE_WARNING = """/*
  *Generated with tools/generate_a64_table.py
  */"""
 
+
 @dataclass
 class A64Instruction:
     mnemonic: str
@@ -153,6 +154,17 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
             print(f"Skipping malformed box in {filepath}: {e}", file=sys.stderr)
             continue
 
+        priority: int = bin(class_mask).count("1")
+
+        class_instruction = A64Instruction(
+            mnemonic=class_mnemonic,
+            mask=class_mask,
+            value=class_value,
+            priority=priority,
+        )
+
+        instructions.append(class_instruction)
+
         # Refine with specific encoding bits.
         # <encoding> blocks often override specific boxes to different variants.
         for encoding in iclass.findall("encoding"):
@@ -161,40 +173,46 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
                 continue
 
             # Check if Encoding overrides mnemonic.
-            encoding_mnemonic = get_mnemonic_from_element(encoding)
-            final_mnemonic = (
-                encoding_mnemonic if encoding_mnemonic is not None else class_mnemonic
+            encoding_mnemonic_temp: Optional[str] = get_mnemonic_from_element(encoding)
+            encoding_mnemonic = (
+                encoding_mnemonic_temp
+                if encoding_mnemonic_temp is not None
+                else class_mnemonic
             )
 
-            total_mask = class_mask
-            total_value = class_value
+            encoding_mask = class_mask
+            encoding_value = class_value
 
             try:
                 for box in encoding.findall("box"):
                     (total_mask, total_value) = process_box(
-                        box, total_mask, total_value
+                        box, encoding_mask, encoding_value
                     )
             except ValueError:
                 continue
 
-        priority: int = bin(total_mask).count("1")
+        priority: int = bin(encoding_mask).count("1")
 
-        instructions.append(
-            A64Instruction(
-                mnemonic=final_mnemonic,
-                mask=total_mask,
-                value=total_value,
-                priority=priority,
-            )
+        encoding_instruction = A64Instruction(
+            mnemonic=encoding_mnemonic,
+            mask=encoding_mask,
+            value=encoding_value,
+            priority=priority,
         )
+        if encoding_instruction != class_instruction:
+            instructions.append(encoding_instruction)
 
     return instructions
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate ARM64 Decoder Tables")
-    parser.add_argument("--xml-directory", help="Directory containing the ARM XML files")
-    parser.add_argument("--output-directory", help="Directory to store the generated files")
+    parser.add_argument(
+        "--xml-directory", help="Directory containing the ARM XML files"
+    )
+    parser.add_argument(
+        "--output-directory", help="Directory to store the generated files"
+    )
     parser.add_argument("--output-header", help="Name of the generated header file")
     parser.add_argument("--output-source", help="Name of the generated source file")
 
@@ -223,12 +241,19 @@ if __name__ == "__main__":
         print(f"Output directory does not exit: {output_directory}", file=sys.stderr)
         sys.exit(1)
 
-
-    output_header_path: str = os.path.join(DEFAULT_OUTPUT_DIRECTORY + DEFAULT_DECODER_GENERATED_HEADER_NAME)
-    output_source_path: str = os.path.join(DEFAULT_OUTPUT_DIRECTORY + DEFAULT_DECODER_GENERATED_SOURCE_NAME)
+    output_header_path: str = os.path.join(
+        DEFAULT_OUTPUT_DIRECTORY + DEFAULT_DECODER_GENERATED_HEADER_NAME
+    )
+    output_source_path: str = os.path.join(
+        DEFAULT_OUTPUT_DIRECTORY + DEFAULT_DECODER_GENERATED_SOURCE_NAME
+    )
     if output_directory != DEFAULT_OUTPUT_DIRECTORY:
-        output_header_path = os.path.join(output_directory + DEFAULT_DECODER_GENERATED_HEADER_NAME)
-        output_source_path = os.path.join(output_directory + DEFAULT_DECODER_GENERATED_SOURCE_NAME)
+        output_header_path = os.path.join(
+            output_directory + DEFAULT_DECODER_GENERATED_HEADER_NAME
+        )
+        output_source_path = os.path.join(
+            output_directory + DEFAULT_DECODER_GENERATED_SOURCE_NAME
+        )
 
     if args.output_header is not None:
         output_header_path = os.path.join(output_directory + args.output_header)
@@ -267,7 +292,9 @@ if __name__ == "__main__":
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
         f.write(f'#include "{DECODER_HEADER_NAME}"\n')
         f.write("#include <stdint.h>\n\n")
-        f.write(f"#define {DECODER_ARM64_INSTRUCTIONS_SIZE_NAME} {len(all_instructions)}\n\n")
+        f.write(
+            f"#define {DECODER_ARM64_INSTRUCTIONS_SIZE_NAME} {len(all_instructions)}\n\n"
+        )
         f.write(
             f"extern const bal_decoder_instruction_metadata_t {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}];\n"
         )
