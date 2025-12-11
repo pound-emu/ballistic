@@ -56,7 +56,7 @@ main (int argc, char *argv[])
     }
     else
     {
-        printf("%s\n", metadata->name);
+        printf("Mnemonic: %s - Mask: 0x%08X - Expected: 0x%08X\n", metadata->name, metadata->mask, metadata->expected);
     }
     return 0;
 }
