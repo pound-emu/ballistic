@@ -33,7 +33,6 @@ DECODER_ARM64_HASH_TABLE_BUCKET_SIZE_NAME = "BAL_DECODER_ARM64_HASH_TABLE_BUCKET
 DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME = "g_bal_decoder_arm64_instructions"
 
 DECODER_HASH_TABLE_SIZE = 4096
-DECODER_HASH_TABLE_BUCKET_SIZE = 512
 
 # Bits [27:20] and [7:4]
 DECODER_HASH_BITS_MASK = 0x0FF000F0
@@ -42,6 +41,7 @@ GENERATED_FILE_WARNING = """/*
  *GENERATED FILE - DO NOT EDIT
  *Generated with tools/generate_a64_table.py
  */"""
+
 
 @dataclass
 class A64Instruction:
@@ -106,7 +106,9 @@ def get_mnemonic_from_element(element: ET.Element) -> Optional[str]:
     return None
 
 
-def parse_xml_file(filepath: str, total_instructions_size: int) -> Tuple[List[A64Instruction], int]:
+def parse_xml_file(
+    filepath: str, total_instructions_size: int
+) -> Tuple[List[A64Instruction], int]:
     try:
         tree = ET.parse(filepath)
         root = tree.getroot()
@@ -171,7 +173,7 @@ def parse_xml_file(filepath: str, total_instructions_size: int) -> Tuple[List[A6
             mask=class_mask,
             value=class_value,
             priority=priority,
-            array_index=total_instructions_size
+            array_index=total_instructions_size,
         )
 
         instructions.append(class_instruction)
@@ -210,7 +212,7 @@ def parse_xml_file(filepath: str, total_instructions_size: int) -> Tuple[List[A6
             mask=encoding_mask,
             value=encoding_value,
             priority=priority,
-            array_index=total_instructions_size
+            array_index=total_instructions_size - 1,  #
         )
         if encoding_instruction != class_instruction:
             total_instructions_size += 1
@@ -218,6 +220,7 @@ def parse_xml_file(filepath: str, total_instructions_size: int) -> Tuple[List[A6
             instructions.append(encoding_instruction)
 
     return (instructions, total_instructions_size)
+
 
 def generate_hash_table(instructions):
     buckets = {i: [] for i in range(DECODER_HASH_TABLE_SIZE)}
@@ -244,17 +247,8 @@ def generate_hash_table(instructions):
 
             if (probe_val & mask) == value:
                 buckets[i].append(inst)
-
-                if len(buckets[i]) > DECODER_HASH_TABLE_BUCKET_SIZE:
-                    print(
-                        f"FATAL ERROR: Bucket {i:#05x} overflowed! Size: {len(buckets[i])}"
-                    )
-                    print(
-                        "This means too many instructions map to the same hash index."
-                    )
-                    sys.exit(1)
-
     return buckets
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate ARM64 Decoder Tables")
@@ -351,11 +345,8 @@ if __name__ == "__main__":
         f.write(
             f"#define {DECODER_ARM64_INSTRUCTIONS_SIZE_NAME} {len(all_instructions)}\n\n"
         )
-        f.write(f"#define {DECODER_ARM64_HASH_TABLE_BUCKET_SIZE_NAME} {DECODER_HASH_TABLE_BUCKET_SIZE}U\n\n")
         f.write("typedef struct {\n")
-        f.write(
-                f"    const {DECODER_METADATA_STRUCT_NAME} *instructions[{DECODER_HASH_TABLE_BUCKET_SIZE}];\n"
-        )
+        f.write(f"    const {DECODER_METADATA_STRUCT_NAME} *const *instructions;\n")
         f.write("    size_t count;\n")
         f.write(f"}} {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME};\n\n")
         f.write(
@@ -387,13 +378,32 @@ if __name__ == "__main__":
             )
         f.write("};")
 
-        f.write(f"const {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME} g_decoder_lookup_table[{DECODER_HASH_TABLE_SIZE}] = {{\n")
+        # Generate the lookup table arrays first
         for i in range(DECODER_HASH_TABLE_SIZE):
             if len(buckets[i]) > 0:
-                f.write(f"    [{i:#05x}] = {{ .instructions = {{ ")
+                # Create a unique name for this bucket's array
+                array_name: str = f"g_bucket_{i}_instructions"
+                f.write(
+                    f"static const {DECODER_METADATA_STRUCT_NAME} *{array_name}[] = {{\n"
+                )
                 for inst in buckets[i]:
-                    f.write(f"&{DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{inst.array_index}], ")
-                f.write(f"}}, .count = {len(buckets[i])}U }},\n")
+                    f.write(
+                        f"    &{DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{inst.array_index}],\n"
+                    )
+                f.write("};\n\n")
+
+        # Generate the main hash table
+        f.write(
+            f"const {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME} g_decoder_lookup_table[{DECODER_HASH_TABLE_SIZE}] = {{\n"
+        )
+        for i in range(DECODER_HASH_TABLE_SIZE):
+            if len(buckets[i]) > 0:
+                array_name: str = f"g_bucket_{i}_instructions"
+                f.write(
+                    f"    [{i:#05x}] = {{ .instructions = {array_name}, .count = {len(buckets[i])}U }},\n"
+                )
+            else:
+                f.write(f"    [{i:#05x}] = {{ .instructions = NULL, .count = 0 }},\n")
         f.write("};\n")
 
     print(f"Generated ARM decoder table source file -> {output_source_path}")
