@@ -18,6 +18,20 @@ option(BALLISTIC_ENABLE_BUILD_TESTS "Enables Ballistic tests" ON)
 # -----------------------------------------------------------------------------
 # Compile Ballistic
 # -----------------------------------------------------------------------------
+
+find_package(Python3 REQUIRED)
+
+set(SCRIPT_GENERATE_DECODER_TABLE ${CMAKE_SOURCE_DIR}/tools/generate_a64_table.py)
+set(GENERATED_DECODER_TABLE_HEADER ${CMAKE_SOURCE_DIR}/src/decoder_table_gen.h)
+set(GENERATED_DECODER_TABLE_SOURCE ${CMAKE_SOURCE_DIR}/src/decoder_table_gen.c)
+
+add_custom_command(
+    OUTPUT ${GENERATED_DECODER_TABLE_HEADER} ${GENERATED_DECODER_TABLE_SOURCE}
+    COMMAND Python3::Interpreter ${SCRIPT_GENERATE_DECODER_TABLE}
+    DEPENDS ${SCRIPT_GENERATE_DECODER_TABLE}
+    COMMENT "Generating ARM64 Decoder Tables"
+)
+
 add_library(Ballistic STATIC
     src/decoder.c
     src/decoder_table_gen.c
