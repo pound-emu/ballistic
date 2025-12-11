@@ -41,7 +41,8 @@ main (void)
     fast_srand((uint32_t)time(0));
 
     int failed = 0;
-    for (size_t i = 0; i < 100000; ++i)
+    int passed = 0;
+    for (size_t i = 0; i < 10000000; ++i)
     {
         uint32_t random_instruction = fast_rand();
         const bal_decoder_instruction_metadata_t *meta
@@ -59,6 +60,7 @@ main (void)
                 ++failed;
                 continue;
             }
+            ++passed;
         }
     }
 
@@ -67,6 +69,13 @@ main (void)
         printf("FAILED %d tests. \n", failed);
         return 1;
     }
-    printf("All tests passed.\n");
-    return 0;
+    if (passed > 0)
+    {
+        printf("Decoded %d instructions successfully\n", passed);
+        return 0;
+    }
+    else
+    {
+        printf("[ERROR] No tests passed or failed. Ballistic's decoding logic is flawed\n");
+    }
 }

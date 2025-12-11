@@ -21,19 +21,27 @@ from typing import List, Tuple, Optional
 DEFAULT_DECODER_GENERATED_HEADER_NAME = "decoder_table_gen.h"
 DEFAULT_DECODER_GENERATED_SOURCE_NAME = "decoder_table_gen.c"
 DEFAULT_OUTPUT_DIRECTORY = "../src/"
-
 DEFAULT_XML_DIRECTORY_PATH = "../spec/arm64_xml/"
 
 DECODER_HEADER_NAME = "decoder.h"
+DECODER_METADATA_STRUCT_NAME = "bal_decoder_instruction_metadata_t"
+# There is no prefix because this struct will not be public
+DECODER_HASH_TABLE_BUCKET_STRUCT_NAME = "decoder_bucket_t"
+
 DECODER_ARM64_INSTRUCTIONS_SIZE_NAME = "BAL_DECODER_ARM64_INSTRUCTIONS_SIZE"
+DECODER_ARM64_HASH_TABLE_BUCKET_SIZE_NAME = "BAL_DECODER_ARM64_HASH_TABLE_BUCKET_SIZE"
 DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME = "g_bal_decoder_arm64_instructions"
-DECODER_STRUCT_NAME = "bal_decoder_instruction_metadata_t"
+
+DECODER_HASH_TABLE_SIZE = 4096
+DECODER_HASH_TABLE_BUCKET_SIZE = 512
+
+# Bits [27:20] and [7:4]
+DECODER_HASH_BITS_MASK = 0x0FF000F0
 
 GENERATED_FILE_WARNING = """/*
  *GENERATED FILE - DO NOT EDIT
  *Generated with tools/generate_a64_table.py
  */"""
-
 
 @dataclass
 class A64Instruction:
@@ -41,6 +49,7 @@ class A64Instruction:
     mask: int
     value: int
     priority: int  # Higher number of set bits in mask = higher priority.
+    array_index: int
 
 
 def process_box(
@@ -97,16 +106,16 @@ def get_mnemonic_from_element(element: ET.Element) -> Optional[str]:
     return None
 
 
-def parse_xml_file(filepath: str) -> List[A64Instruction]:
+def parse_xml_file(filepath: str, total_instructions_size: int) -> Tuple[List[A64Instruction], int]:
     try:
         tree = ET.parse(filepath)
         root = tree.getroot()
     except ET.ParseError:
         print(f"Failed to parse XML file `{filepath}", file=sys.stderr)
-        return []
+        return ([], total_instructions_size)
 
     if root.get("type") == "alias":
-        return []
+        return ([], total_instructions_size)
 
     # Try to get file-level default mnemonic
     file_mnemonic: Optional[str] = get_mnemonic_from_element(root)
@@ -156,14 +165,17 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
 
         priority: int = bin(class_mask).count("1")
 
+        # Check for negatives
         class_instruction = A64Instruction(
             mnemonic=class_mnemonic,
             mask=class_mask,
             value=class_value,
             priority=priority,
+            array_index=total_instructions_size
         )
 
         instructions.append(class_instruction)
+        total_instructions_size += 1
 
         # Refine with specific encoding bits.
         # <encoding> blocks often override specific boxes to different variants.
@@ -198,12 +210,51 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
             mask=encoding_mask,
             value=encoding_value,
             priority=priority,
+            array_index=total_instructions_size
         )
         if encoding_instruction != class_instruction:
+            total_instructions_size += 1
+            encoding_instruction.array_index = total_instructions_size
             instructions.append(encoding_instruction)
 
-    return instructions
+    return (instructions, total_instructions_size)
 
+def generate_hash_table(instructions):
+    buckets = {i: [] for i in range(DECODER_HASH_TABLE_SIZE)}
+
+    # Iterate over every possible hash index to determine which instructions
+    # belong in it
+    for i in range(DECODER_HASH_TABLE_SIZE):
+        # Reconstruct the 32-bit value that would generate this hash index
+        # Hash algorithm: (Major << 4) | Minor
+        # Major is bits [27:20], Minor is bits [7:4]
+
+        major_val = (i >> 4) & 0xFF
+        minor_val = i & 0x0F
+
+        probe_val = (major_val << 20) | (minor_val << 4)
+
+        for inst in instructions:
+            # Check if this instruction matches this hash index.
+            # An instruction matches if its FIXED bits (mask) match the Probe bits
+            # for the specific positions used by the hash.
+
+            mask = inst.mask & DECODER_HASH_BITS_MASK
+            value = inst.value & DECODER_HASH_BITS_MASK
+
+            if (probe_val & mask) == value:
+                buckets[i].append(inst)
+
+                if len(buckets[i]) > DECODER_HASH_TABLE_BUCKET_SIZE:
+                    print(
+                        f"FATAL ERROR: Bucket {i:#05x} overflowed! Size: {len(buckets[i])}"
+                    )
+                    print(
+                        "This means too many instructions map to the same hash index."
+                    )
+                    sys.exit(1)
+
+    return buckets
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate ARM64 Decoder Tables")
@@ -264,13 +315,14 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------
     # Process XML Files
     # -------------------------------------------------------------------------
-    all_instructions = []
     files = glob.glob(os.path.join(xml_directory, "*.xml"))
     if len(files) < 1:
         print(f"No XML files found in {xml_directory}")
         sys.exit(1)
     print(f"Found {len(files)} XML files")
 
+    all_instructions: List[A64Instruction] = []
+    instructions_size: int = 0
     files_to_ignore: List[str] = [os.path.join(xml_directory + "onebigfile.xml")]
     for f in files:
         # Skip index and shared pseudo-code files.
@@ -280,10 +332,13 @@ if __name__ == "__main__":
         if f in files_to_ignore:
             continue
 
-        all_instructions.extend(parse_xml_file(f))
+        instructions: List[A64Instruction]
+        (instructions, instructions_size) = parse_xml_file(f, instructions_size)
+        all_instructions.extend(instructions)
 
-    # Sort by priority
-    all_instructions.sort(key=lambda x: x.priority, reverse=True)
+    # TODO(GloriousTacoo): Sorting by priority puts instructions in the wrong
+    # bucket and I have no idea why.
+    # all_instructions.sort(key=lambda x: x.priority, reverse=True)
 
     # -------------------------------------------------------------------------
     # Generate Header File
@@ -291,12 +346,23 @@ if __name__ == "__main__":
     with open(output_header_path, "w") as f:
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
         f.write(f'#include "{DECODER_HEADER_NAME}"\n')
-        f.write("#include <stdint.h>\n\n")
+        f.write("#include <stdint.h>\n")
+        f.write("#include <stddef.h>\n\n")
         f.write(
             f"#define {DECODER_ARM64_INSTRUCTIONS_SIZE_NAME} {len(all_instructions)}\n\n"
         )
+        f.write(f"#define {DECODER_ARM64_HASH_TABLE_BUCKET_SIZE_NAME} {DECODER_HASH_TABLE_BUCKET_SIZE}U\n\n")
+        f.write("typedef struct {\n")
         f.write(
-            f"extern const bal_decoder_instruction_metadata_t {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}];\n"
+                f"    const {DECODER_METADATA_STRUCT_NAME} *instructions[{DECODER_HASH_TABLE_BUCKET_SIZE}];\n"
+        )
+        f.write("    size_t count;\n")
+        f.write(f"}} {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME};\n\n")
+        f.write(
+            f"extern const {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME} g_decoder_lookup_table[{DECODER_HASH_TABLE_SIZE}];\n\n"
+        )
+        f.write(
+            f"extern const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}];\n"
         )
     print(f"Generated ARM decoder table header file -> {output_header_path}")
 
@@ -307,16 +373,27 @@ if __name__ == "__main__":
     if args.output_header is not None:
         decoder_generated_header_name = args.output_header
 
+    buckets = generate_hash_table(all_instructions)
     with open(output_source_path, "w") as f:
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
         f.write(f"/* Generated {len(all_instructions)} instructions */\n")
         f.write(f'#include "{decoder_generated_header_name}"\n\n')
         f.write(
-            f"const bal_decoder_instruction_metadata_t {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}] = {{\n"
+            f"const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}] = {{\n"
         )
         for inst in all_instructions:
             f.write(
                 f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X} }}, \n'
             )
         f.write("};")
+
+        f.write(f"const {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME} g_decoder_lookup_table[{DECODER_HASH_TABLE_SIZE}] = {{\n")
+        for i in range(DECODER_HASH_TABLE_SIZE):
+            if len(buckets[i]) > 0:
+                f.write(f"    [{i:#05x}] = {{ .instructions = {{ ")
+                for inst in buckets[i]:
+                    f.write(f"&{DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{inst.array_index}], ")
+                f.write(f"}}, .count = {len(buckets[i])}U }},\n")
+        f.write("};\n")
+
     print(f"Generated ARM decoder table source file -> {output_source_path}")
