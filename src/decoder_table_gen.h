@@ -7,12 +7,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 5614
-
-#define BAL_DECODER_ARM64_HASH_TABLE_BUCKET_SIZE 512U
+#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 2918
 
 typedef struct {
-    const bal_decoder_instruction_metadata_t *instructions[512];
+    const bal_decoder_instruction_metadata_t *const *instructions;
     size_t count;
 } decoder_bucket_t;
 
