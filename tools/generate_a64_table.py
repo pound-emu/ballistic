@@ -32,10 +32,10 @@ DECODER_ARM64_INSTRUCTIONS_SIZE_NAME = "BAL_DECODER_ARM64_INSTRUCTIONS_SIZE"
 DECODER_ARM64_HASH_TABLE_BUCKET_SIZE_NAME = "BAL_DECODER_ARM64_HASH_TABLE_BUCKET_SIZE"
 DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME = "g_bal_decoder_arm64_instructions"
 
-DECODER_HASH_TABLE_SIZE = 4096
+DECODER_HASH_TABLE_SIZE = 2048
 
-# Bits [27:20] and [7:4]
-DECODER_HASH_BITS_MASK = 0x0FF000F0
+# Top 11 bits
+DECODER_HASH_BITS_MASK = 0xFFE00000
 
 GENERATED_FILE_WARNING = """/*
  *GENERATED FILE - DO NOT EDIT
@@ -228,14 +228,7 @@ def generate_hash_table(instructions):
     # Iterate over every possible hash index to determine which instructions
     # belong in it
     for i in range(DECODER_HASH_TABLE_SIZE):
-        # Reconstruct the 32-bit value that would generate this hash index
-        # Hash algorithm: (Major << 4) | Minor
-        # Major is bits [27:20], Minor is bits [7:4]
-
-        major_val = (i >> 4) & 0xFF
-        minor_val = i & 0x0F
-
-        probe_val = (major_val << 20) | (minor_val << 4)
+        probe_val = i << 21
 
         for inst in instructions:
             # Check if this instruction matches this hash index.
