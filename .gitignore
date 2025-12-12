@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+build/
+*.bin
 
 # Object files
 *.o
