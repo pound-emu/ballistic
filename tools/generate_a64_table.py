@@ -52,7 +52,7 @@ class A64Instruction:
     mask: int
     value: int
     priority: int  # Higher number of set bits in mask = higher priority.
-    array_index: int
+    array_index: int # Position in the hash table bucket.
 
 
 def process_box(box: Element, current_mask: int, current_value: int) -> Tuple[int, int]:
