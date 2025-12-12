@@ -240,6 +240,7 @@ def generate_hash_table(instructions):
 
             if (probe_val & mask) == value:
                 buckets[i].append(inst)
+        buckets[i].sort(key=lambda x: x.priority, reverse=True)
     return buckets
 
 
@@ -322,10 +323,6 @@ if __name__ == "__main__":
         instructions: List[A64Instruction]
         (instructions, instructions_size) = parse_xml_file(f, instructions_size)
         all_instructions.extend(instructions)
-
-    # TODO(GloriousTacoo): Sorting by priority puts instructions in the wrong
-    # bucket and I have no idea why.
-    # all_instructions.sort(key=lambda x: x.priority, reverse=True)
 
     # -------------------------------------------------------------------------
     # Generate Header File
