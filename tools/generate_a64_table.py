@@ -107,17 +107,17 @@ def get_mnemonic_from_element(element: ET.Element) -> Optional[str]:
 
 
 def parse_xml_file(
-    filepath: str, total_instructions_size: int
-) -> Tuple[List[A64Instruction], int]:
+    filepath: str
+) -> List[A64Instruction]:
     try:
         tree = ET.parse(filepath)
         root = tree.getroot()
     except ET.ParseError:
         print(f"Failed to parse XML file `{filepath}", file=sys.stderr)
-        return ([], total_instructions_size)
+        return []
 
     if root.get("type") == "alias":
-        return ([], total_instructions_size)
+        return []
 
     # Try to get file-level default mnemonic
     file_mnemonic: Optional[str] = get_mnemonic_from_element(root)
@@ -130,8 +130,8 @@ def parse_xml_file(
             if "<" not in candidate:
                 file_mnemonic = candidate
 
-    # Instructions in one XML file
-    instructions: List[A64Instruction] = []
+    # Unique instructions in one XML file
+    instructions: List[A64Instruction] = {}
 
     # Extract mask and value.
     for iclass in root.findall(".//iclass"):
@@ -173,11 +173,10 @@ def parse_xml_file(
             mask=class_mask,
             value=class_value,
             priority=priority,
-            array_index=total_instructions_size,
+            array_index= 0,
         )
 
-        instructions.append(class_instruction)
-        total_instructions_size += 1
+        instructions[(class_mask, class_value)] = class_instruction
 
         # Refine with specific encoding bits.
         # <encoding> blocks often override specific boxes to different variants.
@@ -199,27 +198,25 @@ def parse_xml_file(
 
             try:
                 for box in encoding.findall("box"):
-                    (total_mask, total_value) = process_box(
+                    (encoding_mask, encoding_value) = process_box(
                         box, encoding_mask, encoding_value
                     )
             except ValueError:
                 continue
 
-        priority: int = bin(encoding_mask).count("1")
+            priority: int = bin(encoding_mask).count("1")
 
-        encoding_instruction = A64Instruction(
-            mnemonic=encoding_mnemonic,
-            mask=encoding_mask,
-            value=encoding_value,
-            priority=priority,
-            array_index=total_instructions_size - 1,  #
-        )
-        if encoding_instruction != class_instruction:
-            total_instructions_size += 1
-            encoding_instruction.array_index = total_instructions_size
-            instructions.append(encoding_instruction)
+            encoding_instruction = A64Instruction(
+                mnemonic=encoding_mnemonic,
+                mask=encoding_mask,
+                value=encoding_value,
+                 priority=priority,
+                array_index= 0
+            )
 
-    return (instructions, total_instructions_size)
+            instructions[(encoding_mask, encoding_value)] = encoding_instruction
+
+    return list(instructions.values())
 
 
 def generate_hash_table(instructions):
@@ -234,7 +231,6 @@ def generate_hash_table(instructions):
             # Check if this instruction matches this hash index.
             # An instruction matches if its FIXED bits (mask) match the Probe bits
             # for the specific positions used by the hash.
-
             mask = inst.mask & DECODER_HASH_BITS_MASK
             value = inst.value & DECODER_HASH_BITS_MASK
 
@@ -310,7 +306,6 @@ if __name__ == "__main__":
     print(f"Found {len(files)} XML files")
 
     all_instructions: List[A64Instruction] = []
-    instructions_size: int = 0
     files_to_ignore: List[str] = [os.path.join(xml_directory + "onebigfile.xml")]
     for f in files:
         # Skip index and shared pseudo-code files.
@@ -320,9 +315,11 @@ if __name__ == "__main__":
         if f in files_to_ignore:
             continue
 
-        instructions: List[A64Instruction]
-        (instructions, instructions_size) = parse_xml_file(f, instructions_size)
+        instructions: List[A64Instruction] = parse_xml_file(f)
         all_instructions.extend(instructions)
+
+    for i, instruction in enumerate(all_instructions):
+        instruction.array_index = i
 
     # -------------------------------------------------------------------------
     # Generate Header File

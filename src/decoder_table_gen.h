@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 2918
+#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 3945
 
 typedef struct {
     const bal_decoder_instruction_metadata_t *const *instructions;
