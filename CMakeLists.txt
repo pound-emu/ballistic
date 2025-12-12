@@ -37,6 +37,7 @@ add_library(Ballistic STATIC
     src/decoder_table_gen.c
 )
 
+target_include_directories(Ballistic PUBLIC include)
 target_include_directories(Ballistic PRIVATE src)
 
 if(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION)
@@ -73,7 +74,6 @@ endif()
 set (DECODER_CLI_NAME "decoder_cli")
 add_executable(${DECODER_CLI_NAME} tools/decoder_cli.c)
 target_link_libraries(${DECODER_CLI_NAME} PRIVATE ${PROJECT_NAME})
-target_include_directories(${DECODER_CLI_NAME} PRIVATE src)
 
 # -----------------------------------------------------------------------------
 # Compile Tests
@@ -83,7 +83,6 @@ set(TESTS_NAME "ballistic_tests")
     enable_testing()
     add_executable(${TESTS_NAME} tests/test_decoder_fuzzer.c)
     target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
-    target_include_directories(${TESTS_NAME} PRIVATE src)
     add_test(NAME DecoderTest COMMAND ${TESTS_NAME})
 endif()
 

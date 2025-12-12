@@ -1,11 +1,9 @@
 /**
- * @file decoder.h
+ * @file bal_decoder.h
  * @brief ARM Instruction Decoder Interface.
  *
  * @details
- * This module provides the interface for decoding ARM instructions
- * into internal metadata structures.
- *
+ * This module provides the interface for decoding ARM instructions.
  */
 
 #ifndef BAL_DECODER_H
@@ -29,6 +27,7 @@ extern "C"
         /*!
          * @brief The bitmask indicating which bits in the instruction word are
          * significant.
+         *
          * @details 1 = significant bit, 0 = variable field (register,
          * immediate, etc.).
          */
@@ -42,16 +41,16 @@ extern "C"
     } bal_decoder_instruction_metadata_t;
 
     /*!
-     * @brief Decodes a raw 32-bit ARM instruction.
+     * @brief Decodes a raw ARM64 instruction.
      *
      * @details
      * Performs a hash lookup on the provided instruction word to find a
      * matching definition.
      *
-     * @param[in] instruction The raw 32-bit ARM machine code to decode.
+     * @param[in] instruction The raw ARM64 machine code to decode.
      *
      * @return A pointer to the instruction metadata if a match is found.
-     * @return `nullptr` if the instruction is undefined or invalid.
+     * @return `NULL` if the instruction is undefined or invalid.
      *
      * @post The returned pointer (if not null) points to static read-only
      * memory.

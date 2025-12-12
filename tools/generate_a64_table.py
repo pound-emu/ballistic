@@ -26,7 +26,7 @@ DEFAULT_DECODER_GENERATED_SOURCE_NAME = "decoder_table_gen.c"
 DEFAULT_OUTPUT_DIRECTORY = "../src/"
 DEFAULT_XML_DIRECTORY_PATH = "../spec/arm64_xml/"
 
-DECODER_HEADER_NAME = "decoder.h"
+DECODER_HEADER_NAME = "bal_decoder.h"
 DECODER_METADATA_STRUCT_NAME = "bal_decoder_instruction_metadata_t"
 # There is no prefix because this struct will not be public
 DECODER_HASH_TABLE_BUCKET_STRUCT_NAME = "decoder_bucket_t"

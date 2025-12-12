@@ -1,4 +1,4 @@
-#include "decoder.h"
+#include "bal_decoder.h"
 #include "decoder_table_gen.h"
 #include <stddef.h>
 #include <stdio.h>

@@ -3,7 +3,7 @@
  *Generated with tools/generate_a64_table.py
  */
 
-#include "decoder.h"
+#include "bal_decoder.h"
 #include <stdint.h>
 #include <stddef.h>
 
