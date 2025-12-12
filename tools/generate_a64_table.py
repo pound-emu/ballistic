@@ -10,13 +10,16 @@ Generated ARM decoder table header file -> ../src/decoder_table_gen.h
 Generated ARM decoder table source file -> ../src/decoder_table_gen.c
 """
 
+import io
 import os
 import sys
 import glob
 import argparse
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import ElementTree
+from xml.etree.ElementTree import Element
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
+from typing import List, Dict, Tuple, Optional
 
 DEFAULT_DECODER_GENERATED_HEADER_NAME = "decoder_table_gen.h"
 DEFAULT_DECODER_GENERATED_SOURCE_NAME = "decoder_table_gen.c"
@@ -52,25 +55,28 @@ class A64Instruction:
     array_index: int
 
 
-def process_box(
-    box: ET.Element, current_mask: int, current_value: int
-) -> Tuple[int, int]:
+def process_box(box: Element, current_mask: int, current_value: int) -> Tuple[int, int]:
     """Process a specific bit-field box fron the XML diagram."""
-    try:
-        # The high-bit position in the 32-bit word.
-        hibit = int(box.attrib.get("hibit"))
-        # The width of this bitfield.
-        width = int(box.attrib.get("width", "1"))
-    except TypeError:
+    # The high-bit position in the 32-bit word.
+    hibit_str: Optional[str] = box.attrib.get("hibit")
+    if hibit_str is None:
         return (current_mask, current_value)
+    hibit: int = int(hibit_str)
+
+    # The width of this bitfield.
+    width_str: Optional[int] = int(box.attrib.get("width", "1"))
+    if width_str is None:
+        return (current_mask, current_value)
+    width: int = int(width_str)
 
     if hibit >= 32:
         raise ValueError(f"Bit positiin {hibit} exceeds 31")
 
     # Get the constraint content (e.g., "11", "0", "101")
     # If 'c' is missing, it's usually a variable field (register/imm)
-    c_elements = box.findall("c")
-    content = ""
+
+    c_elements: List[Element[str]] = box.findall("c")
+    content: str = ""
     for c_element in c_elements:
         content += c_element.text if c_element.text is not None else "x"
 
@@ -94,24 +100,27 @@ def process_box(
     return (current_mask, current_value)
 
 
-def get_mnemonic_from_element(element: ET.Element) -> Optional[str]:
+def get_mnemonic_from_element(element: Element) -> Optional[str]:
     """
     Helper to extract 'mnemonic' from a <docvars> block inside an element.
     Returns None if not found.
     """
+    docvars: Element[str]
     for docvars in element.findall("docvars"):
+        docvar: Element[str]
         for docvar in docvars.findall("docvar"):
             if docvar.get("key") == "mnemonic":
                 return docvar.get("value")
     return None
 
 
-def parse_xml_file(
-    filepath: str
-) -> List[A64Instruction]:
+def parse_xml_file(filepath: str) -> List[A64Instruction]:
     try:
-        tree = ET.parse(filepath)
-        root = tree.getroot()
+        tree: Optional[ElementTree[Element[str]]] = ET.parse(filepath)
+        if tree is None:
+            raise ET.ParseError
+
+        root: Element[str] = tree.getroot()
     except ET.ParseError:
         print(f"Failed to parse XML file `{filepath}", file=sys.stderr)
         return []
@@ -124,20 +133,22 @@ def parse_xml_file(
 
     # If no docvar, try the Heading/Title as a fallback for the file default.
     if file_mnemonic is None:
-        heading = root.find(".//heading")
+        heading: Optional[Element] = root.find(".//heading")
         if heading is not None and heading.text is not None:
-            candidate = heading.text.split()[0]
+            candidate: str = heading.text.split()[0]
             if "<" not in candidate:
                 file_mnemonic = candidate
 
     # Unique instructions in one XML file
-    instructions: List[A64Instruction] = {}
+    # Dict[(mask, value), instruction]
+    instructions: Dict[Tuple[int, int], A64Instruction] = {}
 
     # Extract mask and value.
+    iclass: Element[str]
     for iclass in root.findall(".//iclass"):
 
         # The diagram box contains the bit definitions.
-        box_diagram = iclass.find("regdiagram")
+        box_diagram: Optional[Element[str]] = iclass.find("regdiagram")
         if box_diagram is None:
             continue
 
@@ -152,7 +163,7 @@ def parse_xml_file(
             class_mnemonic = file_mnemonic
 
         if class_mnemonic is None:
-            class_mnemnonic = "[UNKNOWN]"
+            class_mnemonic = "[UNKNOWN]"
 
         class_mask: int = 0
         class_value: int = 0
@@ -173,13 +184,14 @@ def parse_xml_file(
             mask=class_mask,
             value=class_value,
             priority=priority,
-            array_index= 0,
+            array_index=0,
         )
 
         instructions[(class_mask, class_value)] = class_instruction
 
         # Refine with specific encoding bits.
         # <encoding> blocks often override specific boxes to different variants.
+        encoding: Element[str]
         for encoding in iclass.findall("encoding"):
             asm_template = encoding.find("asmtemplate")
             if asm_template is None:
@@ -187,14 +199,14 @@ def parse_xml_file(
 
             # Check if Encoding overrides mnemonic.
             encoding_mnemonic_temp: Optional[str] = get_mnemonic_from_element(encoding)
-            encoding_mnemonic = (
+            encoding_mnemonic: str = (
                 encoding_mnemonic_temp
                 if encoding_mnemonic_temp is not None
                 else class_mnemonic
             )
 
-            encoding_mask = class_mask
-            encoding_value = class_value
+            encoding_mask: int = class_mask
+            encoding_value: int = class_value
 
             try:
                 for box in encoding.findall("box"):
@@ -204,14 +216,14 @@ def parse_xml_file(
             except ValueError:
                 continue
 
-            priority: int = bin(encoding_mask).count("1")
+            priority = bin(encoding_mask).count("1")
 
             encoding_instruction = A64Instruction(
                 mnemonic=encoding_mnemonic,
                 mask=encoding_mask,
                 value=encoding_value,
-                 priority=priority,
-                array_index= 0
+                priority=priority,
+                array_index=0,
             )
 
             instructions[(encoding_mask, encoding_value)] = encoding_instruction
@@ -219,20 +231,20 @@ def parse_xml_file(
     return list(instructions.values())
 
 
-def generate_hash_table(instructions):
-    buckets = {i: [] for i in range(DECODER_HASH_TABLE_SIZE)}
+def generate_hash_table(instructions: List[A64Instruction]) -> Dict[int, List[A64Instruction]]:
+    buckets: Dict[int, List[A64Instruction]] = {i: [] for i in range(DECODER_HASH_TABLE_SIZE)}
 
     # Iterate over every possible hash index to determine which instructions
     # belong in it
     for i in range(DECODER_HASH_TABLE_SIZE):
-        probe_val = i << 21
+        probe_val: int = i << 21
 
         for inst in instructions:
             # Check if this instruction matches this hash index.
             # An instruction matches if its FIXED bits (mask) match the Probe bits
             # for the specific positions used by the hash.
-            mask = inst.mask & DECODER_HASH_BITS_MASK
-            value = inst.value & DECODER_HASH_BITS_MASK
+            mask: int = inst.mask & DECODER_HASH_BITS_MASK
+            value: int = inst.value & DECODER_HASH_BITS_MASK
 
             if (probe_val & mask) == value:
                 buckets[i].append(inst)
@@ -254,7 +266,7 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------
     # CLI Arg Parsing
     # -------------------------------------------------------------------------
-    args = parser.parse_args()
+    args: argparse.Namespace = parser.parse_args()
 
     xml_directory: str = DEFAULT_XML_DIRECTORY_PATH
     if args.xml_directory is not None:
@@ -324,7 +336,7 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------
     # Generate Header File
     # -------------------------------------------------------------------------
-    with open(output_header_path, "w") as f:
+    with open(output_header_path, "w", encoding="utf-8") as f:
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
         f.write(f'#include "{DECODER_HEADER_NAME}"\n')
         f.write("#include <stdint.h>\n")
@@ -351,8 +363,8 @@ if __name__ == "__main__":
     if args.output_header is not None:
         decoder_generated_header_name = args.output_header
 
-    buckets = generate_hash_table(all_instructions)
-    with open(output_source_path, "w") as f:
+    buckets: Dict[int, List[A64Instruction]] = generate_hash_table(all_instructions)
+    with open(output_source_path, "w", encoding="utf-8") as f:
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
         f.write(f"/* Generated {len(all_instructions)} instructions */\n")
         f.write(f'#include "{decoder_generated_header_name}"\n\n')
@@ -366,10 +378,11 @@ if __name__ == "__main__":
         f.write("};")
 
         # Generate the lookup table arrays first
+        array_name: str = ""
         for i in range(DECODER_HASH_TABLE_SIZE):
             if len(buckets[i]) > 0:
                 # Create a unique name for this bucket's array
-                array_name: str = f"g_bucket_{i}_instructions"
+                array_name = f"g_bucket_{i}_instructions"
                 f.write(
                     f"static const {DECODER_METADATA_STRUCT_NAME} *{array_name}[] = {{\n"
                 )
@@ -385,7 +398,7 @@ if __name__ == "__main__":
         )
         for i in range(DECODER_HASH_TABLE_SIZE):
             if len(buckets[i]) > 0:
-                array_name: str = f"g_bucket_{i}_instructions"
+                array_name = f"g_bucket_{i}_instructions"
                 f.write(
                     f"    [{i:#05x}] = {{ .instructions = {array_name}, .count = {len(buckets[i])}U }},\n"
                 )
