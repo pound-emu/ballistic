@@ -1,7 +1,7 @@
 All memory will be allocated from a contiguous memory arena before the pass begins. No `malloc` calls inside the loop.
 
 ```c
-// TODO: Design Dominator Tree, Basic Block, Instructions, Def-Use chains
+// TODO: Design Dominator Tree, Basic Block, Instructions
 
 // Ref: Chapter 3.1.3
 typedef struct
