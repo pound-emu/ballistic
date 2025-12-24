@@ -3,6 +3,9 @@ All memory will be allocated from a contiguous memory arena before the pass begi
 ## Variable Design
 
 ```c
+// We implement a tag system to track which operands are variables and constant.
+#define TAG_CONSTANT     0x80000000
+
 // Ref: Chapter 3.1.3
 typedef struct
 {
@@ -28,27 +31,49 @@ original_variable_t original_variables[???];
 typedef struct
 {
     int original_variable_id;
+
+    // If < TAG_CONSTANT: It's an index into the instructions array.
+    // If >= TAG_CONSTANT: It's an index into the constants array (with the
+    // high bit masked off).
     int defining_instruction;
 } ssa_version_t
 
-// This array tracks the unique variables produced by the SSA (x1, x2, y1)
+// This array tracks variables and constants produced by the SSA.
 // 
-// Example:
+// This example shows the logic for tracking constants:
 //
-// Assume `x` and 'y` are stored at index 1 and 2 in `original_variables[]`.
-// 
 // 10: x1 = 5 
-// ssa_versions[x1].original_var_id = 1
-// ssa_versions[x1].defining_instruction = 10
+// ssa_versions[x1].original_var_id = 0 // Constants have no ID.
+// ssa_versions[x1].defining_instruction = 10 | TAG_CONSTANT
 //
 // 20: y1 = x1 + 5
-// ssa_versions[y1].original_var_id = 2
-// ssa_versions[y1].defining_instruction = 20
+// ssa_versions[y1].original_var_id = 0
+// ssa_versions[y1].defining_instruction = 20 | TAG_CONSTANT
 // 
 // 30: x2 = 20
-// ssa_versions[x2].original_var_id = 1
-// ssa_versions[x2].defining_instruction = 30
+// ssa_versions[x2].original_var_id = 0
+// ssa_versions[x2].defining_instruction = 30 | TAG_CONSTANT
 ssa_version_t ssa_versions[???];
+```
+## Constants Design
+
+An open addressing hash map will need to be created to map constants to their index for `constants[]`
+
+```c
+typedef enum { CONST_INT64, CONST_DOUBLE } const_type_t;
+
+typedef struct {
+    const_type_t type;
+    union {
+        uint64_t i64;
+        double   f64;
+        // etc...
+    } value;
+
+} constant_t;
+
+// The frontend is responsible for populating this array.
+constant_t* constants[???];
 ```
 
 ## Instruction Design
@@ -75,15 +100,16 @@ typedef struct
     uint32_t operand2;   // z2
 } instruction_t;
 
-// An example of how variable renaming should work. We will focus on the
-// variable `a`. Lets assume variable a is stored in original_variables[5].
+// An example of how variable renaming should work. This does not apply to
+// constants. We will focus on the variable `a`. Lets assume variable `a` is
+// stored in original_variables[5].
 //
-// 10: a1 = 5
+// 10: a1 = ???
 // original_variables[5].reaching_definition = 1;
 // ssa_versions[1].defining_instruction = 10;
 // ssa_versions[1].original_variable_id = 5;
 //
-// 20: b1 = a1 + 1;
+// 20: b1 = a1 + ???;
 // instructions[20].operand1 = original_variables[5].reaching_definition;
 // 
 // 30: c1 = a1 + b1;
