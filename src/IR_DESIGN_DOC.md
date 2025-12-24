@@ -54,6 +54,12 @@ ssa_version_t ssa_versions[???];
 ## Instruction Design
 
 ```c
+// We implement a tag system to track which operands are variables and constant.
+// If x = 5; operand1 = 0x80000005.
+#define TAG_SSA_VERSION  0x00000000
+#define TAG_CONSTANT     0x80000000
+#define TAG_MASK         0xC0000000
+
 typedef struct
 {
     uint16_t opcode;
