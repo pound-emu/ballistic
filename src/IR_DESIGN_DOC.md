@@ -57,7 +57,8 @@ ssa_version_t ssa_versions[???];
 ```
 ## Constants Design
 
-An open addressing hash map will need to be created to map constants to their index for `constants[]`
+An open addressing hash map will need to be created to map constants to their index for `constants[]`.
+The hashmap will be used by the frontend and IR. `constants[]` should only be used by the backend.
 
 ```c
 typedef enum { CONST_INT64, CONST_DOUBLE } const_type_t;
@@ -73,7 +74,7 @@ typedef struct {
 } constant_t;
 
 // The frontend is responsible for populating this array.
-constant_t* constants[???];
+constant_t constants[???];
 ```
 
 ## Instruction Design
