@@ -89,6 +89,9 @@ typedef struct
 {
     uint16_t opcode;
 
+    // Bitfields.
+    uint16_t flags;
+
     // The Topology (Intrusive Linked List)
     uint32_t next;
     uint32_t previous;
@@ -115,4 +118,121 @@ typedef struct
 // 30: c1 = a1 + b1;
 // instructions[30].operand1 = original_variables[5].reaching_definition;
 instruction_t* instructions[???];
+```
+
+## Instruction Flags Design
+
+### Layout Strategy
+
+```text
+15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+|| |--------------|  |------| |---------------|
+R      Class          Width      Global Flags
+      Specific
+```
+
+### 1. Global Flags [5:0]
+These apply to *every* instruction type.
+
+1. `SIDE_EFFECT` Bit[0]
+
+Dont delete this instruction. Used for Dead Code Elimination.
+
+2. `COMMUTATIVE` Bit[1]
+
+Order doesn't matter. `ADD x, 5` == `ADD 5, x` Used for Global value numbering.
+
+3. `MAY_TRAP` Bit[2]
+
+Dont move the instruction aggressively. Set this for `DIV` (div by zero) and `LDR` (segfault). Used for Loop Invariant Code Motion.
+
+4. `READS_MEMORY` Bit[3]
+
+Instruction depends on the heap state.
+
+5. `TERMINATOR` Bit[4]
+
+Instruction ends the basic block.
+
+6. `SPILL` Bit[5]
+
+Instruction was created by the register allocator.
+
+### 2. Width [8:6]
+Used by Memory Access, SIMD, and Conversion instructions.
+
+| Encoding | Mnemonic | Description |
+| :--- | :--- | :--- |
+| `000` | **DEF** | Default / Void / Context-implied width. |
+| `001` | **B** | Byte (8-bit integer). |
+| `010` | **H** | Half-word (16-bit integer). |
+| `011` | **W** | Word (32-bit integer / float). |
+| `100` | **X** | Double-word (64-bit integer / double). |
+| `101` | **Q** | Quad-word (128-bit SIMD vector). |
+| `110` | **PTR** | Object Reference / Pointer (GC tracked). |
+| `111` | - | *Reserved.* |
+
+### 3. Class-Specific Encodings [14:9]
+We redefine these bits based on the Opcode.
+
+#### Shift and Rotate (`LSL`, `LSR`, `ASR`, `ROR`)
+
+Use when the shift amount is a compile-time constant.
+
+```text
+15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+|| |--------------|  |------| |---------------|
+R    Shift Amount     Width      Global Flags
+```
+
+#### Vector Element (`EXT`, `INS`, `DUP`)
+
+Used for SIMD lane manipulation where the index must be an immediate.
+
+```text
+15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+|------| |---------| |------| |---------------|
+   R        Index     Width     Global Flags
+```
+
+<**Index**> Vector lane index (0-15).
+<**Width**> Must be set to `101` for 128-bit operations.
+
+#### Branch and Compare (`B.cond`, `CSET`, `CSEL`)
+
+Used for operations dependant on the PSTATE condition flags.
+
+```text
+15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+|------| |---------| |------| |---------------|
+   R      Condition    Width     Global Flags
+```
+
+| Encoding | Mnemonic | Meaning |
+| :--- | :--- | :--- |
+| `0000` | **EQ** | Equal |
+| `0001` | **NE** | Not Equal |
+| `0010` | **CS / HS** | Carry Set / Unsigned Higher or Same |
+| `0011` | **CC / LO** | Carry Clear / Unsigned Lower |
+| TODO | TODO | TODO | 
+| `1110` | **AL** | Always |
+
+### 4. Access Macros
+
+Direct bitwise manipulation of flags is discouraged outside of IR Builder. Use these macros instead:
+
+```c
+// Global Flags
+#define IS_SIDE_EFFECT(f)  ((f) & 0x1)
+#define IS_COMMUTATIVE(f)  ((f) & 0x2)
+#define IS_TRAPPING(f)     ((f) & 0x4)
+
+// Width Extraction
+#define GET_WIDTH(f)       (((f) >> 6) & 0x7)
+
+// Opcode Dependant Bits
+#define GET_SHIFT_VALUET(f)       (((f) >> 9) & 0x3F)
+#define GET_LANE(f)        (((f) >> 6) & 0xF)
+#define GET_COND(f)        (((f) >> 6) & 0xF)
+// etc...
 ```
