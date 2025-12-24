@@ -159,7 +159,8 @@ Instruction ends the basic block.
 Instruction was created by the register allocator.
 
 ### 2. Width [8:6]
-Used by Memory Access, SIMD, and Conversion instructions.
+
+Every instruction must set these bits accordingly.
 
 | Encoding | Mnemonic | Description |
 | :--- | :--- | :--- |
