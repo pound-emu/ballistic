@@ -60,6 +60,7 @@ ssa_version_t ssa_versions[???];
 #define TAG_CONSTANT     0x80000000
 #define TAG_MASK         0xC0000000
 
+// Struct should be at most 32 bytes so 2 can fit on one cache line.
 typedef struct
 {
     uint16_t opcode;
@@ -88,7 +89,5 @@ typedef struct
 // 
 // 30: c1 = a1 + b1;
 // instructions[30].operand1 = original_variables[5].reaching_definition;
-//
-// 
 instruction_t* instructions[???];
 ```
