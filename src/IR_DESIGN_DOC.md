@@ -93,10 +93,6 @@ typedef struct
     // Bitfields.
     uint16_t flags;
 
-    // The Topology (Intrusive Linked List)
-    uint32_t next;
-    uint32_t previous;
-
     // SSA versions
     // x3 = y1 + z2
     uint32_t definition; // x3
