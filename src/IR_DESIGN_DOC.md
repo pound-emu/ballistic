@@ -28,6 +28,7 @@ typedef struct
 // `x` maps to instruction 100.
 original_variable_t original_variables[???];
 
+// This struct is designed for a slot-based renaming algorithm.
 typedef struct
 {
     int original_variable_id;
@@ -55,6 +56,7 @@ typedef struct
 // ssa_versions[x2].defining_instruction = 30 | TAG_CONSTANT
 ssa_version_t ssa_versions[???];
 ```
+
 ## Constants Design
 
 An open addressing hash map will need to be created to map constants to their index for `constants[]`.
@@ -75,6 +77,26 @@ typedef struct {
 
 // The frontend is responsible for populating this array.
 constant_t constants[???];
+```
+
+## Phi Nodes
+
+```c
+typedef struct
+{
+    // The SSA variable defined by this Phi
+    uint32_t definition;
+
+    // Index into the phi_operands pool
+    // Phi functions appear at the start of a basic block and execute in parallel.
+    // The length is the number of predecessors of the Basic Block containing this Phi.
+    // We do not store the length here to save space.
+    uint32_t operand_start_index;
+} phi_operand_t;
+
+
+// A massive contiguous array storing all operands for all Phis.
+uint32_t phi_operand_pool[???];
 ```
 
 ## Instruction Design
@@ -114,7 +136,7 @@ typedef struct
 // 
 // 30: c1 = a1 + b1;
 // instructions[30].operand1 = original_variables[5].reaching_definition;
-instruction_t* instructions[???];
+instruction_t instructions[???];
 ```
 
 ## Instruction Flags Design
