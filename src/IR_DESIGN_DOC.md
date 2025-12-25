@@ -102,17 +102,12 @@ uint32_t phi_operand_pool[???];
 ## Instruction Design
 
 ```c
-// We implement a tag system to track which operands are variables and constant.
-#define TAG_SSA_VERSION  0x00000000
-#define TAG_CONSTANT     0x80000000
-#define TAG_MASK         0xC0000000
-
-// Struct should be at most 32 bytes so 2 can fit on one cache line.
+// Strict 16-byte alignment
 typedef struct
 {
     uint16_t opcode;
 
-    // Bitfields.
+    // See Section `Instruction Flags Design` for encoding layout.
     uint16_t flags;
 
     // SSA versions
@@ -145,12 +140,12 @@ instruction_t instructions[???];
 
 ```text
 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|| |--------------|  |------| |---------------|
-R      Class          Width      Global Flags
+|  |--------------|  |------| |---------------|
+E      Class          Width      Global Flags
       Specific
 ```
 
-### 1. Global Flags [5:0]
+### 1. Global Flags Bit[5:0]
 These apply to *every* instruction type.
 
 1. `SIDE_EFFECT` Bit[0]
@@ -177,7 +172,7 @@ Instruction ends the basic block.
 
 Instruction was created by the register allocator.
 
-### 2. Width [8:6]
+### 2. Width Bit[8:6]
 
 Every instruction must set these bits accordingly.
 
@@ -192,7 +187,7 @@ Every instruction must set these bits accordingly.
 | `110` | **PTR** | Object Reference / Pointer (GC tracked). |
 | `111` | - | *Reserved.* |
 
-### 3. Class-Specific Encodings [14:9]
+### 3. Class-Specific Encodings Bit[14:9]
 We redefine these bits based on the Opcode.
 
 #### Shift and Rotate (`LSL`, `LSR`, `ASR`, `ROR`)
@@ -201,8 +196,8 @@ Use when the shift amount is a compile-time constant.
 
 ```text
 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|| |--------------|  |------| |---------------|
-R    Shift Amount     Width      Global Flags
+|  |--------------|  |------| |---------------|
+E    Shift Amount     Width      Global Flags
 ```
 
 #### Vector Element (`EXT`, `INS`, `DUP`)
@@ -211,8 +206,8 @@ Used for SIMD lane manipulation where the index must be an immediate.
 
 ```text
 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|------| |---------| |------| |---------------|
-   R        Index     Width     Global Flags
+|        |---------| |------| |---------------|
+E           Index     Width     Global Flags
 ```
 
 <**Index**> Vector lane index (0-15).
@@ -224,8 +219,8 @@ Used for operations dependant on the PSTATE condition flags.
 
 ```text
 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|------| |---------| |------| |---------------|
-   R      Condition    Width     Global Flags
+|        |---------| |------| |---------------|
+E         Condition    Width     Global Flags
 ```
 
 | Encoding | Mnemonic | Meaning |
@@ -237,7 +232,16 @@ Used for operations dependant on the PSTATE condition flags.
 | TODO | TODO | TODO | 
 | `1110` | **AL** | Always |
 
-### 4. Access Macros
+### 4. Extention Flag Bit[15]
+
+This is for rare instructions like `MADD` which has 3 variable arguments while `instruction_t` only supports 2.
+
+1. If Instruction.E = 1, the **next** 16-byte slot in the instructions array is *not* an instruction. 
+2. It treats that next slot as a data container to retrieve the 3rd operand. 
+3. The iterator increments by 2 instead of 1.
+
+
+### 5. Access Macros
 
 Direct bitwise manipulation of flags is discouraged outside of IR Builder. Use these macros instead:
 
