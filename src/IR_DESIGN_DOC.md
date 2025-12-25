@@ -98,6 +98,85 @@ typedef struct
 // A massive contiguous array storing all operands for all Phis.
 uint32_t phi_operand_pool[???];
 ```
+## Instruction Encoding
+
+```text
+63 62        57 56     54 53        48 47      42 41        28 27        14 13        00
+|  |----------| |-------| |----------| |--------| |----------| |----------| |----------|
+e       cs         wid        TODO        opc         def          src1         src2
+```
+
+### Encoding Symbols
+
+<**src2**>  14-bit index for `ssa_versions[]`.
+
+<**src1**>  14-bit index for `ssa_versions[]`.
+
+<**def**>  14-bit index for `ssa_versions[]`.
+
+<**opc**>  Instruction opcode.
+
+<**TODO**> Still figuring out what to out here.
+
+<**wid**> Instruction width type:
+
+| Encoding | Mnemonic | Description |
+| :--- | :--- | :--- |
+| `000` | **DEF** | Default / Void / Context-implied width. |
+| `001` | **B** | Byte (8-bit integer). |
+| `010` | **H** | Half-word (16-bit integer). |
+| `011` | **W** | Word (32-bit integer / float). |
+| `100` | **X** | Double-word (64-bit integer / double). |
+| `101` | **Q** | Quad-word (128-bit SIMD vector). |
+| `110` | **PTR** | Object Reference / Pointer (GC tracked). |
+| `111` | - | *Reserved.* |
+
+<**cs**> Since `instruction_t` only support 2 args, this is for instructions where the 3rd arg is a constant:
+
+* Vector Element (`EXT`, `INS`, `DUP`)
+
+    - Used for SIMD lane manipulation where the index must be an immediate.
+
+    ```text
+    62 61 60       57
+    |---| |---------|
+      r       imm
+    ```
+
+    - <**imm**> Vector lane index  (0-15).
+
+    - <**r**> Reserved.
+
+* Branch and Compare (`B.cond`, `CSET`, `CSEL`)
+
+    ```text
+    62 61 60       57
+    |---| |---------|
+      r       imm
+    ```
+
+| Encoding | Mnemonic | Meaning |
+| :--- | :--- | :--- |
+| `0000` | **EQ** | Equal |
+| `0001` | **NE** | Not Equal |
+| `0010` | **CS / HS** | Carry Set / Unsigned Higher or Same |
+| `0011` | **CC / LO** | Carry Clear / Unsigned Lower |
+| TODO | TODO | TODO | 
+| `1110` | **AL** | Always |
+
+<**e**> Set to 1 if `def`, `src1`, or `src2` is greater than 16383.
+
+### Operational Information
+
+If Flags.E is 1:
+
+    * `instruction_t` is an index into `large_instructions[]`. We write the index into the 42-bit space.
+
+```text
+63 62        57 56     54 53        48 47      42 41                                  00
+|  |----------| |-------| |----------| |--------| |------------------------------------|
+e       cs         wid        TODO        opc                    index
+```
 
 ## Instruction Design
 
@@ -117,24 +196,33 @@ uint32_t phi_operand_pool[???];
 // 30: c1 = a1 + b1;
 // instructions[30].source1 = original_variables[5].reaching_definition;
 
+// ---------------------------------------------------------
+// Instruction Bit Manipulation Macros
+// ---------------------------------------------------------
+// Layout: [Flags 16 | Op 6 | Def 14 | Src1 14 | Src2 14]
 
+#define IR_MASK_14        0x3FFF
+#define IR_MASK_6         0x3F
+#define IR_MASK_16        0xFFFF
 
-// Strict 8-byte alignment
-typedef struct
-{
-    // 64 Opcodes
-    unsigned int opcode: 6;
+// Encoders
+#define IR_ENCODE(flags, op, def, s1, s2) \   
+    ( ((uint64_t)(flags) & IR_MASK_16) << 48 | \
+      ((uint64_t)(op)    & IR_MASK_6)  << 42 | \
+      ((uint64_t)(def)   & IR_MASK_14) << 28 | \
+      ((uint64_t)(s1)    & IR_MASK_14) << 14 | \
+      ((uint64_t)(s2)    & IR_MASK_14) )
 
-    // See Section `Instruction Flags Design` for encoding layout.
-    uint16_t flags;
+// Decoders
+#define IR_GET_FLAGS(i)   (((i) >> 48) & IR_MASK_16)
+#define IR_GET_OP(i)      (((i) >> 42) & IR_MASK_6)
+#define IR_GET_DEF(i)     (((i) >> 28) & IR_MASK_14)
+#define IR_GET_SRC1(i)    (((i) >> 14) & IR_MASK_14)
+#define IR_GET_SRC2(i)    ((i)         & IR_MASK_14)
 
-    // 0-16383
-    unsigned int definition: 14; 
-    unsigned int source1:    14;   
-    unsigned int source2:    14;
-} instruction_t;
+typedef uint64_t instruction_t
+instruction_t instructions[???];                 // High Density
 
-// Use when variables or constants > 16383
 typedef struct
 {
     uint32_t definition;
@@ -143,131 +231,31 @@ typedef struct
     uint32_t _padding;
 } large_instruction_t
 
-instruction_t instructions[???];                // High Density
 large_instruction_t large_instructions[???];    // Low Density
+size_t large_instructions_count;
 
-// Extension Handling
-#define IR_GET_LARGE_INDEX(i) ((i) & 0xFFFFFFF) // 42 bits
 ```
 
-## Instruction Flags Design
-
-### Layout Strategy
-
-```text
-15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|  |--------------|  |------| |---------------|
-E      Class          Width      Global Flags
-      Specific
-```
-
-### 1. Global Flags Bit[5:0]
-These apply to *every* instruction type.
-
-1. `SIDE_EFFECT` Bit[0]
-
-Dont delete this instruction. Used for Dead Code Elimination.
-
-2. `COMMUTATIVE` Bit[1]
-
-Order doesn't matter. `ADD x, 5` == `ADD 5, x` Used for Global value numbering.
-
-3. `MAY_TRAP` Bit[2]
-
-Dont move the instruction aggressively. Set this for `DIV` (div by zero) and `LDR` (segfault). Used for Loop Invariant Code Motion.
-
-4. `READS_MEMORY` Bit[3]
-
-Instruction depends on the heap state.
-
-5. `TERMINATOR` Bit[4]
-
-Instruction ends the basic block.
-
-6. `SPILL` Bit[5]
-
-Instruction was created by the register allocator.
-
-### 2. Width Bit[8:6]
-
-Every instruction must set these bits accordingly.
-
-| Encoding | Mnemonic | Description |
-| :--- | :--- | :--- |
-| `000` | **DEF** | Default / Void / Context-implied width. |
-| `001` | **B** | Byte (8-bit integer). |
-| `010` | **H** | Half-word (16-bit integer). |
-| `011` | **W** | Word (32-bit integer / float). |
-| `100` | **X** | Double-word (64-bit integer / double). |
-| `101` | **Q** | Quad-word (128-bit SIMD vector). |
-| `110` | **PTR** | Object Reference / Pointer (GC tracked). |
-| `111` | - | *Reserved.* |
-
-### 3. Class-Specific Encodings Bit[14:9]
-We redefine these bits based on the Opcode.
-
-#### Shift and Rotate (`LSL`, `LSR`, `ASR`, `ROR`)
-
-Use when the shift amount is a compile-time constant.
-
-```text
-15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|  |--------------|  |------| |---------------|
-E    Shift Amount     Width      Global Flags
-```
-
-#### Vector Element (`EXT`, `INS`, `DUP`)
-
-Used for SIMD lane manipulation where the index must be an immediate.
-
-```text
-15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|        |---------| |------| |---------------|
-E           Index     Width     Global Flags
-```
-
-<**Index**> Vector lane index (0-15).
-<**Width**> Must be set to `101` for 128-bit operations.
-
-#### Branch and Compare (`B.cond`, `CSET`, `CSEL`)
-
-Used for operations dependant on the PSTATE condition flags.
-
-```text
-15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-|        |---------| |------| |---------------|
-E         Condition    Width     Global Flags
-```
-
-| Encoding | Mnemonic | Meaning |
-| :--- | :--- | :--- |
-| `0000` | **EQ** | Equal |
-| `0001` | **NE** | Not Equal |
-| `0010` | **CS / HS** | Carry Set / Unsigned Higher or Same |
-| `0011` | **CC / LO** | Carry Clear / Unsigned Lower |
-| TODO | TODO | TODO | 
-| `1110` | **AL** | Always |
-
-### 4. Extention Flag Bit[15]
-
-This is for constants and variables greater than 16383.
-
-### 5. Access Macros
-
-Direct bitwise manipulation of flags is discouraged outside of IR Builder. Use these macros instead:
-
+## How to use `instruction_t` to index into `large_instructions[]`.
 ```c
-// Global Flags
-#define IS_SIDE_EFFECT(f)  ((f) & 0x1)
-#define IS_COMMUTATIVE(f)  ((f) & 0x2)
-#define IS_TRAPPING(f)     ((f) & 0x4)
-
-// Width Extraction
-#define GET_WIDTH(f)       (((f) >> 6) & 0x7)
-
-// Opcode Dependant Bits
-#define GET_SHIFT_VALUET(f)       (((f) >> 9) & 0x3F)
-#define GET_LANE(f)        (((f) >> 6) & 0xF)
-#define GET_COND(f)        (((f) >> 6) & 0xF)
-// etc...
+// # Scenario
+// 
+// 1. `large_instructions[]` is empty.
+// 2. Create a new instruction: `z1 = ADD v20000, v20000`.
+// 3. `20000` is larger than `16383`. We must use the large pool.
+//
+// We see our counter `large_instructions_count = 0`. We write the actual values
+// into the pool at index 0;
+//
+// ```
+// large_instructions[0].definition = 1;
+// large_instructions[0].source1 = 20000;
+// large_instructions[0].source2 = 20000;
+// ```
+// 
+// Finally we encode `instruction_t`.
+//
+// 1. Bits[0:41] = large_instructions_count;
+// 2. Bits[47:42] = OPCODE_ADD
+// 4. Bits[63] = 1 << 63 // Enable the Extended Flag
 ```
