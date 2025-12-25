@@ -102,21 +102,6 @@ uint32_t phi_operand_pool[???];
 ## Instruction Design
 
 ```c
-// Strict 16-byte alignment
-typedef struct
-{
-    uint16_t opcode;
-
-    // See Section `Instruction Flags Design` for encoding layout.
-    uint16_t flags;
-
-    // SSA versions
-    // x3 = y1 + z2
-    uint32_t definition; // x3
-    uint32_t operand1;   // y1
-    uint32_t operand2;   // z2
-} instruction_t;
-
 // An example of how variable renaming should work. This does not apply to
 // constants. We will focus on the variable `a`. Lets assume variable `a` is
 // stored in original_variables[5].
@@ -127,11 +112,42 @@ typedef struct
 // ssa_versions[1].original_variable_id = 5;
 //
 // 20: b1 = a1 + ???;
-// instructions[20].operand1 = original_variables[5].reaching_definition;
+// instructions[20].source1= original_variables[5].reaching_definition;
 // 
 // 30: c1 = a1 + b1;
-// instructions[30].operand1 = original_variables[5].reaching_definition;
-instruction_t instructions[???];
+// instructions[30].source1 = original_variables[5].reaching_definition;
+
+
+
+// Strict 8-byte alignment
+typedef struct
+{
+    // 64 Opcodes
+    unsigned int opcode: 6;
+
+    // See Section `Instruction Flags Design` for encoding layout.
+    uint16_t flags;
+
+    // 0-16383
+    unsigned int definition: 14; 
+    unsigned int source1:    14;   
+    unsigned int source2:    14;
+} instruction_t;
+
+// Use when variables or constants > 16383
+typedef struct
+{
+    uint32_t definition;
+    uint32_t source1;
+    uint32_t source2;
+    uint32_t _padding;
+} large_instruction_t
+
+instruction_t instructions[???];                // High Density
+large_instruction_t large_instructions[???];    // Low Density
+
+// Extension Handling
+#define IR_GET_LARGE_INDEX(i) ((i) & 0xFFFFFFF) // 42 bits
 ```
 
 ## Instruction Flags Design
@@ -234,12 +250,7 @@ E         Condition    Width     Global Flags
 
 ### 4. Extention Flag Bit[15]
 
-This is for rare instructions like `MADD` which has 3 variable arguments while `instruction_t` only supports 2.
-
-1. If Instruction.E = 1, the **next** 16-byte slot in the instructions array is *not* an instruction. 
-2. It treats that next slot as a data container to retrieve the 3rd operand. 
-3. The iterator increments by 2 instead of 1.
-
+This is for constants and variables greater than 16383.
 
 ### 5. Access Macros
 
