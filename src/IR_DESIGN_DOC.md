@@ -228,6 +228,12 @@ typedef struct
     uint16_t instruction_count;
     uint16_t phi_count;
 
+    uint16_t successor_start_index;
+    uint16_t successor_count;
+    
+    uint16_t predecessor_start_index;
+    uint16_t predecessor_count;
+
     // If variable gets defined in Block X, this tracks where the definition
     // collide with other blocks.
     //
