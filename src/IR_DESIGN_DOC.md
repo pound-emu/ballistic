@@ -108,7 +108,7 @@ e          opc             def          src1         src2         src3
 
 ### Encoding Symbols
 
-<**src3**>  12-bit index for `ssa_versions[]`.
+<**src3**>  11-bit index for `ssa_versions[]`.
 
 <**src2**>  14-bit index for `ssa_versions[]`.
 
