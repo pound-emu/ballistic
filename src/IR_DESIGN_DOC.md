@@ -222,8 +222,11 @@ size_t large_instructions_count;
 typedef struct
 {
     uint32_t instruction_start_index;
-    uint32_t instruction_count;
+    uint32_t phi_start_index
 
+    uint16_t instruction_count;
+    uint16_t phi_count;
+        
     // Used to order hot and cold blocks in memory.
     uint32_t execution_count;
 } basic_block_t;
