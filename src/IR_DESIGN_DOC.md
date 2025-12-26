@@ -1,5 +1,13 @@
 All memory will be allocated from a contiguous memory arena before the pass begins. No `malloc` calls inside the loop.
 
+# Table of Contents
+1. [Flat SSA Model](#cfg)
+2. [Structured SSA Model](#scfg)
+
+# <a name="cfg" /> Flat SSA Model
+
+This model uses a graph of Basic Blocks connected by jumps where dominance relationships must be calculated explicitly. It handles data flow merges by using ϕ-nodes.
+
 ## Variable Design
 
 ```c
@@ -320,4 +328,28 @@ typedef struct
 uint32_t block_indices[???];
 
 basic_block_t basic_blocks[???];
+```
+# <a name="scfg" /> Structured SSA Model
+
+This replicates Dynarmic's IR layer but it respects SSA by using Block Arguments. Branches push values into the target scope like function parameters.
+
+```c
+// Scenario
+//
+if (cond) { x = 10; } else { x = 20; }
+print(x);
+
+
+// Structured SSA Representation
+//
+v3 = IF (cond) TARGET_TYPE: Int64 // The IF instruction defines v3
+{
+    YIELD 10    // Pushes 10 to v3
+}
+ELSE
+{
+    YIELD 20    // Pushes 20 to v3
+}
+
+PRINT v3
 ```
