@@ -230,4 +230,7 @@ typedef struct
     // Used to order hot and cold blocks in memory.
     uint32_t execution_count;
 } basic_block_t;
+
+// All lists (predecessors, successors, dominance frontiers) are slices of this array.
+uint32_t block_indices[???];
 ```
