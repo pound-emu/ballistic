@@ -234,4 +234,6 @@ typedef struct
 
 // All lists (predecessors, successors, dominance frontiers) are slices of this array.
 uint32_t block_indices[???];
+
+basic_block_t basic_blocks[???];
 ```
