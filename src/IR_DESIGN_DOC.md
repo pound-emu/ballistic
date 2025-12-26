@@ -218,6 +218,44 @@ size_t large_instructions_count;
 // 4. Bits[63] = 1 << 63 // Enable the Extended Flag
 ```
 
+## Terminal Design
+```c
+typedef enum 
+{ 
+    TERMINAL_FALLTHROUGH, // Fall through to the physically next block in memory
+    TERMINAL_BRANCH,      // Unconditional jump
+    TERMINAL_COND_BRANCH, // Conditional jump (if/else)
+    TERMINAL_RET,         // Return from function
+    TERMINAL_INDIRECT     // Branch to Register (Jump Table / Function Pointer)
+} terminal_type_t;
+
+typedef struct
+{
+    terminal_type_t type;
+    union
+    {
+        // For TERMINAL_BRANCH and TERMINAL_COND_BRANCH
+        //
+        struct
+        {
+            uint32_t target_true_block_index;
+            uint32_t target_false_block_index;
+        } direct;
+
+        // For TERMIMAL_INDIRECT
+        // You cannot statically analyze the target of this.
+        // It relies on a runtime value in a register.
+        //
+        struct 
+        {
+            uint32_t target_register_ssa_index; 
+        } indirect;
+    };
+} terminal_t;
+
+terminal_t terminals[???];
+```
+
 ## Basic Block Design
 ```c
 typedef struct
@@ -271,6 +309,8 @@ typedef struct
     uint16_t immediate_dominator_index;
     uint16_t dominator_children_start_index;
     uint16_t dominator_children_count;
+
+    uint32_t terminal_index;
 
     // Used to order hot and cold blocks in memory.
     uint32_t execution_count;
