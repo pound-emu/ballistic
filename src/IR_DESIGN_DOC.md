@@ -101,81 +101,35 @@ uint32_t phi_operand_pool[???];
 ## Instruction Encoding
 
 ```text
-63 62        57 56     54 53        48 47      42 41        28 27        14 13        00
-|  |----------| |-------| |----------| |--------| |----------| |----------| |----------|
-e       cs         wid        TODO        opc         def          src1         src2
+63 62               53 52        39 38        25 24        11 10        00
+|  |-----------------| |----------| |----------| |----------| |----------|
+e          opc             def          src1         src2         src3
 ```
 
 ### Encoding Symbols
+
+<**src3**>  12-bit index for `ssa_versions[]`.
 
 <**src2**>  14-bit index for `ssa_versions[]`.
 
 <**src1**>  14-bit index for `ssa_versions[]`.
 
-<**def**>  14-bit index for `ssa_versions[]`.
+<**def**>   14-bit index for `ssa_versions[]`.
 
-<**opc**>  Instruction opcode.
+<**opc**>   10-bit opcode.
 
-<**TODO**> Still figuring out what to out here.
-
-<**wid**> Instruction width type:
-
-| Encoding | Mnemonic | Description |
-| :--- | :--- | :--- |
-| `000` | **DEF** | Default / Void / Context-implied width. |
-| `001` | **B** | Byte (8-bit integer). |
-| `010` | **H** | Half-word (16-bit integer). |
-| `011` | **W** | Word (32-bit integer / float). |
-| `100` | **X** | Double-word (64-bit integer / double). |
-| `101` | **Q** | Quad-word (128-bit SIMD vector). |
-| `110` | **PTR** | Object Reference / Pointer (GC tracked). |
-| `111` | - | *Reserved.* |
-
-<**cs**> Since `instruction_t` only support 2 args, this is for instructions where the 3rd arg is a constant:
-
-* Vector Element (`EXT`, `INS`, `DUP`)
-
-    - Used for SIMD lane manipulation where the index must be an immediate.
-
-    ```text
-    62 61 60       57
-    |---| |---------|
-      r       imm
-    ```
-
-    - <**imm**> Vector lane index  (0-15).
-
-    - <**r**> Reserved.
-
-* Branch and Compare (`B.cond`, `CSET`, `CSEL`)
-
-    ```text
-    62 61 60       57
-    |---| |---------|
-      r       imm
-    ```
-
-| Encoding | Mnemonic | Meaning |
-| :--- | :--- | :--- |
-| `0000` | **EQ** | Equal |
-| `0001` | **NE** | Not Equal |
-| `0010` | **CS / HS** | Carry Set / Unsigned Higher or Same |
-| `0011` | **CC / LO** | Carry Clear / Unsigned Lower |
-| TODO | TODO | TODO | 
-| `1110` | **AL** | Always |
-
-<**e**> Set to 1 if `def`, `src1`, or `src2` is greater than 16383.
+<**e**>     Set to 1 if `def`, `src1`, or `src2` is greater than 16383.
 
 ### Operational Information
 
 If Flags.E is 1:
 
-    * `instruction_t` is an index into `large_instructions[]`. We write the index into the 42-bit space.
+    * `instruction_t` is an index into `large_instructions[]`. We write the index into the 53-bit space.
 
 ```text
-63 62        57 56     54 53        48 47      42 41                                  00
-|  |----------| |-------| |----------| |--------| |------------------------------------|
-e       cs         wid        TODO        opc                    index
+63 62               53 52                                               00
+|  |-----------------| |-------------------------------------------------|
+e          opc                               index
 ```
 
 ## Instruction Design
@@ -191,7 +145,7 @@ e       cs         wid        TODO        opc                    index
 // ssa_versions[1].original_variable_id = 5;
 //
 // 20: b1 = a1 + ???;
-// instructions[20].source1= original_variables[5].reaching_definition;
+// instructions[20].source1 = original_variables[5].reaching_definition;
 // 
 // 30: c1 = a1 + b1;
 // instructions[30].source1 = original_variables[5].reaching_definition;
@@ -199,26 +153,29 @@ e       cs         wid        TODO        opc                    index
 // ---------------------------------------------------------
 // Instruction Bit Manipulation Macros
 // ---------------------------------------------------------
-// Layout: [Flags 16 | Op 6 | Def 14 | Src1 14 | Src2 14]
+// Layout: [Flag 1| Op 10 | Def 14 | Src1 14 | Src2 14 | Src3 11]
 
 #define IR_MASK_14        0x3FFF
-#define IR_MASK_6         0x3F
-#define IR_MASK_16        0xFFFF
+#define IR_MASK_11        0x7FF
+#define IR_MASK_10        0x3FF
+#define IR_MASK_1         0x1
 
 // Encoders
-#define IR_ENCODE(flags, op, def, s1, s2) \   
-    ( ((uint64_t)(flags) & IR_MASK_16) << 48 | \
-      ((uint64_t)(op)    & IR_MASK_6)  << 42 | \
-      ((uint64_t)(def)   & IR_MASK_14) << 28 | \
-      ((uint64_t)(s1)    & IR_MASK_14) << 14 | \
-      ((uint64_t)(s2)    & IR_MASK_14) )
+#define IR_ENCODE(flag, op, def, s1, s2, s3) \   
+    ( ((uint64_t)(flag)  & IR_MASK_1)  << 63  | \
+      ((uint64_t)(op)    & IR_MASK_10) << 53 | \
+      ((uint64_t)(def)   & IR_MASK_14) << 39 | \
+      ((uint64_t)(s1)    & IR_MASK_14) << 25 | \
+      ((uint64_t)(s2)    & IR_MASK_14) << 14 | \
+      ((uint64_t)(s3)    & IR_MASK_11))
 
 // Decoders
-#define IR_GET_FLAGS(i)   (((i) >> 48) & IR_MASK_16)
-#define IR_GET_OP(i)      (((i) >> 42) & IR_MASK_6)
-#define IR_GET_DEF(i)     (((i) >> 28) & IR_MASK_14)
-#define IR_GET_SRC1(i)    (((i) >> 14) & IR_MASK_14)
-#define IR_GET_SRC2(i)    ((i)         & IR_MASK_14)
+#define IR_GET_FLAG(i)    (((i) >> 63) & IR_MASK_1)
+#define IR_GET_OP(i)      (((i) >> 53) & IR_MASK_10)
+#define IR_GET_DEF(i)     (((i) >> 39) & IR_MASK_14)
+#define IR_GET_SRC1(i)    (((i) >> 25) & IR_MASK_14)
+#define IR_GET_SRC2(i)    (((i) >> 14) & IR_MASK_14)
+#define IR_GET_SRC3(i)    ((i)         & IR_MASK_11)
 
 typedef uint64_t instruction_t
 instruction_t instructions[???];                 // High Density
