@@ -216,3 +216,12 @@ size_t large_instructions_count;
 // 2. Bits[47:42] = OPCODE_ADD
 // 4. Bits[63] = 1 << 63 // Enable the Extended Flag
 ```
+
+## Basic Block Design
+```c
+typedef struct
+{
+    uint32_t instruction_start_index;
+    uint32_t instruction_count;
+} basic_block_t;
+```
