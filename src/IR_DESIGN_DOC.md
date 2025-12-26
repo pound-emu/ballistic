@@ -92,7 +92,7 @@ typedef struct
     // The length is the number of predecessors of the Basic Block containing this Phi.
     // We do not store the length here to save space.
     uint32_t operand_start_index;
-} phi_operand_t;
+} phi_node_t;
 
 
 // A massive contiguous array storing all operands for all Phis.
