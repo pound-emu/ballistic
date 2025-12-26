@@ -31,12 +31,12 @@ original_variable_t original_variables[???];
 // This struct is designed for a slot-based renaming algorithm.
 typedef struct
 {
-    int original_variable_id;
+    uint32_t original_variable_id;
 
     // If < TAG_CONSTANT: It's an index into the instructions array.
     // If >= TAG_CONSTANT: It's an index into the constants array (with the
     // high bit masked off).
-    int defining_instruction;
+    uint32_t defining_instruction;
 } ssa_version_t
 
 // This array tracks variables and constants produced by the SSA.
