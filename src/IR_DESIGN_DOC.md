@@ -223,5 +223,8 @@ typedef struct
 {
     uint32_t instruction_start_index;
     uint32_t instruction_count;
+
+    // Used to order hot and cold blocks in memory.
+    uint32_t execution_count;
 } basic_block_t;
 ```
