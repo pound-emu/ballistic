@@ -266,6 +266,12 @@ typedef struct
     uint16_t dominance_frontier_start;
     uint16_t dominance_frontier_count;
 
+    // If this is the entry block, this index is invaild.
+    //
+    uint16_t immediate_dominator_index;
+    uint16_t dominator_children_start_index;
+    uint16_t dominator_children_count;
+
     // Used to order hot and cold blocks in memory.
     uint32_t execution_count;
 } basic_block_t;
