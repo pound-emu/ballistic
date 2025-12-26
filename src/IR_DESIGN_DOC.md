@@ -94,6 +94,7 @@ typedef struct
     uint32_t operand_start_index;
 } phi_node_t;
 
+phi_node_t phi_nodes[???];
 
 // A massive contiguous array storing all operands for all Phis.
 uint32_t phi_operand_pool[???];
