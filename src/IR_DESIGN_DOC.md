@@ -227,7 +227,39 @@ typedef struct
 
     uint16_t instruction_count;
     uint16_t phi_count;
-        
+
+    // If variable gets defined in Block X, this tracks where the definition
+    // collide with other blocks.
+    //
+    // If-Else:
+    //
+    //      A
+    //     / \
+    //    B   C
+    //     \ /
+    //      D
+    //
+    // B defines x = 1.
+    // B dominates itself. It does not dominate D.
+    // The frontier of B is D.
+    // We insert x = phi(...) in D.
+    // basic_blocks[B].dominance_frontier_start = D
+    // 
+    // For Loop: 
+    //
+    //      A <---|   
+    //      |     |
+    //      B --->|
+    //
+    // B defines i = i + 1
+    // B dominates itself. It does not dominante A.
+    // The frontier of B is A.
+    // We insert i = phi(...) in A.
+    // badic_blocks[B].dominance_frontier_start = A;
+    //
+    uint16_t dominance_frontier_start;
+    uint16_t dominance_frontier_count;
+
     // Used to order hot and cold blocks in memory.
     uint32_t execution_count;
 } basic_block_t;
