@@ -130,7 +130,7 @@ We handle these void instructions by marking the SSA variable as `VOID`: `ssa_ve
 
 ### What about control instructions that defines more than one variable?
 
-We use **Proxy Instructions** to handle multiple definitions while keeping our O(1) Array Indexing.
+We use **Proxy Instructions** to handle multiple definitions while keeping our O(1) Array Indexing: `OPCODE_PROXY`
 
 If an `IF` statement needs to define 2 variables (x, y), we create 3 sequential instructions.
 
@@ -161,7 +161,7 @@ v100 = OPCODE_IF (v_cond)  TARGET_TYPE: INT64
 // This proxy defines the second merge value (y -> v101)
 // It explicity references the parent IF(v100) to attach itself..
 //
-v101 = OPCODE_PROXY_DEFINITION (v100) TARGET_TYPE: INT64
+v101 = OPCODE_PROXY (v100) TARGET_TYPE: INT64
 {
     v102 = OPCODE_CONST 10
     v103 = OPCODE_CONST 20
