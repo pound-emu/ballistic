@@ -336,6 +336,7 @@ This replicates Dynarmic's IR layer but it respects SSA by using Block Arguments
 ```c
 // Scenario
 //
+x = 0;
 if (cond) { x = 10; } else { x = 20; }
 print(x);
 
