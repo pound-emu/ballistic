@@ -393,7 +393,6 @@ ssa_version_t ssa_versions[???];
 <**src1**>  18-bit index for `ssa_versions[]`.
 
 <**opc**>   10-bit opcode.
-```
 
 ## Instruction Design
 
