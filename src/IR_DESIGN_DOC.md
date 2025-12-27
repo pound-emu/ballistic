@@ -358,6 +358,7 @@ PRINT v3
 ## Variable Design
 
 ```c
+// This struct is *only* used for SSA construction. It maps the program's original state (like Guest Registers) to the current SSA variable. 
 typedef struct
 {
     uint32_t current_ssa_index;
