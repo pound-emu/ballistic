@@ -375,3 +375,22 @@ typedef struct
 
 ssa_version_t ssa_versions[???];
 ```
+
+## Instruction Encoding
+
+```text
+63               54 53        36 35        18 17        00
+|-----------------| |----------| |----------| |----------|
+        opc             src1         src2         src3
+```
+
+### Encoding Symbols
+
+<**src3**>  18-bit index for `ssa_versions[]`.
+
+<**src2**>  18-bit index for `ssa_versions[]`.
+
+<**src1**>  18-bit index for `ssa_versions[]`.
+
+<**opc**>   10-bit opcode.
+```
