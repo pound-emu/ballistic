@@ -403,7 +403,40 @@ instruction_t instructions[???];
 uint32_t instruction_count;
 ```
 
-## How do we know when a variable is created?
+## Control Instructions Design
+
+Control Instructions defines nested scopes (Basic Blocks). They produce SSA variables. These will replace phi-nodes and terminals.
+
+1. `OPCODE_IF`
+    * **Input**: Condition variable.
+    * **Structure**: Creates "Then" and "Else" blocks.
+    * **Output**: Defines SSA variables representing the result of the executed branch.
+
+2. `OPCODE_LOOP`
+    * **Input**: Initial loop arguments (optional).
+    * **Structure**: Creates a "Body" block.
+    * **Output**: Defines SSA variables representing the state when the loop terminates.
+
+3. `OPCODE_BLOCK`
+    * **Structure**: Creates a single nested scope.
+    * **Output**: Defines SSA variables yielded by the block.
+
+4. `OPCODE_YIELD`
+    * **Role**: Data Flow.
+    * **Behaviour**: Pushes a value from inside a child scope (Then/Else/Body) to the parent Control Instruction (IF/LOOP), resolving tbe SSA merge.
+
+5. `OPCODE_BREAK`
+    * **Role**: Control Flow.
+    * **Behaviour**: Exits a `LOOP` or `BLOCK` scope immediately. Can carry values to the target scope.
+
+6. `OPCODE_CONTINUE`
+    * **Role**: Control Flow.
+    * **Behaviour**: Jumps to the header of the nearest enclosing `LOOP` scope. Can carry values to update loop arguments.
+
+7. `OPCODE_RETURN`
+    * **Role**: Function Exitu
+    * **Behaviour**: Not exactly sure about this one yet. How would function inlining work?
+### How do we know when a variable is created?
 
 We use Implicit Indexing:
 
@@ -422,3 +455,5 @@ If `instructions[200]` is `STORE v1, [v2]`, it defines no variable for other ins
 Its either this or keep track of a `definition` field in `instruction_t` which then shrinks `src1`, `src2`, and `src3` to a tiny 14 bits.
 
 We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`
+
+### What about instructions that
