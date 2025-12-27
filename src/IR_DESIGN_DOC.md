@@ -412,3 +412,13 @@ We use Implicit Indexing:
 2. We do not "check" if it is created. The act of incrementing `instruction_count` creates it.
 
 This removes the need for an explicit `definition` bitfield in `instructions_t`, creating space to expand `src1`, `src2`, and `src3` to 18 bits.
+
+### What about instructions that don't define anything?
+
+If `instructions[200]` is `STORE v1, [v2]`, it defines no variable for other instructions to use. If we strictly follow implicit indexing, we create `ssa_values[200]`. Is this waste?
+
+**Yes. Its 8 bytes of waste. But this is the best choice we have.**
+
+Its either this or keep track of a `definition` field in `instruction_t` which then shrinks `src1`, `src2`, and `src3` to a tiny 14 bits.
+
+We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`
