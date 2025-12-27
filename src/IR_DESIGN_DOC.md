@@ -354,3 +354,24 @@ ELSE
 
 PRINT v3
 ```
+
+## Variable Design
+
+```c
+typedef struct
+{
+    uint32_t current_ssa_index;
+    uint32_t original_variable_index;
+} source_variable_t;
+
+sourve_variable_t source_variables[???];
+
+typedef struct
+{
+    type_t type; // TYPE_INT, TYPE_FLOAT, etc.
+    uint32_t defining_instruction_index;
+    uint16_t use_count;
+} ssa_version_t;
+
+ssa_version_t ssa_versions[???];
+```
