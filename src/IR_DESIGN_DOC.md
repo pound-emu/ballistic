@@ -400,4 +400,15 @@ ssa_version_t ssa_versions[???];
 ```c
 typedef uint64_t instruction_t;
 instruction_t instructions[???];
+uint32_t instruction_count;
 ```
+
+## How do we know when a variable is created?
+
+We use Implicit Indexing:
+
+1. When we create an instruction at `instructions[100]`, we have implicitly created the variable definition at `ssa_versions[100]`.
+
+2. We do not "check" if it is created. The act of incrementing `instruction_count` creates it.
+
+This removes the need for an explicit `definition` bitfield in `instructions_t`, creating space to expand `src1`, `src2`, and `src3` to 18 bits.
