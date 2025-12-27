@@ -436,9 +436,10 @@ Control Instructions defines nested scopes (Basic Blocks). They produce SSA vari
 7. `OPCODE_RETURN`
     * **Role**: Function Exitu
     * **Behaviour**: Not exactly sure about this one yet. How would function inlining work?
-### How do we know when a variable is created?
 
-We use Implicit Indexing:
+## How do we know when a variable is created?
+
+We use **Implicit Indexing**:
 
 1. When we create an instruction at `instructions[100]`, we have implicitly created the variable definition at `ssa_versions[100]`.
 
@@ -446,7 +447,7 @@ We use Implicit Indexing:
 
 This removes the need for an explicit `definition` bitfield in `instructions_t`, creating space to expand `src1`, `src2`, and `src3` to 18 bits.
 
-### What about instructions that don't define anything?
+## What about instructions that don't define anything?
 
 If `instructions[200]` is `STORE v1, [v2]`, it defines no variable for other instructions to use. If we strictly follow implicit indexing, we create `ssa_values[200]`. Is this waste?
 
@@ -456,4 +457,71 @@ Its either this or keep track of a `definition` field in `instruction_t` which t
 
 We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`
 
-### What about instructions that
+### What about control instructions that defines more than one variable?
+
+We use **Proxy Instructions** to handle multiple definitions while keeping our O(1) Array Indexing.
+
+If an `IF` statement needs to define 2 variables (x, y), we create 3 sequential instructions.
+
+1. The primary `IF` instruction (defines x).
+2. A proxy instruction immediately following it (defines y).
+
+These proxy instructions should generate **ZERO** machine code.
+
+#### Scenario
+```c
+int x;
+int y;
+if (condition) {
+    x = 10; y = 20;
+} else {
+    x = 30; y = 40;
+}
+// x and y are used here.
+```
+
+#### Structured SSA Representation
+
+```text
+// Define the first merge value (x -> v100).
+//
+v100 = OPCODE_IF (v_cond)  TARGET_TYPE: INT64
+
+// This proxy defines the second merge value (y -> v101)
+// It explicity references the parent IF(v100) to attach itself..
+//
+v101 = OPCODE_PROXY_DEFINITION (v100) TARGET_TYPE: INT64
+{
+    v102 = CONST 10
+    v103 = CONST 20
+
+    // v102 -> v100 (x)
+    // v103 -> v101 (y)
+    //
+    YIELD v102, v103
+}
+ELSE
+{
+    v104 = CONST 30
+    v105 = CONST 40
+
+    // v104 -> v100 (x)
+    // v105 -> 101 (y)
+    //
+    YIELD v104, v105
+}
+
+PRINT v100
+PRINT v101
+
+```
+
+#### Memory Layout in `instructions[]`
+```text
+| Index | Opcode                  | Operands             | SSA Value Created |
+|-------|-------------------------|----------------------|-------------------|
+| 100   | OPCODE_IF               | src1: v_cond         | v100 (defines x)  |
+| 101   | OPCODE_PROXY_DEFINITION | src1: 100 (Parent)   | v101 (defines y)  |
+| 103   | OPCODE_MOVZ (x = 10)    | src1: v100, src2: 10 | v103              |
+| 104   | OPCODE_MOVZ (y = 20)    | src1: v101, src2: 20 | v104              |
+```
