@@ -492,27 +492,27 @@ v100 = OPCODE_IF (v_cond)  TARGET_TYPE: INT64
 //
 v101 = OPCODE_PROXY_DEFINITION (v100) TARGET_TYPE: INT64
 {
-    v102 = CONST 10
-    v103 = CONST 20
+    v102 = OPCODE_CONST 10
+    v103 = OPCODE_CONST 20
 
     // v102 -> v100 (x)
     // v103 -> v101 (y)
     //
-    YIELD v102, v103
+    OPCODE_YIELD v102, v103
 }
 ELSE
 {
-    v104 = CONST 30
-    v105 = CONST 40
+    v104 = OPCODE_CONST 30
+    v105 = OPCODE_CONST 40
 
     // v104 -> v100 (x)
     // v105 -> 101 (y)
     //
-    YIELD v104, v105
+    OPCODE_YIELD v104, v105
 }
 
-PRINT v100
-PRINT v101
+OPCODE_PRINT v100
+OPCODE_PRINT v101
 
 ```
 
