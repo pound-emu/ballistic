@@ -394,3 +394,10 @@ ssa_version_t ssa_versions[???];
 
 <**opc**>   10-bit opcode.
 ```
+
+## Instruction Design
+
+```c
+typedef uint64_t instruction_t;
+instruction_t instructions[???];
+```
