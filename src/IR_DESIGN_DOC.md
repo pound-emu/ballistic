@@ -4,26 +4,131 @@ All memory will be allocated from a contiguous memory arena before the pass begi
 
 This replicates Dynarmic's IR layer but it respects SSA by using Block Arguments. Branches push values into the target scope like function parameters.
 
+## Proof of Concept
+
+### Scenario
+
 ```c
-// Scenario
-//
-x = 0;
-if (cond) { x = 10; } else { x = 20; }
-print(x);
-
-
-// Structured SSA Representation
-//
-v3 = IF (cond) TARGET_TYPE: Int64 // The IF instruction defines v3
-{
-    YIELD 10    // Pushes 10 to v3
+// Calculate sum of array[i] where array[i] > 0
+int64_t sum = 0;
+int64_t i = 0;
+while (i < limit) {
+    int64_t val = array[i];
+    if (val > 0) {
+        sum += val;
+    }
+    i++;
 }
-ELSE
-{
-    YIELD 20    // Pushes 20 to v3
-}
+return sum;
+```
 
-PRINT v3
+### Structured SSA Representation
+
+```text
+// ---------------------------------------------------------
+// 1. ENTRY BLOCK
+// ---------------------------------------------------------
+
+// Array base address.
+//
+v0 = OPCODE_CONST 0x1000
+
+// Loop limit.
+//
+v1 = OPCODE_CONST 100
+
+// Sum definition.
+//
+v2 = OPCODE_CONST 0
+
+// Iterator definition
+//
+v3 = OPCODE_CONST 0
+
+// ---------------------------------------------------------
+// 2. LOOP HEADER
+// ---------------------------------------------------------
+
+// v4 Represents the loop expression.
+// Inside the block, v4 is the phi-node for `sum`.
+// Outside the block, v4 is the final result returned by `OPCODE_BREAK`.
+//
+v4 = OPCODE_LOOP (v2, v3) TARGET_TYPE: INT64
+
+// v6 is the phi-node for `i`.
+// It attaches to v4 to handle the second loop argument.
+//
+v5 = OPCODE_PROXY (v4) TARGET_TYPE: INT64
+{
+    // ---------------------------------------------------------
+    // 3. LOOP BODY
+    // ---------------------------------------------------------
+
+    i < limit
+    v6 = OPCODE_CMP_LT v5, v1
+
+    // Decide to continue or exit.
+    // v7 represents the result of this IF block.
+    //
+    v7 = OPCODE_IF (v6) TARGET_TYPE: VOID
+    
+        // val = array[i]
+        //
+        v8 = OPCODE_LOAD v0, v5
+
+        // val > 0
+        //
+        v9 = OPCODE_CONST 0
+        v10 = OPCODE_CMP_GP v8, v9
+
+        // v11 is the new sum after `v > 0`.
+        //
+        v11 = OPCODE_IF (v10) TARGET_TYPE: INT64
+        
+            // sum += val
+            //
+            v12 = OPCODE_ADD v4, v8
+
+            // v12 -> v11
+            //
+            OPCODE_YIELD v12
+        
+        OPCODE_ELSE
+
+            // v4 -> v11
+            //
+            OPCODE_YIELD v4
+
+        OPCODE_END_BLOCK // Terminates the entire IF structure.
+
+        // ++i (v5)
+        //
+        v13 = OCPODE_CONST 1
+        v14 = OPCODE_ADD v5, v13
+
+        // Jump to loop header.
+        // v11 (New Sum) -> v4 (Phi Sum)
+        // v14 (New i)   -> v5 (Phi i)
+        //
+        OPCODE_CONTINUE v11, v14
+    
+    OPCODE_ELSE
+
+        // Exit loop.
+        //
+        OPCODE_BREAK v4
+
+    OPCODE_END_BLOCK // Terminates the entire IF structure.
+
+OPCODE_END_BLOCK // Terminantes the entire loop.
+
+
+// ---------------------------------------------------------
+// 4. EXIT
+// ---------------------------------------------------------
+
+// v4 holds the final sum.
+OPCODE_RETURN v4
 ```
 
 ## Variable Design
@@ -105,7 +210,7 @@ Control Instructions defines nested scopes (Basic Blocks). They produce SSA vari
     * **Behaviour**: Jumps to the header of the nearest enclosing `LOOP` scope. Can carry values to update loop arguments.
 
 7. `OPCODE_RETURN`
-    * **Role**: Function Exitu
+    * **Role**: Function Exit
     * **Behaviour**: Not exactly sure about this one yet. How would function inlining work?
 
 ## How do we know when a variable is created?
@@ -128,18 +233,18 @@ Its either this or keep track of a `definition` field in `instruction_t` which t
 
 We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`
 
-### What about control instructions that defines more than one variable?
+## What about control instructions that defines more than one variable?
 
 We use **Proxy Instructions** to handle multiple definitions while keeping our O(1) Array Indexing: `OPCODE_PROXY`
 
-If an `IF` statement needs to define 2 variables (x, y), we create 3 sequential instructions.
+If an `IF` statement needs to define 2 variables (x, y), we create 2 sequential instructions.
 
 1. The primary `IF` instruction (defines x).
 2. A proxy instruction immediately following it (defines y).
 
 These proxy instructions should generate **ZERO** machine code.
 
-#### Scenario
+### Scenario
 ```c
 int x;
 int y;
@@ -151,7 +256,7 @@ if (condition) {
 // x and y are used here.
 ```
 
-#### Structured SSA Representation
+### Structured SSA Representation
 
 ```text
 // Define the first merge value (x -> v100).
@@ -187,7 +292,7 @@ OPCODE_PRINT v101
 
 ```
 
-#### Memory Layout in `instructions[]`
+### Memory Layout in `instructions[]`
 ```text
 | Index | Opcode                  | Operands             | SSA Value Created |
 |-------|-------------------------|----------------------|-------------------|
