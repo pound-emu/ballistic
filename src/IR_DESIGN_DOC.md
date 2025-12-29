@@ -145,7 +145,6 @@ sourve_variable_t source_variables[???];
 typedef struct
 {
     type_t type; // TYPE_INT, TYPE_FLOAT, etc.
-    uint32_t defining_instruction_index;
     uint16_t use_count;
 } ssa_version_t;
 
