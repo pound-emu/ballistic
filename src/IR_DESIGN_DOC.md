@@ -215,6 +215,27 @@ Control Instructions defines nested scopes (Basic Blocks). They produce SSA vari
     * **Role**: Function Exit
     * **Behaviour**: Not exactly sure about this one yet. How would function inlining work?
 
+## Extention Instructions
+
+If an operation requires more than 3 operands (like `YIELD` returning 5 values), we insert instruction **immediately** preceding the consumer to carry the extra load.
+
+### Opcode Design
+
+`OPCODE_ARG_EXTENSION`
+* **Role**: Holds 3 operands that are pushed to the next instruction.
+* **Output**: `TYPE_VOID`
+
+### Scenario: `OPCODE_YIELD v1, v2, v3, v4, v5`
+
+We cannot fit 5 operands into one `instruction_t`. We split them.
+
+### Memory Layout in `instructions[]`
+
+| Index | Opcode               | src1 | src2 | src3 | SSA Def | Comment                    |
+|-------|----------------------|------|------|------|---------|----------------------------|
+| 100   | OPCODE_ARG_EXTENSION | v4   | v5   | NULL | v100    | Carries args 4 and 5       |
+| 101   | OPCODE_YIELD         | v1   | v2   | v3   | v101    | Carries args 1-3 & Executes|
+
 ## How do we know when a variable is created?
 
 We use **Implicit Indexing**:
