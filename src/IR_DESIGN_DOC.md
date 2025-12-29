@@ -59,7 +59,6 @@ v4 = OPCODE_LOOP (v2, v3) TARGET_TYPE: INT64
 // It attaches to v4 to handle the second loop argument.
 //
 v5 = OPCODE_PROXY (v4) TARGET_TYPE: INT64
-{
     // ---------------------------------------------------------
     // 3. LOOP BODY
     // ---------------------------------------------------------
@@ -267,7 +266,6 @@ v100 = OPCODE_IF (v_cond)  TARGET_TYPE: INT64
 // It explicity references the parent IF(v100) to attach itself..
 //
 v101 = OPCODE_PROXY (v100) TARGET_TYPE: INT64
-{
     v102 = OPCODE_CONST 10
     v103 = OPCODE_CONST 20
 
@@ -275,9 +273,7 @@ v101 = OPCODE_PROXY (v100) TARGET_TYPE: INT64
     // v103 -> v101 (y)
     //
     OPCODE_YIELD v102, v103
-}
 ELSE
-{
     v104 = OPCODE_CONST 30
     v105 = OPCODE_CONST 40
 
@@ -285,11 +281,10 @@ ELSE
     // v105 -> 101 (y)
     //
     OPCODE_YIELD v104, v105
-}
+OPCODE_END_BLOCK
 
 OPCODE_PRINT v100
 OPCODE_PRINT v101
-
 ```
 
 ### Memory Layout in `instructions[]`
