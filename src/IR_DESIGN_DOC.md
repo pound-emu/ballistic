@@ -170,7 +170,7 @@ ssa_version_t ssa_versions[???];
 
 ### Operational Information
 
-If Bit[17] in `src1`, `src2`, or `src` is 1, the operand is a raw number.  It has not SSA index. It has no entry in `ssa_versions`.
+If Bit[17] in `src1`, `src2`, or `src` is 1, the operand is a constant.  It has not SSA index. It has no entry in `ssa_versions`.
 
 ## Instruction Design
 
