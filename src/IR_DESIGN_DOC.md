@@ -181,7 +181,7 @@ instruction_t instructions[???];
 uint32_t instruction_count;
 ```
 
-## Control Instructions Design
+## Control Instructions
 
 Control Instructions defines nested scopes (Basic Blocks). They produce SSA variables. These will replace phi-nodes and terminals.
 
@@ -221,20 +221,36 @@ If an operation requires more than 3 operands (like `YIELD` returning 5 values),
 
 ### Opcode Design
 
-`OPCODE_ARG_EXTENSION`
-* **Role**: Holds 3 operands that are pushed to the next instruction.
-* **Output**: `TYPE_VOID`
+1. `OPCODE_ARG_EXTENSION`
+    * **Role**: Holds 3 operands that are pushed to the next instruction.
+    * **Output**: `TYPE_VOID
 
-### Scenario: `OPCODE_YIELD v1, v2, v3, v4, v5`
+2. `OPCODE_DEF_EXTENSION`
+    * **Role**: Extends the definitiom list of the preceding Control Instruction to support multiple merge values.
+    * **Output**: Defines a valid SSA variable representing the next value in the merge set.
+
+### Scenario 1: `OPCODE_YIELD v1, v2, v3, v4, v5`,
 
 We cannot fit 5 operands into one `instruction_t`. We split them.
 
-### Memory Layout in `instructions[]`
+Memory Layout in `instructions[]`
 
 | Index | Opcode               | src1 | src2 | src3 | SSA Def | Comment                    |
 |-------|----------------------|------|------|------|---------|----------------------------|
 | 100   | OPCODE_ARG_EXTENSION | v4   | v5   | NULL | v100    | Carries args 4 and 5       |
 | 101   | OPCODE_YIELD         | v1   | v2   | v3   | v101    | Carries args 1-3 & Executes|
+
+
+### Scenario 2: `x1, y1 = OPCODE_IF (vcondition) TARGET_TYPE: INT`
+
+This `IF` block defines 2 variables. Since this IR is designed to define one variable per instruction, we split `x1`, and `y1` into two seperate instructions.
+
+Memory Layout in `instructions[]`
+
+| Index | Opcode               | src1 | src2 | src3 | SSA Def | Comment         |
+|-------|----------------------|------|------|------|---------|-----------------|
+| 100   | OPCODE_IF            |vcond | NULL | NULL | v100    | Definition of x |
+| 101   | OPCODE_DEF_EXTENSION | v100 | NULL | NULL | v101    | Definition of y |
 
 ## How do we know when a variable is created?
 
@@ -255,17 +271,6 @@ If `instructions[200]` is `STORE v1, [v2]`, it defines no variable for other ins
 Its either this or keep track of a `definition` field in `instruction_t` which then shrinks `src1`, `src2`, and `src3` to a tiny 14 bits.
 
 We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`
-
-## What about control instructions that defines more than one variable?
-
-We use **Proxy Instructions** to handle multiple definitions while keeping our O(1) Array Indexing: `OPCODE_PROXY`
-
-If an `IF` statement needs to define 2 variables (x, y), we create 2 sequential instructions.
-
-1. The primary `IF` instruction (defines x).
-2. A proxy instruction immediately following it (defines y).
-
-These proxy instructions should generate **ZERO** machine code.
 
 ### Scenario
 ```c
