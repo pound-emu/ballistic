@@ -324,3 +324,10 @@ OPCODE_PRINT v101
 | 103   | OPCODE_MOVZ (x = 10)    | src1: v100, src2: 10 | v103              |
 | 104   | OPCODE_MOVZ (y = 20)    | src1: v101, src2: 20 | v104              |
 ```
+
+## Required Optimization Passes
+
+1. Register Allocation
+2. Constant Folding & Propagation
+3. Dead Code Elimination
+4. Peepholes
