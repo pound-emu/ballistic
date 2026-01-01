@@ -58,7 +58,7 @@ v4 = OPCODE_LOOP (v2, v3) TARGET_TYPE: INT64
 // v6 is the phi-node for `i`.
 // It attaches to v4 to handle the second loop argument.
 //
-v5 = OPCODE_PROXY (v4) TARGET_TYPE: INT64
+v5 = OPCODE_DEF_EXTENSION (v4) TARGET_TYPE: INT64
     // ---------------------------------------------------------
     // 3. LOOP BODY
     // ---------------------------------------------------------
@@ -283,61 +283,7 @@ If `instructions[200]` is `STORE v1, [v2]`, it defines no variable for other ins
 
 Its either this or keep track of a `definition` field in `instruction_t` which then shrinks `src1`, `src2`, and `src3` to a tiny 14 bits.
 
-We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`
-
-### Scenario
-```c
-int x;
-int y;
-if (condition) {
-    x = 10; y = 20;
-} else {
-    x = 30; y = 40;
-}
-// x and y are used here.
-```
-
-### Structured SSA Representation
-
-```text
-// Define the first merge value (x -> v100).
-//
-v100 = OPCODE_IF (v_cond)  TARGET_TYPE: INT64
-
-// This proxy defines the second merge value (y -> v101)
-// It explicity references the parent IF(v100) to attach itself..
-//
-v101 = OPCODE_PROXY (v100) TARGET_TYPE: INT64
-    v102 = OPCODE_CONST 10
-    v103 = OPCODE_CONST 20
-
-    // v102 -> v100 (x)
-    // v103 -> v101 (y)
-    //
-    OPCODE_YIELD v102, v103
-ELSE
-    v104 = OPCODE_CONST 30
-    v105 = OPCODE_CONST 40
-
-    // v104 -> v100 (x)
-    // v105 -> 101 (y)
-    //
-    OPCODE_YIELD v104, v105
-OPCODE_END_BLOCK
-
-OPCODE_PRINT v100
-OPCODE_PRINT v101
-```
-
-### Memory Layout in `instructions[]`
-```text
-| Index | Opcode                  | Operands             | SSA Value Created |
-|-------|-------------------------|----------------------|-------------------|
-| 100   | OPCODE_IF               | src1: v_cond         | v100 (defines x)  |
-| 101   | OPCODE_PROXY_DEFINITION | src1: 100 (Parent)   | v101 (defines y)  |
-| 103   | OPCODE_MOVZ (x = 10)    | src1: v100, src2: 10 | v103              |
-| 104   | OPCODE_MOVZ (y = 20)    | src1: v101, src2: 20 | v104              |
-```
+We handle these void instructions by marking the SSA variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`.
 
 ## <a name="rop"/> Required Optimization Passes
 
