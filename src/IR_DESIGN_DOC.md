@@ -130,6 +130,20 @@ OPCODE_END_BLOCK // Terminantes the entire loop.
 OPCODE_RETURN v4
 ```
 
+## Two Tiered Architecture
+
+### Tier 1: Dumb Translation
+
+* Greedy Register Allocator.
+* Pre-defined machine code templates for code generation.
+* No optimizations **except** for Peepholes. To make peepholing as fast as possible, we use a sliding window while emitting the machine code.
+
+We switch to tier 2 when a basic block turns hot.
+
+### Tier 2: Optimized Translation
+
+* Run all [required](#rop) optimizations passes.
+
 ## Variable Design
 
 ```c
@@ -325,7 +339,7 @@ OPCODE_PRINT v101
 | 104   | OPCODE_MOVZ (y = 20)    | src1: v101, src2: 20 | v104              |
 ```
 
-## Required Optimization Passes
+## <a name="rop"/> Required Optimization Passes
 
 1. Register Allocation
 2. Constant Folding & Propagation
