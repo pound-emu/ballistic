@@ -157,6 +157,7 @@ Memory Layout in `instructions[]`
 3. Multi-return values and multi-instruction arguments are handled via
    [extension instructions](#extension-instructions).
 4. Constants are loaded via pool indices, not raw literals in operands.
+5. Throw away `source_variables[]` after SSA construction. Do not keep it in memory.
 
 # SSA Optimization Rules
 
