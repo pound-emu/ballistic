@@ -234,6 +234,102 @@ If a basic block is deemed cold, it should move to a separate buffer.
 Throw away `source_variables[]` after SSA construction. Do not keep it in
 memory.
 
+# Algorithms
+
+## Loop Construction
+
+We use Iterative Peeling to construct loops with two iterations. The first
+iteration is a **Probe** to detect state change, then we clone the body into
+a loop.
+
+### Step 1: Peeling
+
+We treat the first iteration as conditional branch.
+
+1. Record the mapping of guest registers to current SSA variables as a snapshot.
+2. Emit `OPCODE_IF`.
+3. Emit the body.
+4. When we encounter a back edge, we compare the current register map against
+   the snapshot. Any variable *V* where `register_map[V] != snapshot_map[V]`
+   is a Loop Argument.
+
+### Step 2: Backpatching
+
+Now we know the arity of the loop. We construct the loop header immediately
+after the `IF`.
+
+1. Emit `OPCODE_END_BLOCK` for the `IF`.
+2. Emit `OPCODE_LOOP`.
+    * **Inputs**: The SSA IDs yielded by the `IF`.
+    * **Output: Define the new SSA phi-nodes for the loop arguments.
+
+### Step 3: Cloning the Body
+
+Populate the loop body by cloning the `IF` instructions.
+
+1. Iterate linearly through the `IF`'s instruction range.
+2. Remap the instruction operands.
+    * If the operand is defined before `IF`, keep the original index.
+    * If the operand is defined inside `IF`, we remap it to insidr the loop.
+    * If the operand was an input to `IF`, replace it with the new loop phi
+      node.
+
+### Scenario
+
+`int i = 0; while(i < 10) i++;`
+
+### Structured SSA Representation
+
+```text
+// int i = 0
+// 
+v0 = OPCODE_CONST 0
+
+// limit
+//
+v1 = OPCODE_CONST 10
+
+// We don't know `i` changes yet. Just emit an IF
+// v_cond = i < 10
+//
+v2 = OPCODE_IF (v_cond) TARGET_TYPE: INT
+
+    // i++
+    //
+    v3 = OPCODE_ADD v0, 1
+
+    OPCODE_YIELD v3
+
+OPCODE_END_BLOCK
+
+
+// We then see that `i` changed from v0 to v2.
+// Now we create the loop with arg v2.
+// v4 is the Phi for `i`.
+//
+v4 = OPCODE_LOOP (v2) TARGET_TYPE: INT
+    // Loop condition check.
+    //
+    v5 = OPCODE_CMP_LT v4, v1
+    
+    v6 = IF (v5) TARGET_TYPE: VOID
+
+        // Cloned body.
+        // Changed operand v0 to v4.
+        //
+        v6 = OPCODE_ADD v4, 1
+
+        OPCODE_CONTINUE v6
+    
+    OPCODE_ELSE
+        
+        OPCODE_BREAK v5
+
+    OPCODE_EMD_BLOCK
+
+OPCODE_EMD_BLOCK
+```
+
 # Tiered Compilation Strategy
 
 ## Tier 1: Dumb Translation
