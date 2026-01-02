@@ -28,6 +28,12 @@ typedef struct
 ssa_version_t ssa_versions[???];
 ```
 
+## Constants
+
+```c
+uint32_t constant_pool[???];
+```
+
 ## Instruction Encoding
 
 ```text
@@ -48,8 +54,7 @@ ssa_version_t ssa_versions[???];
 
 ### Operational Information
 
-If Bit[17] in `src1`, `src2`, or `src` is 1, the operand is a constant.  It has
-no SSA index. It has no entry in `ssa_versions`.
+If Bit[17] in `src1`, `src2`, or `src` is 1, the operand is a index into `constant_pool[]`.  It has no SSA index. It has no entry in `ssa_versions`.
 
 ## Instructions
 
