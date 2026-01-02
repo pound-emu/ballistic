@@ -158,6 +158,12 @@ Memory Layout in `instructions[]`
    [extension instructions](#extension-instructions).
 4. Constants are loaded via pool indices, not raw literals in operands.
 
+# SSA Optimization Rules
+
+1. When removing instructions during a Dead Code Elimination pass, replace
+   `instruction[i]` with `OPCODE_NOP`, then compact `instructions[]` if `NOP`
+   density > 25%.
+
 
 # Tiered Compilation Strategy
 
