@@ -1,4 +1,3 @@
-
 # Structured SSA Model
 
 This replicates [Dynarmic's](https://github.com/pound-emu/dynarmic) IR layer 
@@ -22,6 +21,7 @@ sourve_variable_t source_variables[???];
 
 typedef struct
 {
+    uint8_t  type; // INT32, FLOAT, etc.
     uint16_t use_count;
 } ssa_version_t;
 
