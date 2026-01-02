@@ -151,20 +151,88 @@ Memory Layout in `instructions[]`
 
 # SSA Construction Rules
 
-1. All memory will be allocated from a contiguous memory arena before the pass 
-   begins. No `malloc` calls inside the loop.
-2. Every instruction defines exactly one SSA ID (or Void).
-3. Multi-return values and multi-instruction arguments are handled via
-   [extension instructions](#extension-instructions).
-4. Constants are loaded via pool indices, not raw literals in operands.
-5. Throw away `source_variables[]` after SSA construction. Do not keep it in memory.
+## 1. Control Flow Rules
 
-# SSA Optimization Rules
+### Rule 1.1: Yielding
 
-1. When removing instructions during a Dead Code Elimination pass, replace
-   `instruction[i]` with `OPCODE_NOP`, then compact `instructions[]` if `NOP`
-   density > 25%.
+In an `IF/ELSE` structure, the `THEN` block and the `ELSE` block must yield
+the exact same number of values with the exact same types.
 
+### Rule 1.2: Loop Arguments
+
+`OPCODE_LOOP` must define its phi-node (loop arguments) immediately.
+`OPCODE_CONTINUE` at the bottom of the loop must match the arity and types
+of the `LOOP` header exactly. You cannot add a loop argument *later* during
+the pass. If you need a phi-node, you must rebuild the loop header.
+
+## Data Flow Rules
+
+### Rule 2.1: Single Static Assignment
+
+Every instruction defines exactly one SSA ID (or Void). Instructions with
+multiple return values and instruction arguments are handled via
+[extension instructions](#extension-instructions).
+
+### Rule 2.2: Contiguous Extension Instructions
+
+Extention Instructions must be physically contiguous to their parent
+instruction. No other instruction can exist between them.
+
+### Rule 2.3: Constants
+
+Constants are loaded via pool indices. We do not store raw literals in
+operands.
+
+### Rule 2.4: Immutable SSA
+
+Once an instruction is written and the `instruction_count` increments, that SSA
+definition is immutable. You cannot change the opcode of v100 from `ADD` to 
+`SUB`.
+
+If the logic needs to be changed during optomization, you must append a new
+instruction and update and update the users to point to the new index.
+
+You can **only** change an instruction to `OPCODE_NOP` to kill it.
+
+## Type System Rules
+
+### Rule 3.1: Typed Definitions
+
+The type of a variable is defined only in `ssa_versions[]`. Instructions that
+**use** variables do not encode the expected type.
+
+This reduces opcode density. `OPCODE_ADD` doesnt need to say `OPCODE_ADD_INT32`.
+It just says `OPCODE_ADD v1, v2`. Ballistic will look up `v1`'s type. If `v1`
+and is a float and `v2` is int, Ballistic throws an error.
+
+### Rule 3.2: Void Type
+
+Any instructions that do not produce a value must define a variable with
+`TYPE_VOID`. No other instruction can reference this variable as a source
+operand.
+
+## 4. Memory Bandwidth Rules
+
+All memory will be allocated from a contiguous memory arena before the pass 
+begins. No `malloc` calls during construction.
+
+### Rule 4.1: Deleted Instructions
+
+Since we are using implicit indexing, we cannot easily delete instructions.
+Therefore we replace dead code with `NOP`. If the ratio of `NOP`'s to 
+`instructions` exceed a threshold (like 25%), we must trigger a Compaction Pass.
+
+The Compaction Pass will create a new `instructions[]`, remmaping all SSA
+indices to be contiguous again, and discards the old array.
+
+### Rule 4.2: Hot-Cold Splitting
+
+If a basic block is deemed cold, it should move to a separate buffer.
+
+### Rule 4.3: Source Variables
+
+Throw away `source_variables[]` after SSA construction. Do not keep it in
+memory.
 
 # Tiered Compilation Strategy
 
