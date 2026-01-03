@@ -165,6 +165,15 @@ the exact same number of values with the exact same types.
 of the `LOOP` header exactly. You cannot add a loop argument *later* during
 the pass. If you need a phi-node, you must rebuild the loop header.
 
+### Rule 1.3: `OPCODE_IF` and `OPCODE_CONDITIONAL_SELECT`
+
+SSA construction will emit `OPCODE_IF` by default for branches. If the block is
+very small we flatten it to `OPCODE_CONDITIONAL_SELECT` via the
+[If-to-Select Optimization Pass](#if-to-select-optimization-pass).
+
+In general we use `OPCODE_IF` for side-effect heavy operations, and use
+`OPCODE_CONDITIONAL_SELECT` for safe arithmatic.
+
 ## Data Flow Rules
 
 ### Rule 2.1: Single Static Assignment
@@ -328,6 +337,29 @@ v4 = OPCODE_LOOP (v2) TARGET_TYPE: INT
     OPCODE_EMD_BLOCK
 
 OPCODE_EMD_BLOCK
+```
+
+## IF-to-SELECT Optimization Pass
+
+We look for Diamond Patterns in `IF` block control flows that are small enough
+to be flattened into `OPCODE_CONDITIONAL_SELECT`
+
+If the body contains no side effects and the instruction count < 2, we flatten
+it. This removes branches which can be mispredicted.
+
+```text
+v0 = ...
+v1 = ...
+v_cond = ...
+
+// Speculatively execute both paths
+//
+v_true = OPCODE_ADD v0, v1
+v_false = OPCODE_SUB v0, v1
+
+// Select the correct result
+//
+v_result = OPCODE_SELECT v_cond, v_true, v_false
 ```
 
 # Tiered Compilation Strategy
