@@ -381,6 +381,17 @@ indices to be contiguous again, and discards the old array.
 Throw away `source_variables[]` after SSA construction. Do not keep it in
 memory.
 
+### Rule 4.3: Block Size Limit
+
+The IR has a hard limit of 131,072 instructions due to thr 18-bit operand
+encoding.
+
+1. Checks must ensure `instruction_count` does not exceed 130,000. We leave a
+   safety margin for final mergers/exits.
+2. If the limit is reached, the compiler must terminate the block early, even
+   if the guest function has not ended.
+3. Let the runtime handle the next chunk as a separate compilation unit.
+
 # Algorithms
 
 ## Loop Construction
