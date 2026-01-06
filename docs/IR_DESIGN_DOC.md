@@ -11,13 +11,14 @@ target scope like function parameters.
 ```c
 // This struct is *only* used for SSA construction. It maps the program'
 // original state (like Guest Registers) to the current SSA variable. 
+//
 typedef struct
 {
     uint32_t current_ssa_index;
     uint32_t original_variable_index;
 } source_variable_t;
 
-sourve_variable_t source_variables[???];
+source_variable_t source_variables[???];
 
 typedef struct
 {
@@ -64,6 +65,114 @@ instruction_t instructions[???];
 uint32_t instruction_count;
 ```
 
+## Block Scope
+
+This was created to find out how many phi-variables will be defined in
+`IF/LOOP` blocks.
+
+```c
+typedef struct
+{
+    uint32_t type;          // BLOCK_TYPE_IF, BLOCK_TYPE_LOOP
+    uint32_t start_index;   
+    int32_t  yield_arity;   // How many SSA variables to create when merging.
+                            // -1 = Unknown (First branch).
+} block_scope_t;
+
+// Keep track of nested blocks.
+//
+block_scope_t block_scope_stack[64];
+int stack_depth = 0;
+```
+
+### Scenario
+
+```text
+// Some instructions have been ommited to keep this example simple.
+//
+IF (A)
+    IF(B)
+        YIELD w
+    ELSE
+        YIELD x
+    y = MERGE   // End Inner IF Block.
+    YIELD y
+ELSE
+    YIELD z
+a = MERGE      // End Outer IF Block.
+```
+
+### Memory Representation in `block_scope_stack[]`
+
+```text
+// IF/ELSE combined is 1 block.
+// 100: block_scope_stack[0] = {.type = IF, .start =  100, .yield_arity = -1}
+// stack_depth = 1
+//
+IF (A)
+
+    // 101: block_scope_stack[1] = {.type = IF, .start = 101, .yield_arity = -1}
+    // stack_depth = 2
+    //
+    IF(B)
+        
+        // We peek at the top of stack.
+        //
+        // block_scope_stack[1].yield_arity == -1
+        //
+        // Therefore, we set our parent block's arity to one.
+        //
+        // 102: block_scope_stack[1].yield_arity = 1 
+        // 
+        YIELD w
+
+    // Stack does not change here.
+    //
+    ELSE
+
+        // We peek at the top of stack.
+        //
+        // block_scope_stack[1].yield_arity == 1
+        //
+        // Does this current yield have 1 value? Yes. So we do not modify the
+        // block stack.
+        //
+        YIELD x
+
+    // We pop the stack, and retrive `yield_arity = 1`.
+    // We peek at the top stack (outer IF).
+    //
+    // block_scope_stack[0].yield_arity == -1
+    //
+    // We set the yield value from thee inner IF.
+    //
+    // block_scope_stack[0].yield_arity = 1
+    //
+    // We merge w and x into y.
+    //
+    y = MERGE
+
+    // Stack does not change here.
+    //
+    YIELD y
+
+// Stack does not change here.
+ELSE
+
+    // We peek at the top of stack.
+    //
+    // block_scope_stack[0].yield_arity == 1
+    //
+    // Does this current yield arity match 1? Yes. We leave the stack alone.
+    //
+    YIELD z
+
+// We pop the stack. We see `yield_arity == 1`, so only one variable gets
+// defined. We merge y and z into a.
+//
+a = MERGE     // End Outer IF Block.
+```
+
 # Instruction Set Architecture
 
 ## Control Instructions
@@ -74,18 +183,17 @@ variables. These will replace phi-nodes and terminals.
 1. `OPCODE_IF`
     * **Input**: Condition variable.
     * **Structure**: Creates "Then" and "Else" blocks.
-    * **Output**: Defines SSA variables representing the result of the executed
-      branch.
+    * **Output**: None.
 
 2. `OPCODE_LOOP`
     * **Input**: Initial loop arguments (optional).
     * **Structure**: Creates a "Body" block.
     * **Output**: Defines SSA variables representing the state when the loop
-      terminates.
+      terminates. 
 
-3. `OPCODE_BLOCK`
-    * **Structure**: Creates a single nested scope.
-    * **Output**: Defines SSA variables yielded by the block.
+3. `OPCODE_MERGE` 
+    * **Input**: None. Implicitly pops values from `block_scope_stack[]`.
+    * **Output**: Defines the merged SSA variable.
 
 4. `OPCODE_YIELD`
     * **Role**: Data Flow.
@@ -137,26 +245,30 @@ Memory Layout in `instructions[]`
 | 101   | OPCODE_YIELD         | v1   | v2   | v3   | v101    | Carries args 1-3 & Executes|
 
 
-### Scenario 2: `x1, y1 = OPCODE_IF (vcondition) TARGET_TYPE: INT`
+### Scenario 2: `x1, y1 = OPCODE_LOOP (w1) TARGET_TYPE: INT`
 
-This `IF` block defines 2 variables. Since this IR is designed to define one
+This `LOOP` block defines 2 variables. Since this IR is designed to define one
 variable per instruction, we split `x1`, and `y1` into two seperate instructions.
 
 Memory Layout in `instructions[]`
 
 | Index | Opcode               | src1 | src2 | src3 | SSA Def | Comment         |
 |-------|----------------------|------|------|------|---------|-----------------|
-| 100   | OPCODE_IF            |vcond | NULL | NULL | v100    | Definition of x |
+| 100   | OPCODE_LOOP          |vcond | NULL | NULL | v100    | Definition of x |
 | 101   | OPCODE_DEF_EXTENSION | v100 | NULL | NULL | v101    | Definition of y |
 
 # SSA Construction Rules
 
 ## 1. Control Flow Rules
 
-### Rule 1.1: Yielding
+### Rule 1.1: Symmetric Yielding
 
 In an `IF/ELSE` structure, the `THEN` block and the `ELSE` block must yield
 the exact same number of values with the exact same types.
+
+If the source code has an `IF` without an `ELSE`, Ballistic must generate an
+`ELSE` block. For every variable yielded in the `THEN` block, the `ELSE` block
+must be yield the variable before the `IF` started.
 
 ### Rule 1.2: Loop Arguments
 
@@ -173,6 +285,36 @@ very small we flatten it to `OPCODE_CONDITIONAL_SELECT` via the
 
 In general we use `OPCODE_IF` for side-effect heavy operations, and use
 `OPCODE_CONDITIONAL_SELECT` for safe arithmatic.
+
+### Rule 1.4: Loop Positional Mapping
+
+Loop arguments map strictly 1-to-1 based on their position in the instruction
+stream.
+
+1. **Definitions**: `OPCODE_LOOP` defines the 1st Phi variable. The following
+   `OPCODE_DEF_EXTENSION instruction defines the 2nd, 3rd... Nth Phi variables.
+
+2. **Arguments**: If the loop or if block require more than 3 initial values, 
+   `OPCODE_ARG_EXTENSION` must be inserted immediately before `OPCODE_LOOP` or
+   `OPCODE_IF`.
+
+3. **Continue**: The operands passed to `OPCODE_CONTINUE` update the  1st,
+   2nd, 3rd... Nth Phi variables for next iteration.
+
+Example: If `LOOP_OPCODE` defines `[v1, v2]`, and `OPCODE_CONTINUE` passes 
+`[v8, v9]`, then `v8` flows into `v1`, and v9` flows into `v2`.
+
+### Rule 1.5: Block Termination
+
+When closing a scope, Ballistic must determine whether to emit `OPCODE_MERGE`
+or `OPCODE_END_BLOCK` based on reachability.
+
+* If **ANY** path (Then or Else) does not have `OPCODE_BREAK`,
+  `OPCODE_CONTINUE` or `OPCODE_RETURN`, you must emit `OPCODE_MERGE`.
+
+* IF **ALL** paths contain `OPCODE_BREAK`, `OPCODE_CONTINUE`, or
+  `OPCODE_RETURN`, all paths are unreachable. Emit `OPCODE_END_BLOCK`
+  only. 
 
 ## Data Flow Rules
 
@@ -301,7 +443,7 @@ v1 = OPCODE_CONST 10
 // We don't know `i` changes yet. Just emit an IF
 // v_cond = i < 10
 //
-v2 = OPCODE_IF (v_cond) TARGET_TYPE: INT
+OPCODE_IF (v_cond)
 
     // i++
     //
@@ -309,34 +451,43 @@ v2 = OPCODE_IF (v_cond) TARGET_TYPE: INT
 
     OPCODE_YIELD v3
 
-OPCODE_END_BLOCK
+OPCODE_ELSE
+    
+    OPCODE_YIELD v0
+
+// Merge the IF exit values (v3 and v0 into v4).
+v4 = OPCODE_MERGE
 
 
-// We then see that `i` changed from v0 to v2.
+// We then see that `i` changed from v0 to v4.
 // Now we create the loop with arg v2.
-// v4 is the Phi for `i`.
+// v5 represents v4 in the loop.
 //
-v4 = OPCODE_LOOP (v2) TARGET_TYPE: INT
+v5 = OPCODE_LOOP (v4) TARGET_TYPE: INT
     // Loop condition check.
     //
-    v5 = OPCODE_CMP_LT v4, v1
+    v6 = OPCODE_CMP_LT v5, v1
     
-    v6 = IF (v5) TARGET_TYPE: VOID
+    IF (v6) TARGET_TYPE: VOID
 
         // Cloned body.
-        // Changed operand v0 to v4.
+        // Changed operand v0 to v5.
         //
-        v6 = OPCODE_ADD v4, 1
+        v7 = OPCODE_ADD v5, 1
 
-        OPCODE_CONTINUE v6
+        OPCODE_CONTINUE v7
     
     OPCODE_ELSE
         
         OPCODE_BREAK v5
 
-    OPCODE_EMD_BLOCK
+    OPCODE_END_BLOCK
 
-OPCODE_EMD_BLOCK
+OPCODE_END_BLOCK
+
+// Merge the LOOP exit values (v5 into v8).
+//
+v8 = OPCODE_MERGE
 ```
 
 ## IF-to-SELECT Optimization Pass
@@ -361,6 +512,18 @@ v_false = OPCODE_SUB v0, v1
 //
 v_result = OPCODE_SELECT v_cond, v_true, v_false
 ```
+
+## Emitting Yields In `ELSE` Blocks
+
+Whe you reach the end of the `THEN` block, you have a list of dirty variables
+(variables that changed and got yielded).
+
+When generating an `ELSE` block, you must iterate through the dirty list.
+
+1. Did the `THEN` block yield a new variable for register `R`.
+2. If yes, does the `ELSE` block have a new value for `R`?
+3. If no, emit `OPCODE_YIELD R` where `R` is the register before entering the
+   `IF` block.
 
 # Tiered Compilation Strategy
 
@@ -433,12 +596,11 @@ v3 = OPCODE_CONST 0
 // Inside the block, v4 is the phi-node for `sum`.
 // Outside the block, v4 is the final result returned by `OPCODE_BREAK`.
 //
-v4 = OPCODE_LOOP (v2, v3) TARGET_TYPE: INT64
+v4 = OPCODE_LOOP (v2) TARGET_TYPE: INT64
 
-// v6 is the phi-node for `i`.
-// It attaches to v4 to handle the second loop argument.
+// v5 is the phi-node for `i`.
 //
-v5 = OPCODE_DEF_EXTENSION (v4) TARGET_TYPE: INT64
+v5 = OPCODE_DEF_EXTENSION (v3) TARGET_TYPE: INT64
     // ---------------------------------------------------------
     // 3. LOOP BODY
     // ---------------------------------------------------------
@@ -447,9 +609,8 @@ v5 = OPCODE_DEF_EXTENSION (v4) TARGET_TYPE: INT64
     v6 = OPCODE_CMP_LT v5, v1
 
     // Decide to continue or exit.
-    // v7 represents the result of this IF block.
     //
-    v7 = OPCODE_IF (v6) TARGET_TYPE: VOID
+    OPCODE_IF (v6)
     
         // val = array[i]
         //
@@ -460,25 +621,25 @@ v5 = OPCODE_DEF_EXTENSION (v4) TARGET_TYPE: INT64
         v9 = OPCODE_CONST 0
         v10 = OPCODE_CMP_GP v8, v9
 
-        // v11 is the new sum after `v > 0`.
-        //
-        v11 = OPCODE_IF (v10) TARGET_TYPE: INT64
+        OPCODE_IF (v10)
         
             // sum += val
             //
-            v12 = OPCODE_ADD v4, v8
+            v11 = OPCODE_ADD v4, v8
 
-            // v12 -> v11
+            // v11 -> v12
             //
-            OPCODE_YIELD v12
+            OPCODE_YIELD v11
         
         OPCODE_ELSE
 
-            // v4 -> v11
+            // v4 -> v12
             //
             OPCODE_YIELD v4
 
-        OPCODE_END_BLOCK // Terminates the entire IF structure.
+        // Merges v11 and v4 into v12
+        //
+        v12 = OPCODE_MERGE
 
         // ++i (v5)
         //
@@ -486,10 +647,10 @@ v5 = OPCODE_DEF_EXTENSION (v4) TARGET_TYPE: INT64
         v14 = OPCODE_ADD v5, v13
 
         // Jump to loop header.
-        // v11 (New Sum) -> v4 (Phi Sum)
+        // v12 (New Sum) -> v4 (Phi Sum)
         // v14 (New i)   -> v5 (Phi i)
         //
-        OPCODE_CONTINUE v11, v14
+        OPCODE_CONTINUE v12, v14
     
     OPCODE_ELSE
 
@@ -501,13 +662,17 @@ v5 = OPCODE_DEF_EXTENSION (v4) TARGET_TYPE: INT64
 
 OPCODE_END_BLOCK // Terminantes the entire loop.
 
+// The merge is required ti catch the BREAK value.
+// Merges v4 into v15.
+//
+v15 = OPCODE_MERGE
 
 // ---------------------------------------------------------
 // 4. EXIT
 // ---------------------------------------------------------
 
-// v4 holds the final sum.
-OPCODE_RETURN v4
+// v15 holds the final sum.
+OPCODE_RETURN v15
 ```
 
 # Frequently Asked Questions
