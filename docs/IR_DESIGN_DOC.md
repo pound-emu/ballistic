@@ -67,7 +67,7 @@ uint32_t instruction_count;
 
 ## Block Scope
 
-This was created to find out how many phi-variables will be defined in
+This was created to find out how many variables will be modified in
 `IF/LOOP` blocks.
 
 ```c
@@ -120,7 +120,7 @@ IF (A)
         //
         // block_scope_stack[1].yield_arity == -1
         //
-        // Therefore, we set our parent block's arity to one.
+        // Therefore, we set our current block's arity to one.
         //
         // 102: block_scope_stack[1].yield_arity = 1 
         // 
@@ -140,19 +140,19 @@ IF (A)
         YIELD x
 
     // We pop the stack, and retrive `yield_arity = 1`.
-    // We peek at the top stack (outer IF).
+    // This tells us to define ONE variable and merge w and x into y.
     //
-    // block_scope_stack[0].yield_arity == -1
-    //
-    // We set the yield value from thee inner IF.
-    //
-    // block_scope_stack[0].yield_arity = 1
-    //
-    // We merge w and x into y.
+    // This does NOT affect block_scope_stack[0].
     //
     y = MERGE
 
-    // Stack does not change here.
+    // We peek at the top of stack.
+    //
+    // block_scope_stack[0].yield_arity == -1
+    //
+    // Since this is the first yield of the outer block, we set the arity now.
+    //
+    // block_scope_stack[0].yield_arity = 1
     //
     YIELD y
 
