@@ -376,11 +376,7 @@ Therefore we replace dead code with `NOP`. If the ratio of `NOP`'s to
 The Compaction Pass will create a new `instructions[]`, remmaping all SSA
 indices to be contiguous again, and discards the old array.
 
-### Rule 4.2: Hot-Cold Splitting
-
-If a basic block is deemed cold, it should move to a separate buffer.
-
-### Rule 4.3: Source Variables
+### Rule 4.2: Source Variables
 
 Throw away `source_variables[]` after SSA construction. Do not keep it in
 memory.
@@ -539,6 +535,9 @@ We switch to tier 2 when a basic block turns hot.
 ## Tier 2: Optimized Translation
 
 * Run all required optimizations passes.
+* During code generation, if a basic block is deemed cold, it should move to a
+  separate buffer in a memory region far away.
+
 
 ## Required Optimization Passes
 
