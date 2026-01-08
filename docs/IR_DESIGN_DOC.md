@@ -233,6 +233,8 @@ variables. These will replace phi-nodes and terminals.
     * **Output**: `TYPE_VOID
     * This can ONLY be used by `OPCODE_CONTINUE` and `OPCODE_YIELD`.
 
+### Scenario: `OPCODE_YIELD v1, v2, v3, v4, v5`
+
 We cannot fit 5 operands into one `instruction_t`. We split them.
 
 Memory Layout in `instructions[]`
