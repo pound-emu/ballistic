@@ -20,13 +20,8 @@ typedef struct
 
 source_variable_t source_variables[???];
 
-typedef struct
-{
-    uint8_t  bit_width; // 8/16/32/64.
-    uint16_t use_count;
-} ssa_version_t;
-
-ssa_version_t ssa_versions[???];
+uint8_t  ssa_bit_widths[???]; // 8/16/32/64/etc.
+uint16_t ssa_use_counts[???];
 ```
 
 ## Constants
@@ -53,17 +48,18 @@ uint32_t instruction_count;
 
 ### Encoding Symbols
 
-<**src3**>  17-bit index for `ssa_versions[]`.
+<**src3**>  17-bit index for `ssa` arrays.
 
-<**src2**>  17-bit index for `ssa_versions[]`.
+<**src2**>  17-bit index for `ssa` arrays.
 
-<**src1**>  17-bit index for `ssa_versions[]`.
+<**src1**>  17-bit index for `ssa` arrays.
 
 <**opc**>   11-bit opcode.
 
 ### Operational Information
 
-If Bit[16] in `src1`, `src2`, or `src` is 1, the operand is a index into `constant_pool[]`.  It has no SSA index. It has no entry in `ssa_versions`.
+If Bit[16] in `src1`, `src2`, or `src` is 1, the operand is a index into
+`constant_pool[]`.  It has no SSA index. It has no entry in `ssa` arrays.
 
 ## Block Scope
 
@@ -336,12 +332,7 @@ You can **only** change an instruction to `OPCODE_NOP` to kill it.
 
 ### Rule 3.1: Typed Definitions
 
-The type of a variable is defined only in `ssa_versions[]`. Instructions that
-**use** variables do not encode the expected type.
-
-This reduces opcode density. `OPCODE_ADD` doesnt need to say `OPCODE_ADD_INT32`.
-It just says `OPCODE_ADD v1, v2`. Ballistic will look up `v1`'s type. If `v1`
-and is a float and `v2` is int, Ballistic throws an error.
+The type of a variable is defined by the opcode.
 
 ### Rule 3.2: Void Type
 
@@ -686,18 +677,10 @@ OPCODE_RETURN v14
 We use **Implicit Indexing**:
 
 1. When we create an instruction at `instructions[100]`, we have implicitly
-   created the variable definition at `ssa_versions[100]`.
+   created the variable definition in ssa arrays such as `ssa_types[]`.
 2. We do not "check" if it is created. The act of incrementing
    `instruction_count` creates it.
 
 This removes the need for an explicit `definition` bitfield in
 `instructions_t`, creating space to expand `src1`, `src2`, and `src3` to 18
 bits.
-
-## What about instructions that don't define anything?
-
-If `instructions[200]` is `STORE v1, [v2]`, it defines no variable for other
-instructions to use. If we strictly follow implicit indexing, we create
-`ssa_values[200]`. We handle these void instructions by marking the SSA
-variable as `VOID`: `ssa_versions[200].type = TYPE_VOID`.
-
