@@ -38,24 +38,24 @@ uint32_t constant_pool[???];
 ## Instruction Encoding
 
 ```text
-63               54 53        36 35        18 17        00
+63               53 52        35 34        17 16        00
 |-----------------| |----------| |----------| |----------|
         opc             src1         src2         src3
 ```
 
 ### Encoding Symbols
 
-<**src3**>  18-bit index for `ssa_versions[]`.
+<**src3**>  17-bit index for `ssa_versions[]`.
 
-<**src2**>  18-bit index for `ssa_versions[]`.
+<**src2**>  17-bit index for `ssa_versions[]`.
 
-<**src1**>  18-bit index for `ssa_versions[]`.
+<**src1**>  17-bit index for `ssa_versions[]`.
 
-<**opc**>   10-bit opcode.
+<**opc**>   11-bit opcode.
 
 ### Operational Information
 
-If Bit[17] in `src1`, `src2`, or `src` is 1, the operand is a index into `constant_pool[]`.  It has no SSA index. It has no entry in `ssa_versions`.
+If Bit[16] in `src1`, `src2`, or `src` is 1, the operand is a index into `constant_pool[]`.  It has no SSA index. It has no entry in `ssa_versions`.
 
 ## Instructions
 
