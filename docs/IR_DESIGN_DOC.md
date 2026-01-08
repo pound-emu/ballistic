@@ -35,6 +35,14 @@ ssa_version_t ssa_versions[???];
 uint32_t constant_pool[???];
 ```
 
+## Instructions
+
+```c
+typedef uint64_t instruction_t;
+instruction_t instructions[???];
+uint32_t instruction_count;
+```
+
 ## Instruction Encoding
 
 ```text
@@ -56,14 +64,6 @@ uint32_t constant_pool[???];
 ### Operational Information
 
 If Bit[16] in `src1`, `src2`, or `src` is 1, the operand is a index into `constant_pool[]`.  It has no SSA index. It has no entry in `ssa_versions`.
-
-## Instructions
-
-```c
-typedef uint64_t instruction_t;
-instruction_t instructions[???];
-uint32_t instruction_count;
-```
 
 ## Block Scope
 
