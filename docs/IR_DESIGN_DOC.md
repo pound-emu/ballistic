@@ -191,49 +191,52 @@ variables. These will replace phi-nodes and terminals.
     * **Output**: Defines SSA variables representing the state when the loop
       terminates. 
 
-3. `OPCODE_MERGE` 
+3. `OPCODE_BLOCK_ARG`
+    * **Input**: Immediate Index.
+    * **Output**: Defines a valid SSA variable representing  the *Nth* argument
+      passed to the block.
+    * This must be the first instruction(s) inside a `LOOP` body.
+    * On the first iteration, it takes the value from `OPCODE_LOOP` inputs.
+      On subsequent iterations, it takes the value from `OPCODE_CONTINUE`
+      inputs.
+
+4. `OPCODE_MERGE` 
     * **Input**: None. Implicitly pops values from `block_scope_stack[]`.
     * **Output**: Defines the merged SSA variable.
 
-4. `OPCODE_YIELD`
+5. `OPCODE_YIELD`
     * **Role**: Data Flow.
     * **Behaviour**: Pushes a value from inside a child scope (Then/Else/Body)
       to the parent Control Instruction (IF/LOOP), resolving tbe SSA merge.
 
-5. `OPCODE_BREAK`
+6. `OPCODE_BREAK`
     * **Role**: Control Flow.
     * **Behaviour**: Exits a `LOOP` or `BLOCK` scope immediately. Can carry
       values to the target scope.
 
-6. `OPCODE_CONTINUE`
+7. `OPCODE_CONTINUE`
     * **Role**: Control Flow.
     * **Behaviour**: Jumps to the header of the nearest enclosing `LOOP` scope.
       Can carry values to update loop arguments.
 
-7. `OPCODE_RETURN`
+8. `OPCODE_RETURN`
     * **Role**: Function Exit
     * **Behaviour**: Not exactly sure about this one yet. How would function
       inlining work?
 
 ## Extension Instructions
 
+### Opcode Design
+
+* `OPCODE_ARG_EXTENSION`
+    * **Role**: Holds 3 operands that are pushed to the next instruction.
+    * **Output**: `TYPE_VOID
+
 If an operation requires more than 3 operands (like `YIELD` returning 5 values),
 we insert instruction **immediately** preceding the consumer to carry the extra
 load.
 
-### Opcode Design
-
-1. `OPCODE_ARG_EXTENSION`
-    * **Role**: Holds 3 operands that are pushed to the next instruction.
-    * **Output**: `TYPE_VOID
-
-2. `OPCODE_DEF_EXTENSION`
-    * **Role**: Extends the definitiom list of the preceding Control Instruction
-      to support multiple merge values.
-    * **Output**: Defines a valid SSA variable representing the next value in
-      the merge set.
-
-### Scenario 1: `OPCODE_YIELD v1, v2, v3, v4, v5`,
+### Scenario: `OPCODE_YIELD v1, v2, v3, v4, v5`
 
 We cannot fit 5 operands into one `instruction_t`. We split them.
 
@@ -243,19 +246,6 @@ Memory Layout in `instructions[]`
 |-------|----------------------|------|------|------|---------|----------------------------|
 | 100   | OPCODE_ARG_EXTENSION | v4   | v5   | NULL | v100    | Carries args 4 and 5       |
 | 101   | OPCODE_YIELD         | v1   | v2   | v3   | v101    | Carries args 1-3 & Executes|
-
-
-### Scenario 2: `x1, y1 = OPCODE_LOOP (w1) TARGET_TYPE: INT`
-
-This `LOOP` block defines 2 variables. Since this IR is designed to define one
-variable per instruction, we split `x1`, and `y1` into two seperate instructions.
-
-Memory Layout in `instructions[]`
-
-| Index | Opcode               | src1 | src2 | src3 | SSA Def | Comment         |
-|-------|----------------------|------|------|------|---------|-----------------|
-| 100   | OPCODE_LOOP          |vcond | NULL | NULL | v100    | Definition of x |
-| 101   | OPCODE_DEF_EXTENSION | v100 | NULL | NULL | v101    | Definition of y |
 
 # SSA Construction Rules
 
@@ -463,19 +453,24 @@ OPCODE_ELSE
     OPCODE_YIELD v0
 
 // Merge the IF exit values (v3 and v0 into v4).
+//
 v4 = OPCODE_MERGE
 
 
 // We then see that `i` changed from v0 to v4.
-// Now we create the loop with arg v2.
-// v5 represents v4 in the loop.
+// Now we create the loop with arg v4.
 //
-v5 = OPCODE_LOOP (v4) TARGET_TYPE: INT
+OPCODE_LOOP (v4)
+
+    // The 0th argument of this block (v4).
+    //
+    v5 = OPCODE_BLOCK_ARG 0
+
     // Loop condition check.
     //
     v6 = OPCODE_CMP_LT v5, v1
     
-    IF (v6) TARGET_TYPE: VOID
+    IF (v6)
 
         // Cloned body.
         // Changed operand v0 to v5.
@@ -602,20 +597,22 @@ v3 = OPCODE_CONST 0
 // 2. LOOP HEADER
 // ---------------------------------------------------------
 
-// v4 Represents the loop expression.
-// Inside the block, v4 is the phi-node for `sum`.
-// Outside the block, v4 is the final result returned by `OPCODE_BREAK`.
-//
-v4 = OPCODE_LOOP (v2) TARGET_TYPE: INT64
+OPCODE_LOOP (v2, v3)
 
-// v5 is the phi-node for `i`.
-//
-v5 = OPCODE_DEF_EXTENSION (v3) TARGET_TYPE: INT64
+    // Represents v2 in this loop.
+    //
+    v4 = OPCODE_BLOCK_ARG 0
+
+    // Represents v3 in this loop.
+    //
+    v5 = OPCODE_BLOCK_ARG 1
+
     // ---------------------------------------------------------
     // 3. LOOP BODY
     // ---------------------------------------------------------
 
-    i < limit
+    // i < limit
+    //
     v6 = OPCODE_CMP_LT v5, v1
 
     // Decide to continue or exit.
@@ -624,43 +621,43 @@ v5 = OPCODE_DEF_EXTENSION (v3) TARGET_TYPE: INT64
     
         // val = array[i]
         //
-        v8 = OPCODE_LOAD v0, v5
+        v7 = OPCODE_LOAD v0, v5
 
         // val > 0
         //
-        v9 = OPCODE_CONST 0
-        v10 = OPCODE_CMP_GP v8, v9
+        v8 = OPCODE_CONST 0
+        v9 = OPCODE_CMP_GT v7, v8
 
-        OPCODE_IF (v10)
+        OPCODE_IF (v9)
         
             // sum += val
             //
-            v11 = OPCODE_ADD v4, v8
+            v10 = OPCODE_ADD v4, v7
 
-            // v11 -> v12
+            // v10 -> v11
             //
-            OPCODE_YIELD v11
+            OPCODE_YIELD v10
         
         OPCODE_ELSE
 
-            // v4 -> v12
+            // v4 -> v11
             //
             OPCODE_YIELD v4
 
-        // Merges v11 and v4 into v12
+        // Merges v10 and v4 into v11
         //
-        v12 = OPCODE_MERGE
+        v11 = OPCODE_MERGE
 
         // ++i (v5)
         //
-        v13 = OCPODE_CONST 1
-        v14 = OPCODE_ADD v5, v13
+        v12 = OCPODE_CONST 1
+        v13 = OPCODE_ADD v5, v12
 
         // Jump to loop header.
         // v12 (New Sum) -> v4 (Phi Sum)
-        // v14 (New i)   -> v5 (Phi i)
+        // v13 (New i)   -> v5 (Phi i)
         //
-        OPCODE_CONTINUE v12, v14
+        OPCODE_CONTINUE v12, v13
     
     OPCODE_ELSE
 
@@ -673,16 +670,16 @@ v5 = OPCODE_DEF_EXTENSION (v3) TARGET_TYPE: INT64
 OPCODE_END_BLOCK // Terminantes the entire loop.
 
 // The merge is required ti catch the BREAK value.
-// Merges v4 into v15.
+// Merges v4 into v14.
 //
-v15 = OPCODE_MERGE
+v14 = OPCODE_MERGE
 
 // ---------------------------------------------------------
 // 4. EXIT
 // ---------------------------------------------------------
 
 // v15 holds the final sum.
-OPCODE_RETURN v15
+OPCODE_RETURN v14
 ```
 
 # Frequently Asked Questions
