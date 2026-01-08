@@ -240,6 +240,24 @@ Memory Layout in `instructions[]`
 | 100   | OPCODE_ARG_EXTENSION | v4   | v5   | NULL | v100    | Carries args 4 and 5       |
 | 101   | OPCODE_YIELD         | v1   | v2   | v3   | v101    | Carries args 1-3 & Executes|
 
+# Static Assumptions
+
+## Static Configuration
+
+Represents compile time constants.
+
+```c
+// If these change, bail out and recompile???
+//
+typedef struct
+{
+    // PSTATE.M
+    // EL0 - EL3
+    // 
+    uint32_t exception_level : 2; 
+} static_context_t;
+```
+
 # SSA Construction Rules
 
 ## 1. Control Flow Rules
