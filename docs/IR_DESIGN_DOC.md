@@ -231,12 +231,7 @@ variables. These will replace phi-nodes and terminals.
 * `OPCODE_ARG_EXTENSION`
     * **Role**: Holds 3 operands that are pushed to the next instruction.
     * **Output**: `TYPE_VOID
-
-If an operation requires more than 3 operands (like `YIELD` returning 5 values),
-we insert instruction **immediately** preceding the consumer to carry the extra
-load.
-
-### Scenario: `OPCODE_YIELD v1, v2, v3, v4, v5`
+    * This can ONLY be used by `OPCODE_CONTINUE` and `OPCODE_YIELD`.
 
 We cannot fit 5 operands into one `instruction_t`. We split them.
 
