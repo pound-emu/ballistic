@@ -368,7 +368,7 @@ memory.
 
 ### Rule 4.3: Block Size Limit
 
-The IR has a hard limit of 131,072 instructions due to thr 18-bit operand
+The IR has a hard limit of 65536 instructions due to thr 18-bit operand
 encoding.
 
 1. Checks must ensure `instruction_count` does not exceed 130,000. We leave a
