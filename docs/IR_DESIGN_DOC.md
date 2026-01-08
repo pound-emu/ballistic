@@ -22,7 +22,7 @@ source_variable_t source_variables[???];
 
 typedef struct
 {
-    uint8_t  type; // INT32, FLOAT, etc.
+    uint8_t  bit_width; // 8/16/32/64.
     uint16_t use_count;
 } ssa_version_t;
 
