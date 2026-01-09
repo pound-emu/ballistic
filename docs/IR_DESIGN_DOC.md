@@ -379,10 +379,10 @@ memory.
 
 ### Rule 4.3: Block Size Limit
 
-The IR has a hard limit of 65536 instructions due to thr 18-bit operand
+The IR has a hard limit of 65536 instructions due to thr 17-bit operand
 encoding.
 
-1. Checks must ensure `instruction_count` does not exceed 130,000. We leave a
+1. Checks must ensure `instruction_count` does not exceed 65400. We leave a
    safety margin for final mergers/exits.
 2. If the limit is reached, the compiler must terminate the block early, even
    if the guest function has not ended.
