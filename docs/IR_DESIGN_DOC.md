@@ -1,3 +1,15 @@
+# Table of Contents
+
+* [Structured SSA Model](#structured-ssa-model)
+* [Data Structures](#data-structures)
+* [Instruction Set Architecture](#instruction-set-architecture)
+* [Static Assumptions](#static-assumptions)
+* [SSA Construction Rules](#ssa-construction-rules)
+* [Algorithms](#algorithms)
+* [Tiered Compilation Strategy](#tiered-compilation-strategy)
+* [Proof of Concept](#proof-of-concept)
+
+
 # Structured SSA Model
 
 This replicates [Dynarmic's](https://github.com/pound-emu/dynarmic) IR layer 
@@ -131,8 +143,6 @@ IF (A)
         // block_scope_stack[1].yield_arity == 1
         //
         // Does this current yield have 1 value? Yes. So we do not modify the
-        // block stack.
-        //
         YIELD x
 
     // We pop the stack, and retrive `yield_arity = 1`.
