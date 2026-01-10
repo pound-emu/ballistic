@@ -12,27 +12,68 @@
 #include "bal_errors.h"
 #include <stdint.h>
 
+/*!
+ * @brief Pattern written to memory during initialization.
+ * @details Used to detect reads from uninitialized allocated memory.
+ */
 #define POISON_UNINITIALIZED_MEMORY 0x5a
+
+/*!
+ * @brief Pattern written to memory after destruction.
+ * @details Used to detect Use-After-Free bugs.
+ */
 #define POISON_FREED_MEMORY         0x6b
 
+/*!
+ * @brief Represents the mapping of a Guest Register to an SSA variable.
+ * @details This is state used only used during the SSA construction pass.
+ */
 typedef struct
 {
+    /*!
+     * @brief The most recent SSA definition for this register.
+     */
     uint32_t current_ssa_index;
+
+    /*!
+     * @brief The SSA definition that existed at the start of the block. 
+     */
     uint32_t original_variable_index;
 } bal_source_variable_t;
 
 __attribute__((aligned(64))) typedef struct
 {
-    // Hot Data
-    //
+    /* Hot Data */
+
+    /*!
+     * @brief Map of ARM registers to curret SSA definitions.
+     */
     bal_source_variable_t *source_variables;
+
+    /*!
+     * @brief The linear buffer of generated IR instructions.
+     */
     bal_instruction_t     *instructions;
+
+    /*!
+     * @brief Metadata tracking the bit-width (32/64) of each SSA definition.
+     */
     bal_bit_width_t       *ssa_bit_widths;
+
+    /*!
+     * @brief The current number of instructions emitted.
+     */
     uint16_t               instruction_count;
+
+    /*!
+     * @brief The Engine's error state.
+     * @details If an operation fails, this is set to a specific error code.
+     * Subsequent operations will silently fail until the engine is reset.
+     */
     bal_error_t            status;
     char                   _pad[4];
 
-    // Cold Data
+    /* Cold Data */
 
     // The pointer returned during heap initialization.
     // We need this to free the engine's allocated arrays.
@@ -42,6 +83,20 @@ __attribute__((aligned(64))) typedef struct
 
 } bal_engine_t;
 
+/*!
+ * @brief Initialize a Ballistic engine.
+ *
+ * @details
+ * This is a high-cost memory allocation operation that should be done
+ * sparingly.
+ *
+ * @param[in]  allocator Pointer to the memory allocator interface.
+ * @param[out] engine    Pointer to the engine struct to initialize.
+ *
+ * @return BAL_SUCCESS on success.
+ * @return BAL_ERROR_INVALID_ARG if arguments are NULL.
+ * @return BAL_ERROR_ALLOCATION_FAILED if the allocator returns NULL.
+ */
 bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
 
 #endif /* BALLISTIC_ENGINE_H */
