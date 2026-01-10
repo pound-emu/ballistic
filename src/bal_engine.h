@@ -61,6 +61,21 @@ __attribute__((aligned(64))) typedef struct
     bal_bit_width_t       *ssa_bit_widths;
 
     /*!
+     * @brief Size of source variable array.
+     */
+    size_t source_variables_size;
+
+    /*!
+     * @brief Size of instruction array.
+     */
+    size_t instructions_size;
+
+    /*!
+     * @brief Size of ssa bit width array.
+     */
+    size_t ssa_bit_widths_size;
+
+    /*!
      * @brief The current number of instructions emitted.
      */
     uint16_t               instruction_count;
@@ -98,6 +113,19 @@ __attribute__((aligned(64))) typedef struct
  * @return BAL_ERROR_ALLOCATION_FAILED if the allocator returns NULL.
  */
 bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
+
+/*! 
+ * @brief Resets the engine for the next compilation unit.
+ *
+ * @details
+ * This is a low cost memory operation. 
+ *
+ * @param[in,out] engine The engine to reset.
+ *
+ * @return BAL_SUCCESS on success.
+ * @return BAL_ERROR_INVALID_ARG if arguments are NULL.
+ */
+bal_error_t bal_engine_reset(bal_engine_t *engine);
 
 #endif /* BALLISTIC_ENGINE_H */
 
