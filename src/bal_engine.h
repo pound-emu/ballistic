@@ -19,12 +19,6 @@
 #define POISON_UNINITIALIZED_MEMORY 0x5a
 
 /*!
- * @brief Pattern written to memory after destruction.
- * @details Used to detect Use-After-Free bugs.
- */
-#define POISON_FREED_MEMORY         0x6b
-
-/*!
  * @brief Represents the mapping of a Guest Register to an SSA variable.
  * @details This is state used only used during the SSA construction pass.
  */
