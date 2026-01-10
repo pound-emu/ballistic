@@ -94,3 +94,15 @@ bal_engine_reset (bal_engine_t *engine)
 
     return engine->status;
 }
+
+void
+bal_engine_destroy(bal_allocator_t* allocator, bal_engine_t* engine)
+{
+    // No argument error handling. Segfault if user passes NULL.
+
+    allocator->free(allocator, engine->arena_base, engine->arena_size);
+    engine->arena_base = NULL;
+    engine->source_variables = NULL;
+    engine->instructions = NULL;
+    engine->ssa_bit_widths = NULL;
+}

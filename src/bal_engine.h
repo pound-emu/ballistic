@@ -127,6 +127,15 @@ bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
  */
 bal_error_t bal_engine_reset(bal_engine_t *engine);
 
+/*!
+ * Frees all engine heap allocated resources.
+ *
+ * @param[in,out] engine The engine to destroy.
+ *
+ * @warning The engine struct itself is NOT freed (it may be stack allocated).
+ */
+void bal_engine_destroy(bal_allocator_t* allocator, bal_engine_t* engine);
+
 #endif /* BALLISTIC_ENGINE_H */
 
 /*** end of file ***/

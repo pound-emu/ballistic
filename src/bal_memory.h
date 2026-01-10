@@ -53,7 +53,7 @@ typedef struct
     /*!
      * @brief Callback for freeing memory.
      */
-    bal_free_function_t frre;
+    bal_free_function_t free;
 
 } bal_allocator_t;
 
