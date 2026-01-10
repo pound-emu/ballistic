@@ -35,6 +35,7 @@ add_custom_command(
 add_library(Ballistic STATIC
     src/decoder.c
     src/decoder_table_gen.c
+    src/bal_engine.c
 )
 
 target_include_directories(Ballistic PUBLIC include)

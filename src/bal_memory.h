@@ -10,6 +10,9 @@
 #ifndef BALLISTIC_MEMORY_H
 #define BALLISTIC_MEMORY_H
 
+#include <stdint.h>
+#include <stddef.h>
+
 /*!
  * @brief Function signature for memory allocation.
  *
