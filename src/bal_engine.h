@@ -72,7 +72,7 @@ __attribute__((aligned(64))) typedef struct
     /*!
      * @brief The current number of instructions emitted.
      */
-    uint16_t               instruction_count;
+    bal_instruction_count_t instruction_count;
 
     /*!
      * @brief The Engine's error state.
