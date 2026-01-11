@@ -14,6 +14,10 @@ This program is used for decoding ARM64 instructions. The following example show
 Mnemonic: ADD - Mask: 0x7F200000 - Expected: 0x0B000000
 ```
 
+### Coverage CLI
+
+This program takes an ARM64 binary file and outputs the 20 most common instructions.
+
 ## Scripts
 
 These scripts are solely used for building Ballistic and is called by CMake.

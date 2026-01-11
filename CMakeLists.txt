@@ -65,7 +65,7 @@ endif()
 if(WIN32)
     # Disable some Windows SDK deprecation warnings
     target_compile_options(Ballistic PRIVATE -DNOMINMAX -DWIN32_LEAN_AND_MEAN)
-    target_compile_definitions(Ballistic PRIVATE _CRT_SECURE_NO_WARNINGS)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
 
@@ -76,6 +76,9 @@ set (DECODER_CLI_NAME "decoder_cli")
 add_executable(${DECODER_CLI_NAME} tools/decoder_cli.c)
 target_link_libraries(${DECODER_CLI_NAME} PRIVATE ${PROJECT_NAME})
 
+set (COVERAGE_CLI_NAME "coverage_cli")
+add_executable(${COVERAGE_CLI_NAME} tools/coverage_cli.c)
+target_link_libraries(${COVERAGE_CLI_NAME} PRIVATE ${PROJECT_NAME})
 # -----------------------------------------------------------------------------
 # Compile Tests
 # -----------------------------------------------------------------------------
