@@ -54,6 +54,7 @@ else()
         -Wstrict-prototypes -Wmissing-prototypes
         -fno-strict-aliasing # Prevent common C aliasing UB
         -fstack-protector-strong
+        -Wvla
     )
 endif()
 
