@@ -8,11 +8,12 @@
 #define BAL_IS_CONSTANT_BIT_POSITION (1U << 16U)
 
 bal_error_t
-emit_instruction (bal_engine_t *engine,
-                  uint32_t      opcode,
-                  uint32_t      source1,
-                  uint32_t      source2,
-                  uint32_t      source3)
+emit_instruction (bal_engine_t   *engine,
+                  uint32_t        opcode,
+                  uint32_t        source1,
+                  uint32_t        source2,
+                  uint32_t        source3,
+                  bal_bit_width_t bit_width)
 {
     // This is a hot function, no argument error handling. Segfault if the user
     // passes NULL.
@@ -50,8 +51,9 @@ emit_instruction (bal_engine_t *engine,
           | (source1_bits << BAL_SOURCE1_SHIFT_POSITION)
           | (source2_bits << BAL_SOURCE2_SHIFT_POSITION) | source3_bits;
 
-    engine->instructions[engine->instruction_count] = instruction;
-    engine->status                                  = BAL_SUCCESS;
+    engine->instructions[engine->instruction_count]   = instruction;
+    engine->ssa_bit_widths[engine->instruction_count] = bit_width;
+    engine->status                                    = BAL_SUCCESS;
     ++engine->instruction_count;
 
     return engine->status;
