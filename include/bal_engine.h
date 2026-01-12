@@ -31,12 +31,12 @@ typedef struct
     uint32_t current_ssa_index;
 
     /*!
-     * @brief The SSA definition that existed at the start of the block. 
+     * @brief The SSA definition that existed at the start of the block.
      */
     uint32_t original_variable_index;
 } bal_source_variable_t;
 
-__attribute__((aligned(64))) typedef struct
+BAL_ALIGNED(64) typedef struct
 {
     /* Hot Data */
 
@@ -48,12 +48,12 @@ __attribute__((aligned(64))) typedef struct
     /*!
      * @brief The linear buffer of generated IR instructions.
      */
-    bal_instruction_t     *instructions;
+    bal_instruction_t *instructions;
 
     /*!
      * @brief Metadata tracking the bit-width (32/64) of each SSA definition.
      */
-    bal_bit_width_t       *ssa_bit_widths;
+    bal_bit_width_t *ssa_bit_widths;
 
     /*!
      * @brief Size of source variable array.
@@ -80,8 +80,8 @@ __attribute__((aligned(64))) typedef struct
      * @details If an operation fails, this is set to a specific error code.
      * Subsequent operations will silently fail until the engine is reset.
      */
-    bal_error_t            status;
-    char                   _pad[4];
+    bal_error_t status;
+    char        _pad[4];
 
     /* Cold Data */
 
@@ -107,13 +107,14 @@ __attribute__((aligned(64))) typedef struct
  * @return BAL_ERROR_INVALID_ARG if arguments are NULL.
  * @return BAL_ERROR_ALLOCATION_FAILED if the allocator returns NULL.
  */
-BAL_COLD bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
+BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator,
+                                     bal_engine_t    *engine);
 
-/*! 
+/*!
  * @brief Resets the engine for the next compilation unit.
  *
  * @details
- * This is a low cost memory operation. 
+ * This is a low cost memory operation.
  *
  * @param[in,out] engine The engine to reset.
  *
@@ -129,7 +130,8 @@ BAL_HOT bal_error_t bal_engine_reset(bal_engine_t *engine);
  *
  * @warning The engine struct itself is NOT freed (it may be stack allocated).
  */
-BAL_COLD void bal_engine_destroy(bal_allocator_t* allocator, bal_engine_t* engine);
+BAL_COLD void bal_engine_destroy(bal_allocator_t *allocator,
+                                 bal_engine_t    *engine);
 
 #endif /* BALLISTIC_ENGINE_H */
 
