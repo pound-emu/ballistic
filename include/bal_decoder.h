@@ -9,6 +9,7 @@
 #ifndef BAL_DECODER_H
 #define BAL_DECODER_H
 
+#include "bal_attributes.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -55,7 +56,7 @@ extern "C"
      * @post The returned pointer (if not null) points to static read-only
      * memory.
      */
-    const bal_decoder_instruction_metadata_t *bal_decoder_arm64_decode(
+    BAL_HOT const bal_decoder_instruction_metadata_t *bal_decoder_arm64_decode(
         const uint32_t instruction);
 
 #ifdef __cplusplus

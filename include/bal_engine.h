@@ -7,6 +7,7 @@
 #ifndef BALLISTIC_ENGINE_H
 #define BALLISTIC_ENGINE_H
 
+#include "bal_attributes.h"
 #include "bal_types.h"
 #include "bal_memory.h"
 #include "bal_errors.h"
@@ -106,7 +107,7 @@ __attribute__((aligned(64))) typedef struct
  * @return BAL_ERROR_INVALID_ARG if arguments are NULL.
  * @return BAL_ERROR_ALLOCATION_FAILED if the allocator returns NULL.
  */
-bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
+BAL_COLD bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
 
 /*! 
  * @brief Resets the engine for the next compilation unit.
@@ -119,7 +120,7 @@ bal_error_t bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine);
  * @return BAL_SUCCESS on success.
  * @return BAL_ERROR_INVALID_ARG if arguments are NULL.
  */
-bal_error_t bal_engine_reset(bal_engine_t *engine);
+BAL_HOT bal_error_t bal_engine_reset(bal_engine_t *engine);
 
 /*!
  * Frees all engine heap allocated resources.
@@ -128,7 +129,7 @@ bal_error_t bal_engine_reset(bal_engine_t *engine);
  *
  * @warning The engine struct itself is NOT freed (it may be stack allocated).
  */
-void bal_engine_destroy(bal_allocator_t* allocator, bal_engine_t* engine);
+BAL_COLD void bal_engine_destroy(bal_allocator_t* allocator, bal_engine_t* engine);
 
 #endif /* BALLISTIC_ENGINE_H */
 

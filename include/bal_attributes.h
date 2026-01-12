@@ -25,6 +25,24 @@
 
 #endif
 
+/*
+ * Usage:
+ * BAL_COLD bal_error_t emit_instruction(...);
+ */
+
+#if defined(__GNUC__) || defined(__clang__)
+
+/*!
+ * @brief Marks a function as rarely executed.
+ */
+#define BAL_COLD __attribute__((cold))
+
+#else
+
+#define BAL_COLD
+
+#endif
+
 #endif /* BALLISTIC_ATTRIBUTES_H */
 
 /*** end of file ***/
