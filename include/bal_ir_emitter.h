@@ -6,6 +6,7 @@
 #ifndef BALLISTIC_IR_EMITTER_H
 #define BALLISTIC_IR_EMITTER_H
 
+#include "bal_attributes.h"
 #include "bal_types.h"
 #include "bal_errors.h"
 #include "bal_engine.h"
@@ -38,12 +39,12 @@
  * @return BAL_ERROR_INSTRUCTION_OVERFLOW if the block limit is reached.
  * @return BAL_ERROR_ENGINE_STATE_INVALID if engine->status != BAL_SUCCESS.
  */
-bal_error_t emit_instruction(bal_engine_t   *engine,
-                             uint32_t        opcode,
-                             uint32_t        source1,
-                             uint32_t        source2,
-                             uint32_t        source3,
-                             bal_bit_width_t bit_width);
+BAL_HOT bal_error_t emit_instruction(bal_engine_t   *engine,
+                                     uint32_t        opcode,
+                                     uint32_t        source1,
+                                     uint32_t        source2,
+                                     uint32_t        source3,
+                                     bal_bit_width_t bit_width);
 
 #endif /* BALLISTIC_IR_EMITTER_H */
 
