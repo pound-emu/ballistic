@@ -7,38 +7,22 @@
 #define BALLISTIC_ATTRIBUTES_H
 
 /*
+ * BAL_HOT()/BAL_COLD()
+ * Marks a function as hot or cold. Hot makes the compiller optimize it more
+ * aggressively. Cold marks the function as rarely executed.
+ *
  * Usage:
  * BAL_HOT bal_error_t emit_instruction(...);
  */
 
 #if defined(__GNUC__) || defined(__clang__)
 
-/*!
- * @brief Marks a function as hit. The compiler will optimize it more
- * aggresively.
- */
-#define BAL_HOT __attribute__((hot))
-
-#else
-
-#define BAL_HOT
-
-#endif
-
-/*
- * Usage:
- * BAL_COLD bal_error_t emit_instruction(...);
- */
-
-#if defined(__GNUC__) || defined(__clang__)
-
-/*!
- * @brief Marks a function as rarely executed.
- */
+#define BAL_HOT  __attribute__((hot))
 #define BAL_COLD __attribute__((cold))
 
 #else
 
+#define BAL_HOT
 #define BAL_COLD
 
 #endif
