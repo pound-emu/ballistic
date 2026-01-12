@@ -77,7 +77,7 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
 bal_error_t
 bal_engine_reset (bal_engine_t *engine)
 {
-    if (NULL == engine)
+    if (BAL_UNLIKELY(NULL == engine))
     {
         return BAL_ERROR_INVALID_ARGUMENT;
     }

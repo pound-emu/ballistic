@@ -18,25 +18,23 @@ emit_instruction (bal_engine_t   *engine,
     // This is a hot function, no argument error handling. Segfault if the user
     // passes NULL.
 
-    if (engine->status != BAL_SUCCESS)
+    if (BAL_UNLIKELY(engine->status != BAL_SUCCESS))
     {
         return BAL_ENGINE_STATE_INVALID;
     }
 
-#ifndef NDEBUG
     bool is_greater_than_instructions_array
         = (engine->instruction_count >= engine->instructions_size);
 
     bool is_greater_than_source_size
         = (engine->instruction->count >= (BAL_SOURCE_SIZE - 1));
 
-    if ((true == is_greater_than_instructions_array)
-        || (true == is_greater_than_source_size))
+    if (BAL_UNLIKELY((true == is_greater_than_instructions_array)
+        || (true == is_greater_than_source_size)))
     {
         engine->status = BAL_ERROR_INSTRUCTION_OVERFLOW;
         return engine->status;
     }
-#endif
 
     bal_instruction_t opcode_bits = (BAL_OPCODE_SIZE - 1U) & opcode;
     bal_instruction_t source1_bits

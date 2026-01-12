@@ -27,6 +27,26 @@
 
 #endif
 
+/*
+ * BAL_LIKELY(x)/BAL_UNLIKELY(x)
+ * Hints to the CPU branch predictor. Should only be used in hot functions.
+ *
+ * Usage: if (BAL_UNLIKELY(ptr == NULL)) { ... }
+ */
+
+#if defined(__GNUC__) || defined(__clang__)
+
+#define BAL_LIKELY(x)   __builtin_expect(!!(x), 1)
+#define BAL_UNLIKELY(x) __builtin_expect(!!(x), 0)
+
+#else
+
+#define BAL_LIKELY(x)   (x)
+#define BAL_UNLIKELY(x) (x)
+
+#endif 
+
+
 #endif /* BALLISTIC_ATTRIBUTES_H */
 
 /*** end of file ***/
