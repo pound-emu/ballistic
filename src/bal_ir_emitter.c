@@ -23,6 +23,7 @@ emit_instruction (bal_engine_t   *engine,
         return BAL_ENGINE_STATE_INVALID;
     }
 
+#ifndef NDEBUG
     bool is_greater_than_instructions_array
         = (engine->instruction_count >= engine->instructions_size);
 
@@ -35,6 +36,7 @@ emit_instruction (bal_engine_t   *engine,
         engine->status = BAL_ERROR_INSTRUCTION_OVERFLOW;
         return engine->status;
     }
+#endif
 
     bal_instruction_t opcode_bits = (BAL_OPCODE_SIZE - 1U) & opcode;
     bal_instruction_t source1_bits
