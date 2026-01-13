@@ -2,9 +2,9 @@
 
 typedef struct
 {
-    bal_instruction_t     *instructions;
-    bal_bit_width_t       *ssa_bit_widths;
-    bal_source_variable_t *source_variables;
+    bal_instruction_t     *BAL_RESTRICT instructions;
+    bal_bit_width_t       *BAL_RESTRICT ssa_bit_widths;
+    bal_source_variable_t *BAL_RESTRICT source_variables;
     size_t                 instruction_count;
 } bal_translation_context_t;
 
