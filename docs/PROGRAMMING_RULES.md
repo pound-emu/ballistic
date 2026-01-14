@@ -5,11 +5,11 @@ Pointer aliasing forces compilers to avoid optimizing code as best as they shoul
 For all examples shown below, assume `context` is a pointer to a heap allocated
 struct.
 
-## Rule 1: Scalars and Arrays inside a loop
+## Rule 1: Scalars inside a loop
 
-If booleans, integers, or arrays gets modified inside a loop, always assign them to
+If booleans or integers gets modified inside a loop, always assign them to
 local variables before doing so. Yes there are other ways to make the compiler
-optimize this specific scenario, but we do this to guarantee speed.
+optimize this specific scenario, but we do this to easily **guarantee** speed.
 
 ```c
 // SLOW
@@ -81,4 +81,25 @@ for (int i = 0; i < 100; i++) {
 }
 
 // No final store needed, we kept it in sync the whole time.
+```
+
+## Rule 2: Arrays inside a loop
+
+`struct->array[i]` forces the CPU to calculate `Base + Offset + (i * 4)` every
+time. `*cursor++` is just `Pointer + 4`.
+
+
+```c
+// SLOW
+//
+for (int i = 0; i < 100; ++i) {
+    context->instructions[i] = ...; // Math overhead + Aliasing fear.
+}
+
+// FAST
+//
+bal_instruction_t *cursor = context->instructions;
+for (int i = 0; i < 100; ++i) {
+    *cursor++ = ...; // Simple increment.
+}
 ```
