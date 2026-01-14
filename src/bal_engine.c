@@ -75,6 +75,33 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
 }
 
 bal_error_t
+bal_engine_run(bal_engine_t *BAL_RESTRICT engine, const uint32_t *BAL_RESTRICT arm_entry_point)
+{
+    if (NULL == engine || NULL == arm_entry_point)
+    {
+        return BAL_ERROR_ENGINE_STATE_INVALID;
+    }
+
+    // Load state to registers.
+    //
+    bal_instruction_t *BAL_RESTRICT ir_instruction_cursor = engine->instructions + engine->instruction_count;
+    bal_instruction_t *BAL_RESTRICT ir_instruction_end = engine->instructions + engine->instructions_size;
+    bal_bit_width_t   *BAL_RESTRICT bit_width_cursor = engine->ssa_bit_widths + engine->instruction_count;
+    bal_source_variable_t *BAL_RESTRICT source_variables_base = engine->source_variables;
+
+    const uint32_t *BAL_RESTRICT arm_instruction_cursor = arm_entry_point;
+
+    while (ir_instruction_cursor < ir_instruction_end)
+    {
+        ir_instruction_cursor++;
+        bit_width_cursor++;
+        arm_instruction_cursor++;
+    }
+
+    return engine->status;
+}
+
+bal_error_t
 bal_engine_reset (bal_engine_t *engine)
 {
     if (BAL_UNLIKELY(NULL == engine))
