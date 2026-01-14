@@ -6,6 +6,8 @@
 #ifndef BALLISTIC_ATTRIBUTES_H
 #define BALLISTIC_ATTRIBUTES_H
 
+#include "bal_platform.h"
+
 /*!
  * BAL_HOT()/BAL_COLD()
  * Marks a function as hot or cold. Hot makes the compiller optimize it more
@@ -15,7 +17,7 @@
  * BAL_HOT bal_error_t emit_instruction(...);
  */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if BAL_COMPILER_GCC
 
 #define BAL_HOT  __attribute__((hot))
 #define BAL_COLD __attribute__((cold))
@@ -34,7 +36,7 @@
  * Usage: if (BAL_UNLIKELY(ptr == NULL)) { ... }
  */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if BAL_COMPILER_GCC
 
 #define BAL_LIKELY(x)   __builtin_expect(!!(x), 1)
 #define BAL_UNLIKELY(x) __builtin_expect(!!(x), 0)
@@ -53,11 +55,11 @@
  * Usage: BAL_ALIGNED(64)  struct data { ... };
  */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if BAL_COMPILER_GCC
 
 #define BAL_ALIGNED(x) __attribute__((aligned(x)))
 
-#elif defined(_MSC_VER)
+#elif BAL_COMPILER_MSVC
 
 #define BAL_ALIGNED(x) __declspec(align(x))
 
@@ -73,11 +75,11 @@
  * current scope.
  */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if BAL_COMPILER_GCC
 
 #define BAL_RESTRICT __restrict__
 
-#elif defined(_MSC_VER)
+#elif BAL_COMPILER_MSVC
 
 #define BAL_RESTRICT __restrict
 
