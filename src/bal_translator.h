@@ -17,6 +17,7 @@
 
 #include "bal_engine.h"
 #include "bal_types.h"
+#include "bal_errors.h"
 
 
 #endif /* BAL_TRANSLATOR_H */
