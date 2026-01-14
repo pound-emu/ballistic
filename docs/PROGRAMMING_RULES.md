@@ -103,3 +103,9 @@ for (int i = 0; i < 100; ++i) {
     *cursor++ = ...; // Simple increment.
 }
 ```
+
+## Rule 3: Constants/Read-Only Data
+
+Access these values directly, like `context->max_buffer_size` or
+`context->exception_level`. If we never write to it, the compiler knows it
+will not change. It will load once and get cached automatically.
