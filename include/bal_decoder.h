@@ -10,6 +10,7 @@
 #define BAL_DECODER_H
 
 #include "bal_attributes.h"
+#include "bal_types.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -17,12 +18,15 @@ extern "C"
 {
 #endif
 
-    /*! @brief Represents static metadata associated with a specific ARM32
-     * instruction. */
-    typedef struct
+    /*! 
+     * @brief Represents static metadata associated with a specific ARM32
+     * instruction. 
+     */
+    BAL_ALIGNED(32) typedef struct
     {
-
-        /*! @brief The instruction mnemonic (e.g., "ADD", "LDR"). */
+        /*!
+         * @brief The instruction mnemonic (e.g., "ADD", "LDR"). 
+         */
         const char *name;
 
         /*!
@@ -39,6 +43,13 @@ extern "C"
          * @details (instruction & mask) == expected.
          */
         uint32_t expected;
+
+        /*!
+         * @brief The IR opcode equivalent to this instruction's mnemonic.
+         */
+        bal_opcode_t ir_opcode;
+
+        char         _pad[8];
     } bal_decoder_instruction_metadata_t;
 
     /*!

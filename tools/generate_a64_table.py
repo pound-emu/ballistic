@@ -28,7 +28,6 @@ DEFAULT_XML_DIRECTORY_PATH = "../spec/arm64_xml/"
 
 DECODER_HEADER_NAME = "bal_decoder.h"
 DECODER_METADATA_STRUCT_NAME = "bal_decoder_instruction_metadata_t"
-# There is no prefix because this struct will not be public
 DECODER_HASH_TABLE_BUCKET_STRUCT_NAME = "decoder_bucket_t"
 
 DECODER_ARM64_INSTRUCTIONS_SIZE_NAME = "BAL_DECODER_ARM64_INSTRUCTIONS_SIZE"
@@ -230,6 +229,51 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
 
     return list(instructions.values())
 
+def derive_opcode(mnemonic: str) -> str:
+    """ Maps an ARM mnemonic to a Ballistic IR Opcode. """
+    m = mnemonic.upper()
+
+    if m in ["MOVZ", "MOVN"]:
+        return "OPCODE_CONST"
+
+    # ORR is often used for register moves.
+    if m == "ORR" or m == "MOV":
+        return "OPCODE_MOV"
+
+    if m.startswith("ADD"): return "OPCODE_ADD"
+    if m.startswith("SUB"): return "OPCODE_SUB"
+    if m.startswith("MUL") or m.startswith("MADD"): return "OPCODE_MUL"
+    if m.startswith("SDIV") or m.startswith("UDIV"): return "OPCODE_DIV"
+
+    if m.startswith("AND"): return "OPCODE_AND"
+    if m.startswith("EOR"): return "OPCODE_XOR"
+
+    # ORR is handled above, but ORN (Or Not) is distinct
+    if m.startswith("ORN"): return "OPCODE_OR_NOT"
+
+    if m in ["LSL", "LSR", "ASR", "ROR"]:
+        return "OPCODE_SHIFT"
+
+    if m.startswith("LDR") or m.startswith("LDU") or m.startswith("LDP"):
+        return "OPCODE_LOAD"
+
+    if m.startswith("STR") or m.startswith("STP"):
+        return "OPCODE_STORE"
+
+    if m == "B":    return "OPCODE_JUMP"
+    if m == "BL":   return "OPCODE_CALL"
+    if m == "RET":  return "OPCODE_RETURN"
+    if m == "CBZ":  return "OPCODE_BRANCH_ZERO"
+    if m == "CBNZ": return "OPCODE_BRANCH_NOT_ZERO"
+    if m.startswith("TBZ"): return "OPCODE_TEST_BIT_ZERO"
+
+    if m.startswith("CMP") or m.startswith("CMN"):
+        return "OPCODE_CMP"
+    if m.startswith("CCMP"):
+        return "OPCODE_CMP_COND"
+
+    # If we don't know what it is, map it to TRAP.
+    return "OPCODE_TRAP"
 
 def generate_hash_table(instructions: List[A64Instruction]) -> Dict[int, List[A64Instruction]]:
     buckets: Dict[int, List[A64Instruction]] = {i: [] for i in range(DECODER_HASH_TABLE_SIZE)}
@@ -368,12 +412,15 @@ if __name__ == "__main__":
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
         f.write(f"/* Generated {len(all_instructions)} instructions */\n")
         f.write(f'#include "{decoder_generated_header_name}"\n\n')
+        f.write(f'#include "bal_types.h"\n\n')
+
         f.write(
             f"const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}] = {{\n"
         )
         for inst in all_instructions:
+            ir_opcode: str = derive_opcode(inst.mnemonic)
             f.write(
-                f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X} }}, \n'
+                f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X}, {ir_opcode} }}, \n'
             )
         f.write("};")
 
