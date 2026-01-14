@@ -37,6 +37,7 @@ add_library(Ballistic STATIC
     src/decoder_table_gen.c
     src/bal_engine.c
     src/bal_translator.c
+    src/bal_memory.c
 )
 
 target_include_directories(Ballistic PUBLIC include)

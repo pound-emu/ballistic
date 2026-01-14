@@ -10,6 +10,7 @@
 #ifndef BALLISTIC_MEMORY_H
 #define BALLISTIC_MEMORY_H
 
+#include "bal_attributes.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -56,6 +57,15 @@ typedef struct
     bal_free_function_t free;
 
 } bal_allocator_t;
+
+/*!
+ * @brief Populates an allocator struct with the default implementation.
+ *
+ * @param[out] allocator The strict to populate. Must not be NULL.
+ *
+ * @warn Only supports Windows and POSIX systems.
+ */
+BAL_COLD void get_default_allocator(bal_allocator_t *out_allocator);
 
 #endif /* BALLISTIC_MEMORY_H */
 
