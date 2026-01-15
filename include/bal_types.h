@@ -8,7 +8,9 @@
 
 #include <stdint.h>
 
+
 typedef uint64_t bal_instruction_t;
+typedef uint64_t bal_guest_address_t;
 typedef uint16_t bal_instruction_count_t;
 typedef uint16_t bal_ssa_id_t;
 typedef uint8_t  bal_bit_width_t;

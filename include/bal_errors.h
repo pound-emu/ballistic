@@ -13,7 +13,8 @@ typedef enum
     BAL_SUCCESS                    = 0,
     BAL_ERROR_INVALID_ARGUMENT     = -1,
     BAL_ERROR_ALLOCATION_FAILED    = -2,
-    BAL_ERROR_ENGINE_STATE_INVALID = -3,
+    BAL_ERROR_MEMORY_ALIGNMENT     = -3,
+    BAL_ERROR_ENGINE_STATE_INVALID = -4,
 
     // IR Errors.
     //
