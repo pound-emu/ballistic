@@ -110,7 +110,7 @@ BAL_ALIGNED(64) typedef struct
 BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator,
                                      bal_engine_t    *engine);
 /*!
- * @brief Executes the main JIT compilation loop.
+ * @brief Executes the main JIT translation loop.
  *
  * @param[in,out] engine           The engine context. Must be initialized.
  * @param[in]     arm_entry_point  Pointer to the start of the ARM machine code
