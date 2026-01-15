@@ -13,6 +13,9 @@ This program is used for decoding ARM64 instructions. The following example show
 ./decoder_cli 0b5f1da1 # ADD extended registers
 Mnemonic: ADD - Mask: 0x7F200000 - Expected: 0x0B000000
 ```
+### Ballistic CLI
+
+This is used by developers to test Ballistic's translation loop.
 
 ### Coverage CLI
 
