@@ -82,6 +82,10 @@ target_link_libraries(${DECODER_CLI_NAME} PRIVATE ${PROJECT_NAME})
 set (COVERAGE_CLI_NAME "coverage_cli")
 add_executable(${COVERAGE_CLI_NAME} tools/coverage_cli.c)
 target_link_libraries(${COVERAGE_CLI_NAME} PRIVATE ${PROJECT_NAME})
+
+set (BALLISTIC_CLI_NAME "ballistic_cli")
+add_executable(${BALLISTIC_CLI_NAME} tools/ballistic_cli.c)
+target_link_libraries(${BALLISTIC_CLI_NAME} PRIVATE ${PROJECT_NAME})
 # -----------------------------------------------------------------------------
 # Compile Tests
 # -----------------------------------------------------------------------------
