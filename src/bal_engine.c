@@ -26,6 +26,7 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
 
     size_t ssa_bit_widths_size = MAX_INSTRUCTIONS * sizeof(bal_bit_width_t);
     size_t instructions_size   = MAX_INSTRUCTIONS * sizeof(bal_instruction_t);
+    size_t constants_size      = MAX_INSTRUCTIONS * sizeof(bal_instruction_t);
 
     // Calculate amount of memory needed for all arrays in engine.
     //
@@ -37,8 +38,11 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
     size_t offset_ssa_bit_widths = BAL_ALIGN_UP(
         (offset_instructions + instructions_size), memory_alignment);
 
-    size_t total_size_with_padding = BAL_ALIGN_UP(
+    size_t offset_constants = BAL_ALIGN_UP(
         (offset_ssa_bit_widths + ssa_bit_widths_size), memory_alignment);
+
+    size_t total_size_with_padding
+        = BAL_ALIGN_UP((offset_constants + constants_size), memory_alignment);
 
     uint8_t *data = (uint8_t *)allocator->allocate(
         allocator, memory_alignment, total_size_with_padding);
@@ -52,9 +56,10 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
     engine->source_variables = (bal_source_variable_t *)data;
     engine->instructions   = (bal_instruction_t *)(data + offset_instructions);
     engine->ssa_bit_widths = (bal_bit_width_t *)(data + offset_ssa_bit_widths);
+    engine->constants      = (bal_constant_t *)(data + offset_constants);
     engine->source_variables_size = source_variables_size;
     engine->instructions_size     = instructions_size;
-    engine->ssa_bit_widths_size   = ssa_bit_widths_size;
+    engine->constants_size        = constants_size;
     engine->instruction_count     = 0;
     engine->status                = BAL_SUCCESS;
     engine->arena_base            = (void *)data;
@@ -71,6 +76,9 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
                  POISON_UNINITIALIZED_MEMORY,
                  ssa_bit_widths_size);
 
+    (void)memset(
+        engine->constants, POISON_UNINITIALIZED_MEMORY, constants_size);
+
     return engine->status;
 }
 
@@ -79,7 +87,7 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
                       bal_memory_interface_t *BAL_RESTRICT interface,
                       const uint32_t *BAL_RESTRICT         arm_entry_point)
 {
-    if (NULL == engine || NULL == arm_entry_point)
+    if (BAL_UNLIKELY(NULL == engine || NULL == arm_entry_point))
     {
         return BAL_ERROR_ENGINE_STATE_INVALID;
     }
@@ -121,12 +129,12 @@ bal_engine_reset (bal_engine_t *engine)
     engine->instruction_count = 0;
     engine->status            = BAL_SUCCESS;
 
-    size_t source_variables_size
-        = MAX_GUEST_REGISTERS * sizeof(bal_source_variable_t);
-
     (void)memset(engine->source_variables,
                  POISON_UNINITIALIZED_MEMORY,
-                 source_variables_size);
+                 engine->source_variables_size);
+
+    (void)memset(
+        engine->constants, POISON_UNINITIALIZED_MEMORY, engine->constants_size);
 
     return engine->status;
 }

@@ -46,7 +46,8 @@ BAL_ALIGNED(64) typedef struct
     bal_source_variable_t *source_variables;
 
     /*!
-     * @brief The linear buffer of generated IR instructions.
+     * @brief The linear buffer of generated IR instructions in a compilation
+     * unit.
      */
     bal_instruction_t *instructions;
 
@@ -54,6 +55,11 @@ BAL_ALIGNED(64) typedef struct
      * @brief Metadata tracking the bit-width (32/64) of each SSA definition.
      */
     bal_bit_width_t *ssa_bit_widths;
+
+    /*!
+     * @brief Linear buffer of constants generated in a compilation unit.
+     */
+    bal_constant_t *constants;
 
     /*!
      * @brief Size of source variable array.
@@ -66,22 +72,29 @@ BAL_ALIGNED(64) typedef struct
     size_t instructions_size;
 
     /*!
-     * @brief Size of ssa bit width array.
+     * @brief Size of the constants array.
      */
-    size_t ssa_bit_widths_size;
+    size_t constants_size;
 
     /*!
      * @brief The current number of instructions emitted.
+     *
+     * @detials
+     * This keeps track of where we are in the instruction and ssa bit width
+     * arrays to make sure we dont cause an instruction overflow.
      */
     bal_instruction_count_t instruction_count;
 
+    char _padding[2];
+
     /*!
-     * @brief The Engine's error state.
-     * @details If an operation fails, this is set to a specific error code.
+     * @brief The Engine's state.
+     *
+     * @details
+     * If an operation fails, this is set to a specific error code.
      * Subsequent operations will silently fail until the engine is reset.
      */
     bal_error_t status;
-    char        _pad[4];
 
     /* Cold Data */
 
