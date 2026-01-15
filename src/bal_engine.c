@@ -75,7 +75,9 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
 }
 
 bal_error_t
-bal_engine_run(bal_engine_t *BAL_RESTRICT engine, const uint32_t *BAL_RESTRICT arm_entry_point)
+bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
+                      bal_memory_interface_t *BAL_RESTRICT interface,
+                      const uint32_t *BAL_RESTRICT         arm_entry_point)
 {
     if (NULL == engine || NULL == arm_entry_point)
     {
@@ -84,10 +86,17 @@ bal_engine_run(bal_engine_t *BAL_RESTRICT engine, const uint32_t *BAL_RESTRICT a
 
     // Load state to registers.
     //
-    bal_instruction_t *BAL_RESTRICT ir_instruction_cursor = engine->instructions + engine->instruction_count;
-    bal_instruction_t *BAL_RESTRICT ir_instruction_end = engine->instructions + engine->instructions_size;
-    bal_bit_width_t   *BAL_RESTRICT bit_width_cursor = engine->ssa_bit_widths + engine->instruction_count;
-    bal_source_variable_t *BAL_RESTRICT source_variables_base = engine->source_variables;
+    bal_instruction_t *BAL_RESTRICT ir_instruction_cursor
+        = engine->instructions + engine->instruction_count;
+
+    bal_instruction_t *BAL_RESTRICT ir_instruction_end
+        = engine->instructions + engine->instructions_size;
+
+    bal_bit_width_t *BAL_RESTRICT bit_width_cursor
+        = engine->ssa_bit_widths + engine->instruction_count;
+
+    bal_source_variable_t *BAL_RESTRICT source_variables_base
+        = engine->source_variables;
 
     const uint32_t *BAL_RESTRICT arm_instruction_cursor = arm_entry_point;
 
@@ -123,13 +132,13 @@ bal_engine_reset (bal_engine_t *engine)
 }
 
 void
-bal_engine_destroy(bal_allocator_t* allocator, bal_engine_t* engine)
+bal_engine_destroy (bal_allocator_t *allocator, bal_engine_t *engine)
 {
     // No argument error handling. Segfault if user passes NULL.
 
     allocator->free(allocator, engine->arena_base, engine->arena_size);
-    engine->arena_base = NULL;
+    engine->arena_base       = NULL;
     engine->source_variables = NULL;
-    engine->instructions = NULL;
-    engine->ssa_bit_widths = NULL;
+    engine->instructions     = NULL;
+    engine->ssa_bit_widths   = NULL;
 }
