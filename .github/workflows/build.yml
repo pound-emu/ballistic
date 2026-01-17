@@ -101,6 +101,9 @@ jobs:
 
       - name: Configure CMake
         shell: bash
+        # Prevent bash from converting /Zi and /Od to file paths.
+        env:
+          MSYS_NO_PATHCONV: 1
         run: |
           EXTRA_FLAGS=""
           if [ "${{ matrix.type }}" == "Debug" ]; then
