@@ -20,14 +20,14 @@ emit_instruction (bal_engine_t   *engine,
 
     if (BAL_UNLIKELY(engine->status != BAL_SUCCESS))
     {
-        return BAL_ENGINE_STATE_INVALID;
+        return BAL_ERROR_ENGINE_STATE_INVALID;
     }
 
     bool is_greater_than_instructions_array
         = (engine->instruction_count >= engine->instructions_size);
 
     bool is_greater_than_source_size
-        = (engine->instruction->count >= (BAL_SOURCE_SIZE - 1));
+        = (engine->instruction_count >= (BAL_SOURCE_SIZE - 1));
 
     if (BAL_UNLIKELY((true == is_greater_than_instructions_array)
         || (true == is_greater_than_source_size)))
