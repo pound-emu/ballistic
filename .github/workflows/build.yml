@@ -133,6 +133,9 @@ jobs:
             -DBALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION=${{ matrix.type == 'Release' && 'ON' || 'OFF' }}
 
       - name: Build Project
+        # Disable address sanatizer when building CDoc.
+        env:
+          ASAN_OPTIONS: detect_leaks=0
         run: cmake --build build --config ${{ matrix.type }} --target all --parallel 4
 
       - name: Run Test Suite
