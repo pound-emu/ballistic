@@ -18,55 +18,40 @@ extern "C"
 {
 #endif
 
-    /*! 
-     * @brief Represents static metadata associated with a specific ARM32
-     * instruction. 
-     */
+    /// Represents static metadata aasociated with a specific ARM instruction.
     BAL_ALIGNED(32) typedef struct
     {
-        /*!
-         * @brief The instruction mnemonic (e.g., "ADD", "LDR"). 
-         */
+        /// The instruction mnemonic.
         const char *name;
 
-        /*!
-         * @brief The bitmask indicating which bits in the instruction word are
-         * significant.
-         *
-         * @details 1 = significant bit, 0 = variable field (register,
-         * immediate, etc.).
-         */
+        /// A bitmask indicating which bits in the instruction word are
+        /// significant for decoding.
+        ///
+        /// A value of `1` indicates a fixed bit used for identification,
+        /// while `0` indicates a variable field (e.g, imm, shamt, Rn).
         uint32_t mask;
 
-        /*!
-         * @brief The expected value of the instruction after applying the mask.
-         * @details (instruction & mask) == expected.
-         */
+        /// The expected pattern of the instruction after applying the `mask`.
+        /// `(instruction & mask) == expected`.
         uint32_t expected;
 
-        /*!
-         * @brief The IR opcode equivalent to this instruction's mnemonic.
-         */
+        /// The IR opcode equivalent to this instruction's mnemonic.
         bal_opcode_t ir_opcode;
 
+        /// Padding to maintain 32 byte alignment.
         char         _pad[8];
     } bal_decoder_instruction_metadata_t;
 
-    /*!
-     * @brief Decodes a raw ARM64 instruction.
-     *
-     * @details
-     * Performs a hash lookup on the provided instruction word to find a
-     * matching definition.
-     *
-     * @param[in] instruction The raw ARM64 machine code to decode.
-     *
-     * @return A pointer to the instruction metadata if a match is found.
-     * @return `NULL` if the instruction is undefined or invalid.
-     *
-     * @post The returned pointer (if not null) points to static read-only
-     * memory.
-     */
+    /// Decodes a raw ARM64 instruction.
+    ///
+    /// Returns a pointer to [`bal_decoder_instruction_metadata_t`] describing
+    /// the instruction if a match is found, or `NULL` if the instruction is
+    /// invalid.
+    ///
+    /// # Safety
+    ///
+    /// The pointer refers to static readonly memory. It is valid for the
+    /// lifetime of the program and must not be freed.
     BAL_HOT const bal_decoder_instruction_metadata_t *bal_decoder_arm64_decode(
         const uint32_t instruction);
 
