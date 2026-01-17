@@ -90,7 +90,7 @@ BAL_ALIGNED(64) typedef struct
 ///
 /// # Errors
 ///
-/// Returns [`BAL_ERROR_INVALID_ARGUMENT` if the pointers are `NULL`.
+/// Returns [`BAL_ERROR_INVALID_ARGUMENT`] if the pointers are `NULL`.
 ///
 /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot fulfill the
 /// request.

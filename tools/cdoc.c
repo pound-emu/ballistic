@@ -589,24 +589,47 @@ void write_common_head(FILE* f, const char* title) {
     fprintf(f, "</style></head><body>");
 }
 
+int compare_item_ptrs(const void* a, const void* b) {
+    const DocItem* da = *(const DocItem**)a;
+    const DocItem* db = *(const DocItem**)b;
+
+    if (!da->name && !db->name) return 0;
+    if (!da->name) return 1;
+    if (!db->name) return -1;
+
+    return strcmp(da->name, db->name);
+}
+
 void render_sidebar_section(FILE* f, FileContext* ctx, ItemKind kind, const char* title) {
-    int found = 0;
-    // Check if any items of this kind exist
+    size_t count = 0;
+    // Count items of this kind
     for(size_t i=0; i<ctx->count; i++) {
         if (ctx->items[i].kind == kind) {
-            found = 1;
-            break;
+            count++;
         }
     }
-    // If found, print the header and the links
-    if (found) {
-        fprintf(f, "<h3>%s</h3>", title);
-        for(size_t i=0; i<ctx->count; i++) {
-            if (ctx->items[i].kind == kind) {
-                fprintf(f, "<a href='#%s'>%s</a>", ctx->items[i].anchor_id, ctx->items[i].name);
-            }
+
+    if (count == 0) return;
+
+    // Create a temporary array of pointers
+    DocItem** ptrs = malloc(sizeof(DocItem*) * count);
+    size_t idx = 0;
+    for(size_t i=0; i<ctx->count; i++) {
+        if (ctx->items[i].kind == kind) {
+            ptrs[idx++] = &ctx->items[i];
         }
     }
+
+    // Sort the pointers alphabetically for the sidebar
+    qsort(ptrs, count, sizeof(DocItem*), compare_item_ptrs);
+
+    // Render sorted links
+    fprintf(f, "<h3>%s</h3>", title);
+    for(size_t i=0; i<count; i++) {
+        fprintf(f, "<a href='#%s'>%s</a>", ptrs[i]->anchor_id, ptrs[i]->name);
+    }
+
+    free(ptrs);
 }
 
 void generate_file_html(ProjectContext* proj, FileContext* ctx, const char* out_dir) {
@@ -858,10 +881,6 @@ int main(int argc, char** argv) {
         void* args[] = { file_ctx, &proj };
         clang_visitChildren(root, main_visitor, args);
         clang_disposeTranslationUnit(unit);
-    }
-
-    for (size_t i = 0; i < proj.count; i++) {
-        qsort(proj.files[i].items, proj.files[i].count, sizeof(DocItem), compare_items);
     }
 
     printf("Generating HTML in '%s'...\n", out_dir);
