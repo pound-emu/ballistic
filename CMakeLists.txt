@@ -101,7 +101,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_compile_options(${CDOC_NAME} PRIVATE -Wno-missing-prototypes
         -Wno-sign-conversion -Wno-int-conversion -Wno-unused-parameter
         -Wno-implicit-function-declaration -Wno-shorten-64-to-32)
-    target_link_libraries(${CDOC_NAME} PRIVATE clang cmark)
+    target_include_directories(${CDOC_NAME} PRIVATE ${CMARK_INCLUDE_DIR} ${CLANG_INCLUDE_DIR})
+    target_link_libraries(${CDOC_NAME} PRIVATE ${CMARK_LIBRARY} ${CLANG_LIBRARY})
     set (PROJECT_HEADERS include/bal_engine.h include/bal_decoder.h
         include/bal_memory.h include/bal_types.h include/bal_errors.h)
 

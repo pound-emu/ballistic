@@ -46,11 +46,15 @@ jobs:
           sudo apt install -y ninja-build clang lld cmake ccache \
                          libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
                          libxi-dev libxinerama-dev libwayland-dev libxkbcommon-dev \
-                         wayland-protocols libgl-dev git
+                         wayland-protocols libgl-dev git libcmark-dev libclang-19-dev
 
       - name: Configure CMake
-        run: cmake -G Ninja -B ${{env.BUILD_DIR}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-
+        run: >
+            cmake -G Ninja -B ${{env.BUILD_DIR}}
+            -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+            -DCMAKE_C_COMPILER=clang
+            -DCMAKE_CXX_COMPILER=clang++
+            -DCMAKE_PREFIX_PATH=/usr/lib/llvm-19
       - name: Build
         run: cmake --build ${{env.BUILD_DIR}} --config ${{env.BUILD_TYPE}} --parallel $(nproc)
 
@@ -91,17 +95,18 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install llvm@20
-          echo "CMAKE_PREFIX_PATH=/usr/local/opt/llvm@20" >> $GITHUB_ENV
+          brew update
+          brew install llvm cmark ninja
 
-      - name: Configure CMake (x86_64)
+      - name: Configure CMake (x86)
         run: >
-          cmake -G Ninja -B "${{env.BUILD_DIR}}"
+          cmake -G Ninja -B ${{env.BUILD_DIR}}
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_OSX_ARCHITECTURES=x86_64
-          -DCMAKE_C_COMPILER=/usr/local/opt/llvm@20/bin/clang
-          -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm@20/bin/clang++
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15
+          -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang
+          -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++
+          -DClang_DIR=$(brew --prefix llvm)/lib/cmake/clang
+          -DLLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm
+          -DCMAKE_PREFIX_PATH="$(brew --prefix llvm);$(brew --prefix cmark)"
 
       - name: Build (x86_64)
         run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $(sysctl -n hw.logicalcpu)
@@ -123,17 +128,18 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install llvm@20
-          echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@20" >> $GITHUB_ENV
+          brew update
+          brew install llvm cmark ninja
 
       - name: Configure CMake (ARM64)
         run: >
-          cmake -G Ninja -B "${{env.BUILD_DIR}}"
+          cmake -G Ninja -B ${{env.BUILD_DIR}}
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@20/bin/clang
-          -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@20/bin/clang++
-          -DCMAKE_OSX_ARCHITECTURES=arm64
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15
+          -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang
+          -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++
+          -DClang_DIR=$(brew --prefix llvm)/lib/cmake/clang
+          -DLLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm
+          -DCMAKE_PREFIX_PATH="$(brew --prefix llvm);$(brew --prefix cmark)"
 
       - name: Build (ARM64)
         run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $(sysctl -n hw.logicalcpu)
