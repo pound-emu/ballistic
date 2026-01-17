@@ -132,9 +132,8 @@ jobs:
             -DBALLISTIC_ENABLE_BUILD_TESTS=ON \
             -DBALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION=${{ matrix.type == 'Release' && 'ON' || 'OFF' }}
 
-      - name: Build Project & Docs
-        # FIX: Replaced env var with relative path
-        run: cmake --build build --config ${{ matrix.type }} --target all doc --parallel 4
+      - name: Build Project
+        run: cmake --build build --config ${{ matrix.type }} --target all --parallel 4
 
       - name: Run Test Suite
         working-directory: build
@@ -145,7 +144,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ballistic-tools-${{ matrix.os }}
-          # Relative paths are safe in action inputs
           path: |
             build/ballistic_cli*
             build/decoder_cli*

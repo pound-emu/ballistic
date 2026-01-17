@@ -106,7 +106,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set (PROJECT_HEADERS include/bal_engine.h include/bal_decoder.h
         include/bal_memory.h include/bal_types.h include/bal_errors.h)
 
-    add_custom_target(doc
+    add_custom_target(doc ALL
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cdoc docs/cdoc ${PROJECT_HEADERS}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Generating Documentation..."
