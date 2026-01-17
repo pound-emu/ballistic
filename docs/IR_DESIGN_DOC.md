@@ -53,7 +53,7 @@ uint32_t instruction_count;
 ## Instruction Encoding
 
 ```text
-63               53 52        35 34        17 16        00
+63               51 50        34 33        17 16        00
 |-----------------| |----------| |----------| |----------|
         opc             src1         src2         src3
 ```
@@ -66,7 +66,7 @@ uint32_t instruction_count;
 
 <**src1**>  17-bit index for `ssa` arrays.
 
-<**opc**>   11-bit opcode.
+<**opc**>   13-bit opcode.
 
 ### Operational Information
 
