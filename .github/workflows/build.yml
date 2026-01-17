@@ -1,146 +1,148 @@
-name: Build
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 concurrency:
-  group: ci-${{github.event_name}}-${{github.ref}}
-  cancel-in-progress: ${{github.event_name == 'push'}}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  BUILD_TYPE: Release
-  BUILD_DIR: ${{github.workspace}}/build
+  BUILD_DIR: ${{ github.workspace }}/build
 
 jobs:
-  get-info:
-    name: Info
+  Lint:
+    name: Standards & Formatting
     runs-on: ubuntu-24.04
-    outputs:
-      shorthash: ${{steps.vars.outputs.shorthash}}
-      commit: ${{steps.vars.outputs.commit}}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Commit Count and Git Hash
-        id: vars
-        run: |
-          echo "shorthash=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "commit=$(git rev-list --count HEAD)" >> $GITHUB_ENV
-          echo "shorthash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "commit=$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
+          fetch-depth: 1
 
-  Linux:
-    name: Linux
-    runs-on: ubuntu-24.04
-    needs: get-info
-    steps:
-      - uses: actions/checkout@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          submodules: recursive
-          fetch-depth: 0
+          python-version: '3.11'
 
       - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy-18 cmake ninja-build libclang-18-dev libcmark-dev pkg-config
+
+      - name: Generate Compilation Database
         run: |
-          sudo apt update
-          sudo apt-get remove --purge man-db
-          sudo apt install -y ninja-build clang lld cmake ccache \
-                         libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
-                         libxi-dev libxinerama-dev libwayland-dev libxkbcommon-dev \
-                         wayland-protocols libgl-dev git libcmark-dev libclang-19-dev
+          ARCH_TRIPLET=$(gcc -dumpmachine)
+          cmake -S . -B ${{ env.BUILD_DIR }} -G Ninja \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_C_COMPILER=clang-18 \
+            -DCMAKE_PREFIX_PATH="/usr/lib/llvm-18;/usr/lib/$ARCH_TRIPLET"
+
+      - name: Generate Source Headers
+        run: cmake --build ${{ env.BUILD_DIR }} --target Ballistic --parallel $(nproc)
+
+      - name: Run Clang-Tidy
+        working-directory: ${{ github.workspace }}
+        run: |
+          find src include -name "*.[ch]" -not -name "decoder_table_gen.*" | xargs clang-tidy-18 -p ${{ env.BUILD_DIR }} \
+            --checks='-*,clang-diagnostic-*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-reserved-identifier' \
+            --warnings-as-errors=*
+  Build:
+    name: ${{ matrix.os }} / ${{ matrix.type }}
+    needs: Lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-14]
+        type: [Debug, Release]
+        include:
+          - os: ubuntu-24.04
+            cc: clang-18
+            cxx: clang++-18
+            flags_debug: "-fsanitize=address,undefined -fno-omit-frame-pointer"
+            deps_cmd: sudo apt-get update && sudo apt-get install -y ninja-build ccache clang-18 libclang-18-dev libcmark-dev pkg-config
+            
+          - os: windows-latest
+            cc: clang-cl
+            cxx: clang-cl
+            flags_debug: "/Zi /Od"
+            deps_cmd: choco install ninja ccache
+            
+          - os: macos-14
+            cc: $(brew --prefix llvm@18)/bin/clang
+            cxx: $(brew --prefix llvm@18)/bin/clang++
+            flags_debug: "-fsanitize=address,undefined"
+            deps_cmd: brew install ninja ccache cmark llvm@18
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install System Dependencies
+        shell: bash
+        run: ${{ matrix.deps_cmd }}
+
+      - name: Setup Compiler Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.os == 'Windows' && '~/AppData/Local/ccache' || '~/.ccache' }}
+          key: ${{ runner.os }}-${{ matrix.type }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.type }}-
 
       - name: Configure CMake
-        run: >
-            cmake -G Ninja -B ${{env.BUILD_DIR}}
-            -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-            -DCMAKE_C_COMPILER=clang
-            -DCMAKE_CXX_COMPILER=clang++
-            -DCMAKE_PREFIX_PATH=/usr/lib/llvm-19
-      - name: Build
-        run: cmake --build ${{env.BUILD_DIR}} --config ${{env.BUILD_TYPE}} --parallel $(nproc)
-
-
-  Windows:
-    name: Windows
-    runs-on: windows-2025
-    needs: get-info
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Configure CMake
-        run:
-          cmake -G Ninja -B "${{env.BUILD_DIR}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} `
-          -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl `
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-
-      - name: Build
-        run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $env:NUMBER_OF_PROCESSORS
-
-  macOS-x86_64:
-    name: macOS x86_64
-    runs-on: macos-15-intel
-    needs: get-info
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Setup latest Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
-      - name: Install Dependencies
+        shell: bash
         run: |
-          brew update
-          brew install llvm cmark ninja
+          EXTRA_FLAGS=""
+          if [ "${{ matrix.type }}" == "Debug" ]; then
+            EXTRA_FLAGS="${{ matrix.flags_debug }}"
+          fi
+          
+          SEARCH_PATH=""
+          if [ "$RUNNER_OS" == "Linux" ]; then
+             SEARCH_PATH="/usr/lib/llvm-18;/usr/lib/$(gcc -dumpmachine)"
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+             SEARCH_PATH="$(brew --prefix llvm@18);$(brew --prefix cmark)"
+          fi
 
-      - name: Configure CMake (x86)
-        run: >
-          cmake -G Ninja -B ${{env.BUILD_DIR}}
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang
-          -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++
-          -DClang_DIR=$(brew --prefix llvm)/lib/cmake/clang
-          -DLLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm
-          -DCMAKE_PREFIX_PATH="$(brew --prefix llvm);$(brew --prefix cmark)"
+          export CCACHE_DIR=${{ runner.os == 'Windows' && '~/AppData/Local/ccache' || '~/.ccache' }}
+          export CCACHE_MAXSIZE=500M
+          
+          cmake -G Ninja -B ${{ env.BUILD_DIR }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.type }} \
+            -DCMAKE_C_COMPILER="${{ matrix.cc }}" \
+            -DCMAKE_CXX_COMPILER="${{ matrix.cxx }}" \
+            -DCMAKE_C_FLAGS="$EXTRA_FLAGS" \
+            -DCMAKE_CXX_FLAGS="$EXTRA_FLAGS" \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_PREFIX_PATH="$SEARCH_PATH" \
+            -DBALLISTIC_ENABLE_BUILD_TESTS=ON \
+            -DBALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION=${{ matrix.type == 'Release' && 'ON' || 'OFF' }}
 
-      - name: Build (x86_64)
-        run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $(sysctl -n hw.logicalcpu)
+      - name: Build Project & Docs
+        run: cmake --build ${{ env.BUILD_DIR }} --config ${{ matrix.type }} --target all doc --parallel 4
 
-  macOS-arm64:
-    name: macOS ARM64
-    runs-on: macos-14
-    needs: get-info
-    steps:
-      - uses: actions/checkout@v5
+      - name: Run Test Suite
+        working-directory: ${{ env.BUILD_DIR }}
+        run: ctest -C ${{ matrix.type }} --output-on-failure
+
+      - name: Upload Artifacts
+        if: matrix.type == 'Release'
+        uses: actions/upload-artifact@v4
         with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Setup latest Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
-      - name: Install Dependencies
-        run: |
-          brew update
-          brew install llvm cmark ninja
-
-      - name: Configure CMake (ARM64)
-        run: >
-          cmake -G Ninja -B ${{env.BUILD_DIR}}
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang
-          -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++
-          -DClang_DIR=$(brew --prefix llvm)/lib/cmake/clang
-          -DLLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm
-          -DCMAKE_PREFIX_PATH="$(brew --prefix llvm);$(brew --prefix cmark)"
-
-      - name: Build (ARM64)
-        run: cmake --build "${{env.BUILD_DIR}}" --config ${{env.BUILD_TYPE}} --parallel $(sysctl -n hw.logicalcpu)
-
+          name: ballistic-tools-${{ matrix.os }}
+          path: |
+            ${{ env.BUILD_DIR }}/ballistic_cli*
+            ${{ env.BUILD_DIR }}/decoder_cli*
+            ${{ env.BUILD_DIR }}/*.exe
+          if-no-files-found: ignore
