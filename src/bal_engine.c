@@ -57,9 +57,9 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
     engine->instructions   = (bal_instruction_t *)(data + offset_instructions);
     engine->ssa_bit_widths = (bal_bit_width_t *)(data + offset_ssa_bit_widths);
     engine->constants      = (bal_constant_t *)(data + offset_constants);
-    engine->source_variables_size = source_variables_size;
-    engine->instructions_size     = instructions_size;
-    engine->constants_size        = constants_size;
+    engine->source_variables_size = source_variables_size / sizeof(bal_source_variable_t);
+    engine->instructions_size     = instructions_size / sizeof(bal_instruction_t);
+    engine->constants_size        = constants_size / sizeof(bal_constant_t);
     engine->instruction_count     = 0;
     engine->status                = BAL_SUCCESS;
     engine->arena_base            = (void *)data;

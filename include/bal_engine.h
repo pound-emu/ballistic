@@ -44,13 +44,13 @@ BAL_ALIGNED(64) typedef struct
     /// Linear buffer of constants generated in the current compilation unit.
     bal_constant_t *constants;
 
-    /// The size of the `source_variables` array in bytes.
+    /// The size of the `source_variables` array.
     size_t source_variables_size;
 
-    /// The size of the `instructions` array in bytes.
+    /// The size of the `instructions` array.
     size_t instructions_size;
 
-    /// The size of the `constants` array in bytes.
+    /// The size of the `constants` array.
     size_t constants_size;
 
     /// The current number of instructions emitted.
