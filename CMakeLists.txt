@@ -86,6 +86,33 @@ target_link_libraries(${COVERAGE_CLI_NAME} PRIVATE ${PROJECT_NAME})
 set (BALLISTIC_CLI_NAME "ballistic_cli")
 add_executable(${BALLISTIC_CLI_NAME} tools/ballistic_cli.c)
 target_link_libraries(${BALLISTIC_CLI_NAME} PRIVATE ${PROJECT_NAME})
+
+# Our documentation generator completely relies on Clang running on UNIX
+# compatable machines for parsing C code. I do not have a Windows machine to
+# to test this so only Linux and macOS are supported.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set (CDOC_NAME "cdoc")
+    find_library(CMARK_LIBRARY NAMES cmark libcmark REQUIRED)
+    find_path(CMARK_INCLUDE_DIR NAMES cmark.h REQUIRED)
+    find_library(CLANG_LIBRARY NAMES clang libclang REQUIRED)
+    find_path(CLANG_INCLUDE_DIR NAMES clang-c/Index.h REQUIRED)
+
+    add_executable(${CDOC_NAME} tools/cdoc.c)
+    target_compile_options(${CDOC_NAME} PRIVATE -Wno-missing-prototypes
+        -Wno-sign-conversion -Wno-int-conversion -Wno-unused-parameter
+        -Wno-implicit-function-declaration -Wno-shorten-64-to-32)
+    target_link_libraries(${CDOC_NAME} PRIVATE clang cmark)
+    set (PROJECT_HEADERS include/bal_engine.h include/bal_decoder.h
+        include/bal_memory.h include/bal_types.h include/bal_errors.h)
+
+    add_custom_target(doc
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cdoc docs/cdoc ${PROJECT_HEADERS}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Generating Documentation..."
+        DEPENDS cdoc
+    )
+endif()
+
 # -----------------------------------------------------------------------------
 # Compile Tests
 # -----------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 *.d
 build/
 *.bin
+docs/cdoc
 
 # Object files
 *.o
