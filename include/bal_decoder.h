@@ -11,12 +11,39 @@
 
 #include "bal_attributes.h"
 #include "bal_types.h"
+#include <assert.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+    /// The type of an instruction operand.
+    typedef enum
+    {
+        BAL_OPERAND_TYPE_NONE      = 0,
+        BAL_OPERAND_TYPE_REGISTER_32  = 1,
+        BAL_OPERAND_TYPE_REGISTER_64 = 2,
+        BAL_OPERAND_TYPE_REGISTER_128 = 3,
+        BAL_OPERAND_TYPE_IMMEDIATE = 4,
+        BAL_OPERAND_TYPE_CONDITION = 5,
+    } bal_decoder_operand_type_t;
+
+    /// Descriptor for a single operand.
+    typedef struct
+    {
+        /// Operand type. See [`bal_decoder_operand_type_t`].
+        uint16_t type         : 5;
+
+        /// Bit position in the instruction.
+        uint16_t bit_position : 6;
+
+        /// Bit width of the field.
+        uint16_t bit_width    : 5;
+    } bal_decoder_operand_t;
+
+    static_assert(2 == sizeof(bal_decoder_operand_t), "Expected operand struct to be 2 bytes.");
 
     /// Represents static metadata aasociated with a specific ARM instruction.
     BAL_ALIGNED(32) typedef struct
@@ -38,9 +65,11 @@ extern "C"
         /// The IR opcode equivalent to this instruction's mnemonic.
         bal_opcode_t ir_opcode;
 
-        /// Padding to maintain 32 byte alignment.
-        char         _pad[8];
+        /// Descriptors for up to 4 operands.
+        bal_decoder_operand_t operand[4];
     } bal_decoder_instruction_metadata_t;
+
+    static_assert(32 == sizeof(bal_decoder_instruction_metadata_t), "Expected decoder metadata struct to be 32 bytes.");
 
     /// Decodes a raw ARM64 instruction.
     ///

@@ -1,13 +1,13 @@
 /*
- *GENERATED FILE - DO NOT EDIT
- *Generated with tools/generate_a64_table.py
+ * GENERATED FILE - DO NOT EDIT
+ * Generated with tools/generate_a64_table.py
  */
 
 #include "bal_decoder.h"
 #include <stdint.h>
 #include <stddef.h>
 
-#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 3945
+#define BAL_DECODER_ARM64_INSTRUCTIONS_SIZE 3608
 
 typedef struct {
     const bal_decoder_instruction_metadata_t *const *instructions;
