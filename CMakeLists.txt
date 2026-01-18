@@ -8,7 +8,7 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-project(Ballistic LANGUAGES C VERSION 0.3.0)
+project(Ballistic LANGUAGES C VERSION 0.4.0)
 
 
 # option(BALLISTIC_ENABLE_CPU_FEATURE_DETECTION "Makes Ballistic able to detect CPU features of the host" ON)
