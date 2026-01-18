@@ -120,9 +120,8 @@ endif()
 if (BALLISTIC_ENABLE_BUILD_TESTS)
 set(TESTS_NAME "ballistic_tests")
     enable_testing()
-    add_executable(${TESTS_NAME} tests/test_decoder_fuzzer.c)
+    add_executable(${TESTS_NAME} tests/test_decoder.c)
+    target_include_directories(${TESTS_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
     add_test(NAME DecoderTest COMMAND ${TESTS_NAME})
 endif()
-
-
