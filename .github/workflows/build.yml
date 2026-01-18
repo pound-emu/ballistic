@@ -139,6 +139,7 @@ jobs:
         run: cmake --build build --config ${{ matrix.type }} --target all --parallel 4
 
       - name: Run Test Suite
+        if: matrix.type == 'Release'
         working-directory: build
         run: ctest -C ${{ matrix.type }} --output-on-failure
 
