@@ -29,14 +29,6 @@ typedef struct
     const bal_decoder_instruction_metadata_t *metadata;
 } hot_candidate_t;
 
-static int
-compare_candidates (const void *a, const void *b)
-{
-    const hot_candidate_t *ca = (const hot_candidate_t *)a;
-    const hot_candidate_t *cb = (const hot_candidate_t *)b;
-    return cb->priority - ca->priority;
-}
-
 int
 main (void)
 {
@@ -68,7 +60,6 @@ main (void)
             }
 
             candidate_count = bucket->count;
-            qsort(local_candidates, candidate_count, sizeof(hot_candidate_t), compare_candidates);
         }
 
         uint32_t base_instruction = hash_index << DECODER_HASH_SHIFT;
