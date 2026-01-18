@@ -1,6 +1,9 @@
 #include "bal_decoder.h"
+
+#include "bal_attributes.h"
 #include "decoder_table_gen.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
@@ -14,99 +17,125 @@
 
 #define DECODER_HASH_SHIFT 21
 #define DECODER_HASH_MASK  0x7FF
+#define DECODER_HASH_TABLE_SIZE 2048
+#define BLOCK_SIZE         (1U << DECODER_HASH_SHIFT)
+#define MAX_LOCAL_CANDIDATES 256
+
+typedef struct
+{
+    uint32_t mask;
+    uint32_t expected;
+    int priority;
+    const bal_decoder_instruction_metadata_t *metadata;
+} hot_candidate_t;
+
+static int
+compare_candidates (const void *a, const void *b)
+{
+    const hot_candidate_t *ca = (const hot_candidate_t *)a;
+    const hot_candidate_t *cb = (const hot_candidate_t *)b;
+    return cb->priority - ca->priority;
+}
 
 int
 main (void)
 {
-    printf("Starting Decoder Test (0x00000000 - 0xFFFFFFFF)...\n");
-    uint64_t total_decoded = 0;
     uint64_t total_collisions = 0;
     uint64_t total_errors = 0;
 
-    for (uint64_t i = 0; i <= UINT32_MAX; ++i)
+    for (uint32_t hash_index = 0; hash_index < DECODER_HASH_TABLE_SIZE; ++hash_index)
     {
-        uint32_t instruction = (uint32_t)i;
-        const bal_decoder_instruction_metadata_t *metadata
-            = bal_decoder_arm64_decode(instruction);
-
-        uint32_t hash_index = (instruction >> DECODER_HASH_SHIFT) & DECODER_HASH_MASK;
         const decoder_bucket_t *bucket = &g_decoder_lookup_table[hash_index];
-        const bal_decoder_instruction_metadata_t *best_match = NULL;
-        int max_priority = -1;
-
+        hot_candidate_t local_candidates[MAX_LOCAL_CANDIDATES];
+        size_t candidate_count = 0;
+        
         if (bucket->instructions != NULL)
         {
-            for (size_t j = 0; j < bucket->count; ++j)
+            if (BAL_UNLIKELY(bucket->count > MAX_LOCAL_CANDIDATES))
             {
-                const bal_decoder_instruction_metadata_t *candidate = bucket->instructions[j];
+                printf("[FATAL] Bucket %u has %zu items. Increase MAX_LOCAL_CANDIDATES.\n",
+                        hash_index, bucket->count);
+                return 1;
+            }
 
-                if (candidate->expected == (instruction & candidate->mask))
+            for (size_t i = 0; i < bucket->count; ++i)
+            {
+                const bal_decoder_instruction_metadata_t *metadata = bucket->instructions[i];
+                local_candidates[i].mask = metadata->mask;
+                local_candidates[i].expected = metadata->expected;
+                local_candidates[i].priority = POPCOUNT(metadata->mask);
+                local_candidates[i].metadata = metadata;
+            }
+
+            candidate_count = bucket->count;
+            qsort(local_candidates, candidate_count, sizeof(hot_candidate_t), compare_candidates);
+        }
+
+        uint32_t base_instruction = hash_index << DECODER_HASH_SHIFT;
+
+        for (uint32_t offset = 0; offset < BLOCK_SIZE; ++offset)
+        {
+            uint32_t instruction = base_instruction + offset;
+
+            // Device Under Test.
+            // 
+            const bal_decoder_instruction_metadata_t *dut_result
+                  = bal_decoder_arm64_decode(instruction);
+
+            const bal_decoder_instruction_metadata_t *ref_result = NULL;
+
+            for (size_t k = 0; k < candidate_count; ++k)
+            {
+                if ((instruction & local_candidates[k].mask) == local_candidates[k].expected)
                 {
-                    int priority = POPCOUNT(candidate->mask);
+                    ref_result = local_candidates[k].metadata;
 
-                    if (priority > max_priority)
+                    // Collision Check. Does the next candidate also matches
+                    // and has the same priority?
+                    // 
+                    if (BAL_UNLIKELY(k + 1 < candidate_count))
                     {
-                        max_priority = priority;
-                        best_match = candidate;
-                    }
-                    else
-                    {
-                        // Two instructions with equal priority claim these bits.
-                        // There is a bug in the XML parser.
-                        //
-                        if (best_match && strcmp(best_match->name, candidate->name) != 0)
+                        if (local_candidates[k].priority == local_candidates[k+1].priority)
                         {
-                            ++total_collisions;
+                            if ((instruction & local_candidates[k+1].mask) == local_candidates[k+1].expected)
+                            {
+                                if (strcmp(ref_result->name, local_candidates[k+1].metadata->name) != 0)
+                                {
+                                    ++total_collisions;
+                                }
+                            }
                         }
                     }
+
+                    // Found hight priority match.
+                    //
+                    break; 
+                }
+            }
+
+            if (BAL_UNLIKELY(dut_result != ref_result))
+            {
+                printf("[FAIL] Mismatch at 0x%08x\n", instruction);
+                printf("DUT: %s\n", dut_result ? dut_result->name : "NULL");
+                printf("REF: %s\n", ref_result ? ref_result->name : "NULL");
+                ++total_errors;
+
+                if (total_errors > 10)
+                {
+                    return 1;
                 }
             }
         }
 
-        if (metadata != best_match)
+        if (0 == (hash_index & 0x7F))
         {
-            printf("[FAIL] Priority Error at 0x%08x\n", instruction);
-            printf("       Decoder returned: %s\n", metadata ? metadata->name : "NULL");
-            printf("       Reference found: %s\n", best_match ? best_match->name : "NULL");
-
-            if (metadata != NULL)
-            {
-                printf("       Decoder Mask: 0x%08x (Priority: %d)\n", metadata->mask, POPCOUNT(metadata->mask));
-            }
-
-            if (best_match != NULL)
-            {
-                printf("       Ref Mask: 0x%08x (Priority: %d)\n", best_match->mask, POPCOUNT(best_match->mask));
-            }
-
-            ++total_errors;
-
-            if (total_errors > 10)
-            {
-                printf("[FATAL] Too many errors. Aborting...");
-                return 1;
-            }
-        }
-
-        if (metadata != NULL)
-        {
-            // The decoder should never return a match that failed the mask.
-            if ((instruction & metadata->mask) != metadata->expected)
-            {
-                printf("[FAIL] Consistency: Inst 0x%08x matched '%s' but failed mask check.\n", instruction, metadata->name);
-                ++total_errors;
-            }
-            ++total_decoded;
-        }
-        
-        if (0 == (instruction & 0x0FFFFFFF))
-        {
-            printf("Progress: %3.0f%% (0x%08x)\n", (double)i / 42949672.96, instruction);
+            printf("Progress: %3.0F%% (Bucket %d/%d)\n",
+                    (double)hash_index / DECODER_HASH_TABLE_SIZE * 100.0,
+                    hash_index, DECODER_HASH_TABLE_SIZE);
         }
     }
 
     printf("--- Results ---\n");
-    printf("Total Decoded:  %" PRIu64 "\n", total_decoded);
     printf("Total Collisions:  %" PRIu64 "\n", total_collisions);
     printf("Total Errors:  %" PRIu64 "\n", total_errors);
 
