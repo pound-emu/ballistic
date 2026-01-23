@@ -19,6 +19,8 @@ extern "C"
 {
 #endif
 
+    #define BAL_OPERAND_BIT_WIDTH 5
+
     /// The type of an instruction operand.
     typedef enum
     {
@@ -40,10 +42,11 @@ extern "C"
         uint16_t bit_position : 6;
 
         /// Bit width of the field.
-        uint16_t bit_width    : 5;
+        uint16_t bit_width    : BAL_OPERAND_BIT_WIDTH;
     } bal_decoder_operand_t;
 
     static_assert(2 == sizeof(bal_decoder_operand_t), "Expected operand struct to be 2 bytes.");
+    static_assert(5 == BAL_OPERAND_BIT_WIDTH, "Operand bit width must be less than 32 to prevent shift overflow.");
 
     /// Represents static metadata aasociated with a specific ARM instruction.
     BAL_ALIGNED(32) typedef struct
