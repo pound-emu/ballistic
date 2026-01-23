@@ -59,8 +59,10 @@ BAL_ALIGNED(64) typedef struct
     /// arrays.
     bal_instruction_count_t instruction_count;
 
-    /// Padding to maintain 64 byte alignment.
-    char _padding[2];
+    /// The number of constants emiited.
+    ///
+    /// This tracks the current position in the `constants` array.
+    bal_constant_count_t constant_count;
 
     /// The current error state of the Engine.
     ///

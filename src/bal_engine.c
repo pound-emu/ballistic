@@ -1,4 +1,5 @@
 #include "bal_engine.h"
+#include "bal_decoder.h"
 #include <stddef.h>
 #include <string.h>
 
@@ -57,13 +58,14 @@ bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
     engine->instructions   = (bal_instruction_t *)(data + offset_instructions);
     engine->ssa_bit_widths = (bal_bit_width_t *)(data + offset_ssa_bit_widths);
     engine->constants      = (bal_constant_t *)(data + offset_constants);
-    engine->source_variables_size = source_variables_size / sizeof(bal_source_variable_t);
-    engine->instructions_size     = instructions_size / sizeof(bal_instruction_t);
-    engine->constants_size        = constants_size / sizeof(bal_constant_t);
-    engine->instruction_count     = 0;
-    engine->status                = BAL_SUCCESS;
-    engine->arena_base            = (void *)data;
-    engine->arena_size            = total_size_with_padding;
+    engine->source_variables_size
+        = source_variables_size / sizeof(bal_source_variable_t);
+    engine->instructions_size = instructions_size / sizeof(bal_instruction_t);
+    engine->constants_size    = constants_size / sizeof(bal_constant_t);
+    engine->instruction_count = 0;
+    engine->status            = BAL_SUCCESS;
+    engine->arena_base        = (void *)data;
+    engine->arena_size        = total_size_with_padding;
 
     (void)memset(engine->source_variables,
                  POISON_UNINITIALIZED_MEMORY,
@@ -106,6 +108,8 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
     bal_source_variable_t *BAL_RESTRICT source_variables_base
         = engine->source_variables;
 
+    bal_constant_t               constant_count    = engine->constant_count;
+    bal_instruction_count_t      instruction_count = engine->instruction_count;
     const uint32_t *BAL_RESTRICT arm_instruction_cursor = arm_entry_point;
 
     while (ir_instruction_cursor < ir_instruction_end)
@@ -149,4 +153,18 @@ bal_engine_destroy (bal_allocator_t *allocator, bal_engine_t *engine)
     engine->source_variables = NULL;
     engine->instructions     = NULL;
     engine->ssa_bit_widths   = NULL;
+}
+
+BAL_HOT static uint32_t
+extract_operand_value (bal_instruction_t      instruction,
+                       bal_decoder_operand_t *operand)
+{
+    if (BAL_OPERAND_TYPE_NONE == operand->type)
+    {
+        return 0;
+    }
+
+    uint32_t mask = (1U << (uint32_t)operand->bit_width) - 1;
+    uint32_t bits = (instruction >> (uint32_t)operand->bit_position) & mask;
+    return bits;
 }
