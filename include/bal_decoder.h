@@ -19,6 +19,7 @@ extern "C"
 {
 #endif
 
+    #define BAL_OPERANDS_SIZE 4
     #define BAL_OPERAND_BIT_WIDTH 5
 
     /// The type of an instruction operand.
@@ -69,7 +70,7 @@ extern "C"
         bal_opcode_t ir_opcode;
 
         /// Descriptors for up to 4 operands.
-        bal_decoder_operand_t operand[4];
+        bal_decoder_operand_t operands[BAL_OPERANDS_SIZE];
     } bal_decoder_instruction_metadata_t;
 
     static_assert(32 == sizeof(bal_decoder_instruction_metadata_t), "Expected decoder metadata struct to be 32 bytes.");
@@ -84,7 +85,7 @@ extern "C"
     ///
     /// The pointer refers to static readonly memory. It is valid for the
     /// lifetime of the program and must not be freed.
-    BAL_HOT const bal_decoder_instruction_metadata_t *bal_decoder_arm64_decode(
+    BAL_HOT const bal_decoder_instruction_metadata_t *bal_decode_arm64(
         const uint32_t instruction);
 
 #ifdef __cplusplus

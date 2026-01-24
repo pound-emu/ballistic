@@ -63,7 +63,7 @@ main (int argc, char *argv[])
         }
 
         const bal_decoder_instruction_metadata_t *metadata
-            = bal_decoder_arm64_decode(instruction);
+            = bal_decode_arm64(instruction);
 
         if (NULL == metadata)
         {

@@ -27,6 +27,14 @@
 #define BAL_ALIGN_UP(x, memory_alignment) \
     (((x) + ((memory_alignment) - 1)) & ~((memory_alignment) - 1))
 
+static uint32_t extract_operand_value(const uint32_t,
+                                      const bal_decoder_operand_t *);
+static uint32_t intern_constant(bal_constant_t,
+                                bal_constant_t *,
+                                bal_constant_count_t *,
+                                size_t,
+                                bal_error_t *);
+
 bal_error_t
 bal_engine_init (bal_allocator_t *allocator, bal_engine_t *engine)
 {
@@ -122,9 +130,32 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
     bal_constant_t               constant_count    = engine->constant_count;
     bal_instruction_count_t      instruction_count = engine->instruction_count;
     const uint32_t *BAL_RESTRICT arm_instruction_cursor = arm_entry_point;
+    uint32_t                     arm_register_values[BAL_OPERANDS_SIZE] = { 0 };
 
     while (ir_instruction_cursor < ir_instruction_end)
     {
+        const bal_decoder_instruction_metadata_t *metadata
+            = bal_decode_arm64(*arm_instruction_cursor);
+        const bal_decoder_operand_t *BAL_RESTRICT operands = metadata->operands;
+
+        for (size_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
+        {
+            arm_register_values[i]
+                = extract_operand_value(*arm_instruction_cursor, &operands[i]);
+        }
+
+        switch (metadata->ir_opcode)
+        {
+            case OPCODE_ADD: {
+                uint32_t rd = arm_register_values[0];
+                uint32_t rn = arm_register_values[1];
+                uint32_t rm = arm_register_values[2];
+                // TODO
+            }
+            default:
+                break;
+        }
+
         ir_instruction_cursor++;
         bit_width_cursor++;
         arm_instruction_cursor++;
@@ -167,16 +198,16 @@ bal_engine_destroy (bal_allocator_t *allocator, bal_engine_t *engine)
 }
 
 BAL_HOT static uint32_t
-extract_operand_value (bal_instruction_t      instruction,
-                       bal_decoder_operand_t *operand)
+extract_operand_value (const uint32_t               instruction,
+                       const bal_decoder_operand_t *operand)
 {
     if (BAL_OPERAND_TYPE_NONE == operand->type)
     {
         return 0;
     }
 
-    uint32_t mask = (1U << (uint32_t)operand->bit_width) - 1;
-    uint32_t bits = (instruction >> (uint32_t)operand->bit_position) & mask;
+    uint32_t mask = (1U << operand->bit_width) - 1;
+    uint32_t bits = (instruction >> operand->bit_position) & mask;
     return bits;
 }
 
@@ -199,7 +230,7 @@ intern_constant (bal_constant_t                     constant,
     }
 
     constants[*count] = constant;
-    uint32_t index = *count | BAL_IS_CONSTANT_BIT_POSITION;
+    uint32_t index    = *count | BAL_IS_CONSTANT_BIT_POSITION;
     (*count)++;
     return index;
 }

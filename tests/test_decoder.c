@@ -71,7 +71,7 @@ main (void)
             // Device Under Test.
             // 
             const bal_decoder_instruction_metadata_t *dut_result
-                  = bal_decoder_arm64_decode(instruction);
+                  = bal_decode_arm64(instruction);
 
             const bal_decoder_instruction_metadata_t *ref_result = NULL;
 
