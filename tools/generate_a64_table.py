@@ -392,6 +392,8 @@ def parse_xml_file(filepath: str) -> List[A64Instruction]:
             operands: List[Operand] = parse_operands(
                 asmtemplate, field_map, explanation_map
             )
+            operands.sort(key=lambda x: x.bit_position)
+
             key: Tuple[int, int] = (encoding_mask, encoding_value)
             priority = bin(encoding_mask).count("1")
 
