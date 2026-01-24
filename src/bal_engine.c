@@ -9,8 +9,21 @@
 //
 #define MAX_GUEST_REGISTERS 128
 
-// Helper macro to align `x` UP to the nearest memory alignment.
-//
+#define BAL_OPCODE_SHIFT_POSITION  51U
+#define BAL_SOURCE1_SHIFT_POSITION 34U
+#define BAL_SOURCE2_SHIFT_POSITION 17U
+
+/// The maximum value for an Opcode.
+#define BAL_OPCODE_SIZE (1U << 11U)
+
+/// The maximum value for an Operand Index.
+/// Bit 17 is reserved for the "Is Constant" flag.
+#define BAL_SOURCE_SIZE (1U << 16U)
+
+/// The bit position for the is constant flag in a bal_instruction_t.
+#define BAL_IS_CONSTANT_BIT_POSITION (1U << 16U)
+
+/// Helper macro to align `x` UP to the nearest memory alignment.
 #define BAL_ALIGN_UP(x, memory_alignment) \
     (((x) + ((memory_alignment) - 1)) & ~((memory_alignment) - 1))
 
@@ -94,8 +107,6 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
         return BAL_ERROR_ENGINE_STATE_INVALID;
     }
 
-    // Load state to registers.
-    //
     bal_instruction_t *BAL_RESTRICT ir_instruction_cursor
         = engine->instructions + engine->instruction_count;
 
@@ -167,4 +178,28 @@ extract_operand_value (bal_instruction_t      instruction,
     uint32_t mask = (1U << (uint32_t)operand->bit_width) - 1;
     uint32_t bits = (instruction >> (uint32_t)operand->bit_position) & mask;
     return bits;
+}
+
+BAL_HOT static uint32_t
+intern_constant (bal_constant_t                     constant,
+                 bal_constant_t *BAL_RESTRICT       constants,
+                 bal_constant_count_t *BAL_RESTRICT count,
+                 size_t                             constants_max_size,
+                 bal_error_t *BAL_RESTRICT          status)
+{
+    if (BAL_UNLIKELY(*status != BAL_SUCCESS))
+    {
+        return 0 | BAL_IS_CONSTANT_BIT_POSITION;
+    }
+
+    if (BAL_UNLIKELY(*count >= constants_max_size))
+    {
+        *status = BAL_ERROR_INSTRUCTION_OVERFLOW;
+        return 0 | BAL_IS_CONSTANT_BIT_POSITION;
+    }
+
+    constants[*count] = constant;
+    uint32_t index = *count | BAL_IS_CONSTANT_BIT_POSITION;
+    (*count)++;
+    return index;
 }

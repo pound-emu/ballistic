@@ -132,7 +132,6 @@ BAL_HOT bal_error_t bal_engine_reset(bal_engine_t *engine);
 /// caller may have allocated it on the stack.
 BAL_COLD void bal_engine_destroy(bal_allocator_t *allocator,
                                  bal_engine_t    *engine);
-
 #endif /* BALLISTIC_ENGINE_H */
 
 /*** end of file ***/
