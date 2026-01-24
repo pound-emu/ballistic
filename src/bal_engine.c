@@ -124,11 +124,14 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
     bal_bit_width_t *BAL_RESTRICT bit_width_cursor
         = engine->ssa_bit_widths + engine->instruction_count;
 
-    bal_source_variable_t *BAL_RESTRICT source_variables_base
+    bal_source_variable_t *BAL_RESTRICT source_variables_cursor
         = engine->source_variables;
 
-    bal_constant_t               constant_count    = engine->constant_count;
+    bal_constant_t *BAL_RESTRICT constants_cursor  = engine->constants;
+    bal_constant_count_t         constant_count    = engine->constant_count;
+    size_t                       constants_size    = engine->constants_size;
     bal_instruction_count_t      instruction_count = engine->instruction_count;
+    bal_error_t                  status            = engine->status;
     const uint32_t *BAL_RESTRICT arm_instruction_cursor = arm_entry_point;
     uint32_t                     arm_register_values[BAL_OPERANDS_SIZE] = { 0 };
 
@@ -141,7 +144,8 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
         for (size_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
         {
             arm_register_values[i]
-                = extract_operand_value(*arm_instruction_cursor, &operands[i]);
+                = extract_operand_value(*arm_instruction_cursor, operands);
+            ++operands;
         }
 
         switch (metadata->ir_opcode)
@@ -150,7 +154,19 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
                 uint32_t rd = arm_register_values[0];
                 uint32_t rn = arm_register_values[1];
                 uint32_t rm = arm_register_values[2];
-                // TODO
+
+                if (BAL_OPERAND_TYPE_IMMEDIATE == operands[2].type)
+                {
+                    uint32_t constant_index = intern_constant(rm,
+                                                              constants_cursor,
+                                                              &constant_count,
+                                                              constants_size,
+                                                              &status);
+                }
+                else
+                {
+                    // TODO: Handle registers.
+                }
             }
             default:
                 break;
