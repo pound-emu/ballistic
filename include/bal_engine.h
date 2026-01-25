@@ -2,9 +2,9 @@
 #define BALLISTIC_ENGINE_H
 
 #include "bal_attributes.h"
-#include "bal_types.h"
-#include "bal_memory.h"
 #include "bal_errors.h"
+#include "bal_memory.h"
+#include "bal_types.h"
 #include <stdint.h>
 
 /// A byte pattern written to memory during initialization, poisoning allocated
@@ -75,7 +75,7 @@ BAL_ALIGNED(64) typedef struct
 
     /// The base pointer returned during the underlying heap allocation. This
     /// is required to correctly free the engine's internal arrays.
-    void  *arena_base;
+    void *arena_base;
 
     /// The total size of the allocated arena.
     size_t arena_size;
@@ -96,8 +96,7 @@ BAL_ALIGNED(64) typedef struct
 ///
 /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot fulfill the
 /// request.
-BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator,
-                                     bal_engine_t    *engine);
+BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine);
 
 /// Translates machine code starting at `arm_entry_point` into the engine's
 /// internal IR. `interface` provides memory access handling (like instruction
@@ -109,17 +108,16 @@ BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator,
 ///
 /// Returns [`BAL_ERROR_ENGINE_STATE_INVALID`] if `engine` is not initialized
 /// or `engine->status != BAL_SUCCESS`.
-BAL_HOT bal_error_t
-bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
-                     bal_memory_interface_t *BAL_RESTRICT interface,
-                     const uint32_t *BAL_RESTRICT         arm_entry_point);
+BAL_HOT bal_error_t bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
+                                         bal_memory_interface_t *BAL_RESTRICT interface,
+                                         const uint32_t *BAL_RESTRICT         arm_entry_point);
 
 /// Resets `engine` for the next compilation unit. This is a low cost memory
 /// operation designed to be called between translation units.
 ///
 /// Returns [`BAL_SUCCESS`] on success.
 ///
-/// # Errors 
+/// # Errors
 ///
 /// Returns [`BAL_ERROR_INVALID_ARGUMENT`] if `engine` is `NULl`.
 BAL_HOT bal_error_t bal_engine_reset(bal_engine_t *engine);
@@ -130,8 +128,7 @@ BAL_HOT bal_error_t bal_engine_reset(bal_engine_t *engine);
 ///
 /// This function does not free the [`bal_engine_t`] struct itself, as the
 /// caller may have allocated it on the stack.
-BAL_COLD void bal_engine_destroy(bal_allocator_t *allocator,
-                                 bal_engine_t    *engine);
+BAL_COLD void bal_engine_destroy(bal_allocator_t *allocator, bal_engine_t *engine);
 #endif /* BALLISTIC_ENGINE_H */
 
 /*** end of file ***/

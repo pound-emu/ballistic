@@ -19,35 +19,36 @@ extern "C"
 {
 #endif
 
-    #define BAL_OPERANDS_SIZE 4
-    #define BAL_OPERAND_BIT_WIDTH 5
+#define BAL_OPERANDS_SIZE     4
+#define BAL_OPERAND_BIT_WIDTH 5
 
     /// The type of an instruction operand.
     typedef enum
     {
-        BAL_OPERAND_TYPE_NONE      = 0,
+        BAL_OPERAND_TYPE_NONE         = 0,
         BAL_OPERAND_TYPE_REGISTER_32  = 1,
-        BAL_OPERAND_TYPE_REGISTER_64 = 2,
+        BAL_OPERAND_TYPE_REGISTER_64  = 2,
         BAL_OPERAND_TYPE_REGISTER_128 = 3,
-        BAL_OPERAND_TYPE_IMMEDIATE = 4,
-        BAL_OPERAND_TYPE_CONDITION = 5,
+        BAL_OPERAND_TYPE_IMMEDIATE    = 4,
+        BAL_OPERAND_TYPE_CONDITION    = 5,
     } bal_decoder_operand_type_t;
 
     /// Descriptor for a single operand.
     typedef struct
     {
         /// Operand type. See [`bal_decoder_operand_type_t`].
-        uint16_t type         : 5;
+        uint16_t type : 5;
 
         /// Bit position in the instruction.
         uint16_t bit_position : 6;
 
         /// Bit width of the field.
-        uint16_t bit_width    : BAL_OPERAND_BIT_WIDTH;
+        uint16_t bit_width : BAL_OPERAND_BIT_WIDTH;
     } bal_decoder_operand_t;
 
     static_assert(2 == sizeof(bal_decoder_operand_t), "Expected operand struct to be 2 bytes.");
-    static_assert(5 == BAL_OPERAND_BIT_WIDTH, "Operand bit width must be less than 32 to prevent shift overflow.");
+    static_assert(5 == BAL_OPERAND_BIT_WIDTH,
+                  "Operand bit width must be less than 32 to prevent shift overflow.");
 
     /// Represents static metadata aasociated with a specific ARM instruction.
     BAL_ALIGNED(32) typedef struct
@@ -73,7 +74,8 @@ extern "C"
         bal_decoder_operand_t operands[BAL_OPERANDS_SIZE];
     } bal_decoder_instruction_metadata_t;
 
-    static_assert(32 == sizeof(bal_decoder_instruction_metadata_t), "Expected decoder metadata struct to be 32 bytes.");
+    static_assert(32 == sizeof(bal_decoder_instruction_metadata_t),
+                  "Expected decoder metadata struct to be 32 bytes.");
 
     /// Decodes a raw ARM64 instruction.
     ///
@@ -85,8 +87,7 @@ extern "C"
     ///
     /// The pointer refers to static readonly memory. It is valid for the
     /// lifetime of the program and must not be freed.
-    BAL_HOT const bal_decoder_instruction_metadata_t *bal_decode_arm64(
-        const uint32_t instruction);
+    BAL_HOT const bal_decoder_instruction_metadata_t *bal_decode_arm64(const uint32_t instruction);
 
 #ifdef __cplusplus
 }

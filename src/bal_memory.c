@@ -1,12 +1,10 @@
 #include "bal_memory.h"
-#include <stdlib.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 static void                  *default_allocate(void *, size_t, size_t);
 static void                   default_free(void *, void *, size_t);
-BAL_HOT static const uint8_t *_bal_translate_flat(void *,
-                                                  bal_guest_address_t,
-                                                  size_t *);
+BAL_HOT static const uint8_t *_bal_translate_flat(void *, bal_guest_address_t, size_t *);
 
 typedef struct
 {
@@ -15,7 +13,7 @@ typedef struct
 } flat_translation_interface_t;
 
 void
-bal_get_default_allocator (bal_allocator_t *out_allocator)
+bal_get_default_allocator(bal_allocator_t *out_allocator)
 {
     out_allocator->allocator = NULL;
     out_allocator->allocate  = default_allocate;
@@ -23,10 +21,10 @@ bal_get_default_allocator (bal_allocator_t *out_allocator)
 }
 
 bal_error_t
-bal_memory_init_flat (bal_allocator_t *BAL_RESTRICT        allocator,
-                      bal_memory_interface_t *BAL_RESTRICT interface,
-                      void *BAL_RESTRICT                   buffer,
-                      size_t                               size)
+bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
+                     bal_memory_interface_t *BAL_RESTRICT interface,
+                     void *BAL_RESTRICT                   buffer,
+                     size_t                               size)
 {
     if (NULL == allocator || NULL == interface || NULL == buffer || 0 == size)
     {
@@ -53,8 +51,7 @@ bal_memory_init_flat (bal_allocator_t *BAL_RESTRICT        allocator,
 }
 
 void
-bal_memory_destroy_flat (bal_allocator_t        *allocator,
-                         bal_memory_interface_t *interface)
+bal_memory_destroy_flat(bal_allocator_t *allocator, bal_memory_interface_t *interface)
 {
     if (NULL == allocator || NULL == interface)
     {
@@ -66,14 +63,13 @@ bal_memory_destroy_flat (bal_allocator_t        *allocator,
         return;
     }
 
-    allocator->free(
-        allocator, interface->context, sizeof(flat_translation_interface_t));
+    allocator->free(allocator, interface->context, sizeof(flat_translation_interface_t));
 }
 
 #if BAL_PLATFORM_POSIX
 
 static void *
-default_allocate (void *allocator, size_t alignment, size_t size)
+default_allocate(void *allocator, size_t alignment, size_t size)
 {
     if (0 == size)
     {
@@ -85,7 +81,7 @@ default_allocate (void *allocator, size_t alignment, size_t size)
 }
 
 static void
-default_free (void *allocator, void *pointer, size_t size)
+default_free(void *allocator, void *pointer, size_t size)
 {
     free(pointer);
 }
@@ -97,7 +93,7 @@ default_free (void *allocator, void *pointer, size_t size)
 #include <malloc.h>
 
 static void *
-default_allocate (void *allocator, size_t alignment, size_t size)
+default_allocate(void *allocator, size_t alignment, size_t size)
 {
     if (0 == size)
     {
@@ -109,7 +105,7 @@ default_allocate (void *allocator, size_t alignment, size_t size)
 }
 
 static void
-default_free (void *allocator, void *pointer, size_t size)
+default_free(void *allocator, void *pointer, size_t size)
 {
     _aligned_free(pointer);
 }
@@ -117,19 +113,17 @@ default_free (void *allocator, void *pointer, size_t size)
 #endif /* BAL_PLATFORM_WINDOWS */
 
 static const uint8_t *
-_bal_translate_flat (void *BAL_RESTRICT   interface,
-                     bal_guest_address_t  guest_address,
-                     size_t *BAL_RESTRICT max_readable_size)
+_bal_translate_flat(void *BAL_RESTRICT   interface,
+                    bal_guest_address_t  guest_address,
+                    size_t *BAL_RESTRICT max_readable_size)
 {
-    if (BAL_UNLIKELY(NULL == interface || 0 == guest_address
-                     || NULL == max_readable_size))
+    if (BAL_UNLIKELY(NULL == interface || 0 == guest_address || NULL == max_readable_size))
     {
         return NULL;
     }
 
     flat_translation_interface_t *BAL_RESTRICT context
-        = (flat_translation_interface_t *)((bal_memory_interface_t *)interface)
-              ->context;
+        = (flat_translation_interface_t *)((bal_memory_interface_t *)interface)->context;
 
     // Is address out of bounds.
     //

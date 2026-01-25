@@ -1,13 +1,12 @@
 /** @file bal_types.h
  *
  * @brief Defines types used by Ballistic.
- */     
+ */
 
 #ifndef BALLISTIC_TYPES_H
 #define BALLISTIC_TYPES_H
 
 #include <stdint.h>
-
 
 typedef uint64_t bal_guest_address_t;
 typedef uint64_t bal_instruction_t;
@@ -42,6 +41,6 @@ typedef enum
     OPCODE_EMUM_END = 0x7FF, // Force enum to 2 bytes.
 } bal_opcode_t;
 
-#endif /* BALLISTIC_TYPES_H */   
+#endif /* BALLISTIC_TYPES_H */
 
 /*** end of file ***/

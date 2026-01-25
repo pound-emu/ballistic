@@ -2,10 +2,10 @@
 #define BALLISTIC_MEMORY_H
 
 #include "bal_attributes.h"
-#include "bal_types.h"
 #include "bal_errors.h"
-#include <stdint.h>
+#include "bal_types.h"
 #include <stddef.h>
+#include <stdint.h>
 
 /// A function signature for allocating aligned memory.
 ///
@@ -16,9 +16,7 @@
 ///
 /// Returns a pointer to the allocated memory, or `NULL` if the request could
 /// not be fulfilled.
-typedef void *(*bal_allocate_function_t)(void  *allocator, 
-                                         size_t alignment,
-                                         size_t size);
+typedef void *(*bal_allocate_function_t)(void *allocator, size_t alignment, size_t size);
 
 /// A function signature for releasing memory.
 ///
@@ -26,29 +24,26 @@ typedef void *(*bal_allocate_function_t)(void  *allocator,
 /// previously allocated by the corresponding allocate function. The `size`
 /// parameter indicates the size of the allocation being freed. Access to the
 /// heap state is provided via `allocator`.
-typedef void (*bal_free_function_t)(void  *allocator,
-                                    void  *pointer,
-                                    size_t size);
+typedef void (*bal_free_function_t)(void *allocator, void *pointer, size_t size);
 
 /// Translates a Guest Virtual Address (GVA) to a Host Virtual Address (HVA).
 ///
-/// Ballistic invokes this callback when it needs to fetch instructions or 
+/// Ballistic invokes this callback when it needs to fetch instructions or
 /// access data. The implementation must translate the provided `guest_address`
-/// using the opaque `context` and return a pointer to the corresponding host 
-/// memory. 
+/// using the opaque `context` and return a pointer to the corresponding host
+/// memory.
 ///
 /// Returns a pointer to the host memory containing the data at `guest_address`, or `NULL`
 /// if the address is unmapped or invalid.
 ///
-/// # Safety 
+/// # Safety
 ///
-/// The implementation must write the number of contiguous, readable bytes 
+/// The implementation must write the number of contiguous, readable bytes
 /// available at the returned pointer into `max_readable_size`. This prevents
 /// Ballistic from reading beyond the end of a mapped page or buffer.
-typedef const uint8_t *(*bal_translate_function_t)(
-    void               *context,
-    bal_guest_address_t guest_address,
-    size_t             *max_readable_size);
+typedef const uint8_t *(*bal_translate_function_t)(void               *context,
+                                                   bal_guest_address_t guest_address,
+                                                   size_t             *max_readable_size);
 
 /// The host application is responsible for providing an allocator capable of
 /// handling aligned memory requests.
@@ -74,9 +69,9 @@ typedef struct
 /// Defines the interface for translating guest addresses to host memory.
 typedef struct
 {
-    /// An opaque pointer to the context required for address translation 
+    /// An opaque pointer to the context required for address translation
     /// (e.g, a page walker or a buffer descriptor.).
-    void                    *context;
+    void *context;
 
     /// The callback invoked to perform address translation.
     bal_translate_function_t translate;
@@ -100,7 +95,7 @@ BAL_COLD void bal_get_default_allocator(bal_allocator_t *out_allocator);
 ///
 /// The internal interface is allocated with `allocator`. `interface` is
 /// populated with the resulting context and translation callbacks. `buffer`
-/// must be a  pre-allocated block of host memory of at least `size bytes. 
+/// must be a  pre-allocated block of host memory of at least `size bytes.
 ///
 /// Returns [`BAL_SUCCESS`] on success.
 ///
@@ -115,11 +110,10 @@ BAL_COLD void bal_get_default_allocator(bal_allocator_t *out_allocator);
 ///
 /// The caller retains ownership of `buffer`. It must remain valid and
 /// unmodified for the lifetime of the created interface.
-BAL_COLD bal_error_t
-bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
-                     bal_memory_interface_t *BAL_RESTRICT interface,
-                     void *BAL_RESTRICT                   buffer,
-                     size_t                               size);
+BAL_COLD bal_error_t bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
+                                          bal_memory_interface_t *BAL_RESTRICT interface,
+                                          void *BAL_RESTRICT                   buffer,
+                                          size_t                               size);
 
 /// Frees the internal sttae allocated within `interface` using the provided
 /// `allocator`.

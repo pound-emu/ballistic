@@ -1,7 +1,6 @@
 #ifndef BALLISTIC_PLATFORM_H
 #define BALLISTIC_PLATFORM_H
 
-
 #if defined(_WIN32) || defined(_WIN64)
 
 #define BAL_PLATFORM_WINDOWS 1
