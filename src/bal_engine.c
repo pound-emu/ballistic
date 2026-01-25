@@ -124,16 +124,15 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
     bal_bit_width_t *BAL_RESTRICT bit_width_cursor
         = engine->ssa_bit_widths + engine->instruction_count;
 
-    bal_source_variable_t *BAL_RESTRICT source_variables_cursor
+    bal_source_variable_t *BAL_RESTRICT source_variables
         = engine->source_variables;
 
-    bal_constant_t *BAL_RESTRICT constants_cursor  = engine->constants;
+    bal_constant_t *BAL_RESTRICT constants         = engine->constants;
     bal_constant_count_t         constant_count    = engine->constant_count;
-    size_t                       constants_size    = engine->constants_size;
     bal_instruction_count_t      instruction_count = engine->instruction_count;
     bal_error_t                  status            = engine->status;
     const uint32_t *BAL_RESTRICT arm_instruction_cursor = arm_entry_point;
-    uint32_t                     arm_register_values[BAL_OPERANDS_SIZE] = { 0 };
+    uint32_t                     arm_registers[BAL_OPERANDS_SIZE] = { 0 };
 
     while (ir_instruction_cursor < ir_instruction_end)
     {
@@ -143,30 +142,119 @@ bal_engine_translate (bal_engine_t *BAL_RESTRICT           engine,
 
         for (size_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
         {
-            arm_register_values[i]
+            arm_registers[i]
                 = extract_operand_value(*arm_instruction_cursor, operands);
             ++operands;
         }
 
         switch (metadata->ir_opcode)
         {
-            case OPCODE_ADD: {
-                uint32_t rd = arm_register_values[0];
-                uint32_t rn = arm_register_values[1];
-                uint32_t rm = arm_register_values[2];
+            case OPCODE_CONST: {
+                uint32_t rd    = arm_registers[0];
+                uint32_t imm16 = arm_registers[1];
+                uint32_t hw    = arm_registers[2];
+                uint32_t shift = hw * 16;
 
-                if (BAL_OPERAND_TYPE_IMMEDIATE == operands[2].type)
+                uint64_t mask = (32 == operands[0].bit_width)
+                                    ? 0xFFFFFFFFULL
+                                    : 0xFFFFFFFFFFFFFFFFULL;
+                // Calculate the shifted immediate value.
+                //
+                uint64_t value = (imm16 << shift) & mask;
+
+                // Check mneminic 4th character: MOV[Z], MOV[N], MOV[K].
+                //
+                char variant = metadata->name[3];
+
+                if ('N' == variant)
                 {
-                    uint32_t constant_index = intern_constant(rm,
-                                                              constants_cursor,
-                                                              &constant_count,
-                                                              constants_size,
-                                                              &status);
+                    value = (~value) & mask;
+                }
+
+                if ('K' == variant)
+                {
+                    // MOVK:
+                    // mask = ~(0xFFFF << shift)
+                    // cleared_val = Old_Rd & mask
+                    // new_val = cleared_val + (imm << shift)
+
+                    uint32_t old_ssa
+                        = (31 == rd) ? intern_constant(0,
+                                                       constants,
+                                                       &constant_count,
+                                                       engine->constants_size,
+                                                       &status)
+                                     : source_variables[rd].current_ssa_index;
+                    uint64_t clear_mask = (~(0xFFFFULL << shift)) & mask;
+                    uint32_t mask_index
+                        = intern_constant((uint32_t)clear_mask,
+                                          constants,
+                                          &constant_count,
+                                          engine->constants_size,
+                                          &status);
+
+                    if (BAL_UNLIKELY(status != BAL_SUCCESS))
+                    {
+                        break;
+                    }
+
+                    *ir_instruction_cursor = ((bal_instruction_t)OPCODE_AND
+                                              << BAL_OPCODE_SHIFT_POSITION)
+                                             | ((bal_instruction_t)old_ssa
+                                                << BAL_SOURCE1_SHIFT_POSITION)
+                                             | ((bal_instruction_t)mask_index
+                                                << BAL_SOURCE2_SHIFT_POSITION);
+
+                    ++ir_instruction_cursor;
+                    ++bit_width_cursor;
+                    ++instruction_count;
+
+                    uint32_t value_index
+                        = intern_constant((uint32_t)value,
+                                          constants,
+                                          &constant_count,
+                                          engine->constants_size,
+                                          &status);
+
+                    // Source 1 is the result of the AND instruction.
+                    //
+                    uint32_t masked_ssa    = instruction_count - 1;
+                    *ir_instruction_cursor = ((bal_instruction_t)OPCODE_ADD
+                                              << BAL_OPCODE_SHIFT_POSITION)
+                                             | ((bal_instruction_t)masked_ssa
+                                                << BAL_SOURCE1_SHIFT_POSITION)
+                                             | ((bal_instruction_t)value_index
+                                                << BAL_SOURCE2_SHIFT_POSITION);
                 }
                 else
                 {
-                    // TODO: Handle registers.
+                    uint32_t constant_index
+                        = intern_constant((uint32_t)value,
+                                          constants,
+                                          &constant_count,
+                                          engine->constants_size,
+                                          &status);
+
+                    if (BAL_UNLIKELY(status != BAL_SUCCESS))
+                    {
+                            break;
+                    }
+
+                    *ir_instruction_cursor
+                        = ((bal_instruction_t)OPCODE_CONST
+                           << BAL_OPCODE_SHIFT_POSITION)
+                          | ((bal_instruction_t)constant_index
+                             << BAL_SOURCE1_SHIFT_POSITION);
                 }
+
+                // Only update the SSA map is not writing to XZR/WZR.
+                //
+                if (rd != 31)
+                {
+                    source_variables[rd].current_ssa_index = instruction_count;
+                }
+
+                break;
             }
             default:
                 break;
