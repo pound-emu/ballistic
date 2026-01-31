@@ -74,7 +74,7 @@ main (int argc, char *argv[])
             (void)fprintf(stderr, "Error reading binary file.\n");
         }
         
-        error = bal_engine_translate(&engine, &interface, buffer);
+        error = bal_engine_translate(&engine, &interface, buffer, BUFFER_SIZE);
 
         if (error != BAL_SUCCESS)
         {

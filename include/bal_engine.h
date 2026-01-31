@@ -11,6 +11,31 @@
 /// regions. This is mainly used for detecting reads from uninitialized memory.
 #define POISON_UNINITIALIZED_MEMORY 0xFF
 
+/// IR Instruction Bitfield Layout:
+///
+/// 63               51 50        34 33        17 16        00
+/// |-----------------| |----------| |----------| |----------|
+///        opc             src1         src2         src3
+
+/// Opcode bitfield least significant bit.
+#define BAL_OPCODE_SHIFT_POSITION  51U
+
+/// Source1 bitfield least significant bit.
+#define BAL_SOURCE1_SHIFT_POSITION 34U
+
+/// Source2 bitfield least significant bit.
+#define BAL_SOURCE2_SHIFT_POSITION 17U
+
+/// The maximum value for an Opcode.
+#define BAL_OPCODE_SIZE (1U << 11U)
+
+/// The maximum value for an Operand Index.
+/// Bit 17 is reserved for the "Is Constant" flag.
+#define BAL_SOURCE_SIZE (1U << 16U)
+
+/// The bit position for the is constant flag in a bal_instruction_t.
+#define BAL_IS_CONSTANT_BIT_POSITION (1U << 16U)
+
 /// Represents the mapping of a Guest Register to an SSA variable.
 /// This is only used during Single Static Assignment construction
 /// to track variable definitions across basic blocks.
@@ -27,7 +52,7 @@ typedef struct
 /// Holds the Intermediate Representation buffers, SSA state, and other
 /// important metadata. The structure is divided into hot and cold data aligned
 /// to 64 bytes. Both hot and cold data lives on their own cache lines.
-BAL_ALIGNED(64) typedef struct
+typedef struct 
 {
     /* Hot Data */
 
@@ -98,7 +123,7 @@ BAL_ALIGNED(64) typedef struct
 /// request.
 BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine);
 
-/// Translates machine code starting at `arm_entry_point` into the engine's
+/// Translates machine code starting at `arm_instruction_cursor` into the engine's
 /// internal IR. `interface` provides memory access handling (like instruction
 /// fetching).
 ///
@@ -110,7 +135,8 @@ BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *e
 /// or `engine->status != BAL_SUCCESS`.
 BAL_HOT bal_error_t bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
                                          bal_memory_interface_t *BAL_RESTRICT interface,
-                                         const uint32_t *BAL_RESTRICT         arm_entry_point);
+                                         const uint32_t *BAL_RESTRICT arm_instruction_cursor,
+                                         size_t                       arm_size);
 
 /// Resets `engine` for the next compilation unit. This is a low cost memory
 /// operation designed to be called between translation units.

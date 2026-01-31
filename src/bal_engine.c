@@ -2,26 +2,13 @@
 #include "bal_decoder.h"
 #include <stddef.h>
 #include <string.h>
+#include <stdio.h>
 
 #define MAX_INSTRUCTIONS 65536
 
 // Not sure what exact value to put here.
 //
 #define MAX_GUEST_REGISTERS 128
-
-#define BAL_OPCODE_SHIFT_POSITION  51U
-#define BAL_SOURCE1_SHIFT_POSITION 34U
-#define BAL_SOURCE2_SHIFT_POSITION 17U
-
-/// The maximum value for an Opcode.
-#define BAL_OPCODE_SIZE (1U << 11U)
-
-/// The maximum value for an Operand Index.
-/// Bit 17 is reserved for the "Is Constant" flag.
-#define BAL_SOURCE_SIZE (1U << 16U)
-
-/// The bit position for the is constant flag in a bal_instruction_t.
-#define BAL_IS_CONSTANT_BIT_POSITION (1U << 16U)
 
 /// Helper macro to align `x` UP to the nearest memory alignment.
 #define BAL_ALIGN_UP(x, memory_alignment) \
@@ -33,8 +20,8 @@ typedef struct
     bal_bit_width_t        *bit_width_cursor;
     bal_source_variable_t  *source_variables;
     bal_constant_t         *constants;
-    bal_constant_count_t    constant_count;
     size_t                  constants_size;
+    bal_constant_count_t    constant_count;
     bal_instruction_count_t instruction_count;
     bal_error_t             status;
 } bal_translation_context_t;
@@ -107,9 +94,10 @@ bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
 bal_error_t
 bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
                      bal_memory_interface_t *BAL_RESTRICT interface,
-                     const uint32_t *BAL_RESTRICT         arm_entry_point)
+                     const uint32_t *BAL_RESTRICT         arm_instruction_cursor,
+                     size_t                               arm_size_bytes)
 {
-    if (BAL_UNLIKELY(NULL == engine || NULL == arm_entry_point))
+    if (BAL_UNLIKELY(NULL == engine || NULL == arm_instruction_cursor))
     {
         return BAL_ERROR_ENGINE_STATE_INVALID;
     }
@@ -119,26 +107,38 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
         .bit_width_cursor = engine->ssa_bit_widths + engine->instruction_count,
         .source_variables = engine->source_variables,
         .constants         = engine->constants,
+        .constants_size    = engine->constants_size,
         .constant_count    = engine->constant_count,
         .instruction_count = engine->instruction_count,
         .status            = engine->status,
     };
-    bal_instruction_t *BAL_RESTRICT ir_instruction_end
+
+    const bal_instruction_t *BAL_RESTRICT ir_instruction_end
         = engine->instructions + engine->instructions_size;
-    const uint32_t *BAL_RESTRICT arm_instruction_cursor           = arm_entry_point;
+    const uint32_t *arm_end = arm_instruction_cursor + (arm_size_bytes / sizeof(arm_size_bytes));
     uint32_t                     arm_registers[BAL_OPERANDS_SIZE] = { 0 };
 
-    while (context.ir_instruction_cursor < ir_instruction_end)
+    while ((context.ir_instruction_cursor < ir_instruction_end) && (arm_instruction_cursor < arm_end))
     {
         const bal_decoder_instruction_metadata_t *metadata
             = bal_decode_arm64(*arm_instruction_cursor);
+
+        if (BAL_UNLIKELY(NULL == metadata))
+        {
+            context.status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+            break;
+        }
+
         const bal_decoder_operand_t *BAL_RESTRICT operands = metadata->operands;
+
 
         for (size_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
         {
             arm_registers[i] = extract_operand_value(*arm_instruction_cursor, operands);
             ++operands;
         }
+
+        operands = metadata->operands;
 
         switch (metadata->ir_opcode)
         {
@@ -149,9 +149,14 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
                 break;
         }
 
-        context.ir_instruction_cursor++;
-        context.bit_width_cursor++;
-        arm_instruction_cursor++;
+        if (BAL_UNLIKELY(context.status != BAL_SUCCESS))
+        {
+            break;
+        }
+        
+        ++context.ir_instruction_cursor;
+        ++context.bit_width_cursor;
+        ++arm_instruction_cursor;
     }
 
     engine->instruction_count     = context.instruction_count;
@@ -229,10 +234,10 @@ intern_constant(bal_constant_t                     constant,
 }
 
 BAL_HOT static inline void
-translate_const(bal_translation_context_t                *context,
-                const bal_decoder_instruction_metadata_t *metadata,
-                uint32_t                                 *arm_registers,
-                const bal_decoder_operand_t              *operands)
+translate_const(bal_translation_context_t                *BAL_RESTRICT context,
+                const bal_decoder_instruction_metadata_t *BAL_RESTRICT metadata,
+                uint32_t                                 *BAL_RESTRICT arm_registers,
+                const bal_decoder_operand_t              *BAL_RESTRICT operands)
 {
     uint32_t rd    = arm_registers[0];
     uint32_t imm16 = arm_registers[1];
@@ -326,4 +331,6 @@ translate_const(bal_translation_context_t                *context,
     {
         context->source_variables[rd].current_ssa_index = context->instruction_count;
     }
+
+    context->instruction_count++;
 }

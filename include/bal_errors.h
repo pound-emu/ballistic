@@ -15,6 +15,7 @@ typedef enum
     BAL_ERROR_ALLOCATION_FAILED    = -2,
     BAL_ERROR_MEMORY_ALIGNMENT     = -3,
     BAL_ERROR_ENGINE_STATE_INVALID = -4,
+    BAL_ERROR_UNKNOWN_INSTRUCTION  = -5,
 
     // IR Errors.
     //

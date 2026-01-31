@@ -33,10 +33,11 @@ add_custom_command(
 )
 
 add_library(Ballistic STATIC
-    src/decoder.c
-    src/decoder_table_gen.c
+    src/bal_assert.c
     src/bal_engine.c
     src/bal_memory.c
+    src/decoder.c
+    src/decoder_table_gen.c
 )
 
 target_include_directories(Ballistic PUBLIC include)
@@ -53,6 +54,7 @@ else()
         -Wall -Wextra -Wpedantic -Werror
         -Wconversion -Wsign-conversion -Wshadow
         -Wstrict-prototypes -Wmissing-prototypes
+        -Wno-gnu-zero-variadic-macro-arguments # Make formatting assert messages easier
         -fno-strict-aliasing # Prevent common C aliasing UB
         -fstack-protector-strong
         -Wvla
@@ -119,8 +121,11 @@ endif()
 if (BALLISTIC_ENABLE_BUILD_TESTS)
 set(TESTS_NAME "ballistic_tests")
     enable_testing()
-    add_executable(${TESTS_NAME} tests/test_decoder.c)
+    create_test_sourcelist(
+        Tests ballistic_test_driver.c tests/test_decoder.c tests/test_translation.c)
+    add_executable(${TESTS_NAME} ${Tests})
     target_include_directories(${TESTS_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
-    add_test(NAME DecoderTest COMMAND ${TESTS_NAME})
+    add_test(NAME DecoderTest COMMAND ${TESTS_NAME} tests/test_decoder)
+    add_test(NAME TranslatorTest COMMAND ${TESTS_NAME} tests/test_translation)
 endif()

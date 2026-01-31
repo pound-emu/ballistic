@@ -29,8 +29,10 @@ typedef struct
     const bal_decoder_instruction_metadata_t *metadata;
 } hot_candidate_t;
 
+int tests_test_decoder (void);
+
 int
-main (void)
+tests_test_decoder (void)
 {
     uint64_t total_collisions = 0;
     uint64_t total_errors = 0;

@@ -141,7 +141,7 @@ jobs:
       - name: Run Test Suite
         if: matrix.type == 'Release'
         working-directory: build
-        run: ctest -C ${{ matrix.type }} --output-on-failure
+        run: ctest -C ${{ matrix.type }} --output-on-failure --verbose
 
       - name: Upload Artifacts
         if: matrix.type == 'Release'
