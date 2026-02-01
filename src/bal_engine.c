@@ -114,8 +114,8 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
     };
 
     const bal_instruction_t *BAL_RESTRICT ir_instruction_end
-        = engine->instructions + (engine->instructions_size / sizeof(engine->instructions_size));
-    const uint32_t *arm_end = arm_instruction_cursor + (arm_size_bytes / sizeof(arm_size_bytes));
+        = engine->instructions + engine->instructions_size;
+    const uint32_t *arm_end = arm_instruction_cursor + (arm_size_bytes / sizeof(uint32_t));
     uint32_t        arm_registers[BAL_OPERANDS_SIZE] = { 0 };
 
     while ((context.ir_instruction_cursor < ir_instruction_end)
