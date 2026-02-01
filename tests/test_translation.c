@@ -1,3 +1,4 @@
+#include "bal_attributes.h"
 #include "bal_assert.h"
 #include "bal_engine.h"
 #include "bal_errors.h"
@@ -37,7 +38,7 @@ tests_test_translation(void)
     // MOV X0, #42
     // MOV X0, #0
     //
-    uint32_t    buffer[BUFFER_SIZE] = { 0xD2800540, 0xD2800000 };
+    BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0xD2800540, 0xD2800000 };
     bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE);
 
     if (error != BAL_SUCCESS)
@@ -62,7 +63,7 @@ tests_test_translation(void)
     if (error != BAL_SUCCESS)
     {
         (void)fprintf(
-                stderr, "bal_engine_translate() failed (reason: %s).", bal_error_to_string(error));
+            stderr, "bal_engine_translate() failed (reason: %s).", bal_error_to_string(error));
         return EXIT_FAILURE;
     }
 

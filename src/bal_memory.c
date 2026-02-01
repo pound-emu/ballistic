@@ -34,7 +34,7 @@ bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
         return BAL_ERROR_INVALID_ARGUMENT;
     }
 
-    // ABI compliant memory alignment.
+    // ABI compliant 16-byte  memory alignment.
     size_t memory_alignment_bytes = 16U;
 
     if (((uintptr_t)buffer & memory_alignment_bytes) != 0)
