@@ -34,14 +34,15 @@ bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
         return BAL_ERROR_INVALID_ARGUMENT;
     }
 
-    // ABI compliant 16-byte  memory alignment.
-    size_t memory_alignment_bytes = 16U;
+    // ABI compliant 16-byte memory alignment.
+    size_t memory_alignment = 15U;
 
-    if (((uintptr_t)buffer & memory_alignment_bytes) != 0)
+    if (((uintptr_t)buffer & memory_alignment) != 0)
     {
         return BAL_ERROR_MEMORY_ALIGNMENT;
     }
 
+    size_t memory_alignment_bytes = 16U;
     flat_translation_interface_t *flat_interface
         = (flat_translation_interface_t *)allocator->allocate(
             allocator, memory_alignment_bytes, sizeof(flat_translation_interface_t));
