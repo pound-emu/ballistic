@@ -1,8 +1,8 @@
 #include "bal_engine.h"
 #include "bal_decoder.h"
 #include <stddef.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_INSTRUCTIONS 65536
 
@@ -104,21 +104,22 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
 
     bal_translation_context_t context = {
         .ir_instruction_cursor = engine->instructions + engine->instruction_count,
-        .bit_width_cursor = engine->ssa_bit_widths + engine->instruction_count,
-        .source_variables = engine->source_variables,
-        .constants         = engine->constants,
-        .constants_size    = engine->constants_size,
-        .constant_count    = engine->constant_count,
-        .instruction_count = engine->instruction_count,
-        .status            = engine->status,
+        .bit_width_cursor      = engine->ssa_bit_widths + engine->instruction_count,
+        .source_variables      = engine->source_variables,
+        .constants             = engine->constants,
+        .constants_size        = engine->constants_size,
+        .constant_count        = engine->constant_count,
+        .instruction_count     = engine->instruction_count,
+        .status                = engine->status,
     };
 
     const bal_instruction_t *BAL_RESTRICT ir_instruction_end
-        = engine->instructions + engine->instructions_size;
+        = engine->instructions + (engine->instructions_size / sizeof(engine->instructions_size));
     const uint32_t *arm_end = arm_instruction_cursor + (arm_size_bytes / sizeof(arm_size_bytes));
-    uint32_t                     arm_registers[BAL_OPERANDS_SIZE] = { 0 };
+    uint32_t        arm_registers[BAL_OPERANDS_SIZE] = { 0 };
 
-    while ((context.ir_instruction_cursor < ir_instruction_end) && (arm_instruction_cursor < arm_end))
+    while ((context.ir_instruction_cursor < ir_instruction_end)
+           && (arm_instruction_cursor < arm_end))
     {
         const bal_decoder_instruction_metadata_t *metadata
             = bal_decode_arm64(*arm_instruction_cursor);
@@ -129,21 +130,20 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
             break;
         }
 
-        const bal_decoder_operand_t *BAL_RESTRICT operands = metadata->operands;
-
+        const bal_decoder_operand_t *BAL_RESTRICT operands_cursor = metadata->operands;
 
         for (size_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
         {
-            arm_registers[i] = extract_operand_value(*arm_instruction_cursor, operands);
-            ++operands;
+            arm_registers[i] = extract_operand_value(*arm_instruction_cursor, operands_cursor);
+            ++operands_cursor;
         }
 
-        operands = metadata->operands;
+        operands_cursor = metadata->operands;
 
         switch (metadata->ir_opcode)
         {
             case OPCODE_CONST:
-                translate_const(&context, metadata, arm_registers, operands);
+                translate_const(&context, metadata, arm_registers, operands_cursor);
                 break;
             default:
                 break;
@@ -153,15 +153,15 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
         {
             break;
         }
-        
+
         ++context.ir_instruction_cursor;
         ++context.bit_width_cursor;
         ++arm_instruction_cursor;
     }
 
-    engine->instruction_count     = context.instruction_count;
-    engine->constant_count        = context.constant_count;
-    engine->status                = context.status;
+    engine->instruction_count = context.instruction_count;
+    engine->constant_count    = context.constant_count;
+    engine->status            = context.status;
     return engine->status;
 }
 
@@ -234,10 +234,10 @@ intern_constant(bal_constant_t                     constant,
 }
 
 BAL_HOT static inline void
-translate_const(bal_translation_context_t                *BAL_RESTRICT context,
+translate_const(bal_translation_context_t *BAL_RESTRICT                context,
                 const bal_decoder_instruction_metadata_t *BAL_RESTRICT metadata,
-                uint32_t                                 *BAL_RESTRICT arm_registers,
-                const bal_decoder_operand_t              *BAL_RESTRICT operands)
+                uint32_t *BAL_RESTRICT                                 arm_registers,
+                const bal_decoder_operand_t *BAL_RESTRICT              operands)
 {
     uint32_t rd    = arm_registers[0];
     uint32_t imm16 = arm_registers[1];
