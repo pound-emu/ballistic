@@ -106,6 +106,8 @@ BAL_COLD void bal_get_default_allocator(bal_allocator_t *out_allocator);
 /// Returns [`BAL_ERROR_MEMORY_ALIGNMENT`] if `buffer` is not aligned to a 4-byte
 /// boundary.
 ///
+/// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if failed to allocate memory interface.
+///
 /// # Safety
 ///
 /// The caller retains ownership of `buffer`. It must remain valid and

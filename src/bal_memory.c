@@ -1,16 +1,19 @@
 #include "bal_memory.h"
+#include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 
 static void                  *default_allocate(void *, size_t, size_t);
 static void                   default_free(void *, void *, size_t);
-BAL_HOT static const uint8_t *_bal_translate_flat(void *, bal_guest_address_t, size_t *);
+BAL_HOT static const uint8_t *bal_translate_flat(void *, bal_guest_address_t, size_t *);
 
 typedef struct
 {
     uint8_t *host_base;
     size_t   size;
 } flat_translation_interface_t;
+
+static_assert(0 == sizeof(flat_translation_interface_t) % 16, "Struct must be aligned to 16 bytes");
 
 void
 bal_get_default_allocator(bal_allocator_t *out_allocator)
@@ -31,22 +34,27 @@ bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
         return BAL_ERROR_INVALID_ARGUMENT;
     }
 
-    if (((uintptr_t)buffer & 3U) != 0)
+    // ABI compliant memory alignment.
+    size_t memory_alignment_bytes = 16U;
+
+    if (((uintptr_t)buffer & memory_alignment_bytes) != 0)
     {
-        // Buffer is not 4 byte aligned.
-        //
         return BAL_ERROR_MEMORY_ALIGNMENT;
     }
 
-    size_t                        memory_alignment = 4U;
     flat_translation_interface_t *flat_interface
         = (flat_translation_interface_t *)allocator->allocate(
-            allocator, memory_alignment, sizeof(flat_translation_interface_t));
+            allocator, memory_alignment_bytes, sizeof(flat_translation_interface_t));
+
+    if (NULL == flat_interface)
+    {
+        return BAL_ERROR_ALLOCATION_FAILED;
+    }
 
     flat_interface->host_base = (uint8_t *)buffer;
     flat_interface->size      = size;
     interface->context        = flat_interface;
-    interface->translate      = _bal_translate_flat;
+    interface->translate      = bal_translate_flat;
     return BAL_SUCCESS;
 }
 
@@ -113,7 +121,7 @@ default_free(void *allocator, void *pointer, size_t size)
 #endif /* BAL_PLATFORM_WINDOWS */
 
 static const uint8_t *
-_bal_translate_flat(void *BAL_RESTRICT   interface,
+bal_translate_flat(void *BAL_RESTRICT    interface,
                     bal_guest_address_t  guest_address,
                     size_t *BAL_RESTRICT max_readable_size)
 {
