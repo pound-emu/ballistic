@@ -6,6 +6,8 @@
 #ifndef BAL_ERRORS_H
 #define BAL_ERRORS_H
 
+#include "bal_attributes.h"
+
 typedef enum
 {
     // General Errors.
@@ -21,6 +23,9 @@ typedef enum
     //
     BAL_ERROR_INSTRUCTION_OVERFLOW = -100,
 } bal_error_t;
+
+/// Converts the enum into a readable string for error handling.
+BAL_COLD const char* bal_error_to_string(bal_error_t error);
 
 #endif /* BAL_ERRORS_H */
 

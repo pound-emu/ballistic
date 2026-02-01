@@ -35,6 +35,7 @@ add_custom_command(
 add_library(Ballistic STATIC
     src/bal_assert.c
     src/bal_engine.c
+    src/bal_errors.c
     src/bal_memory.c
     src/decoder.c
     src/decoder_table_gen.c

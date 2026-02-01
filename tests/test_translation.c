@@ -1,5 +1,6 @@
 #include "bal_assert.h"
 #include "bal_engine.h"
+#include "bal_errors.h"
 #include "bal_memory.h"
 #include <errno.h>
 #include <stdbool.h>
@@ -41,7 +42,8 @@ tests_test_translation(void)
 
     if (error != BAL_SUCCESS)
     {
-        (void)fprintf(stderr, "bal_memory_init_flat() failed.\n");
+        (void)fprintf(
+            stderr, "bal_memory_init_flat() failed (reason: %s).\n", bal_error_to_string(error));
         return EXIT_FAILURE;
     }
 
@@ -50,12 +52,19 @@ tests_test_translation(void)
 
     if (error != BAL_SUCCESS)
     {
-        (void)fprintf(stderr, "bal_engine_init() failed.\n");
+        (void)fprintf(
+            stderr, "bal_engine_init() failed (reason: %s).\n", bal_error_to_string(error));
         return EXIT_FAILURE;
     }
 
     error = bal_engine_translate(&engine, &interface, buffer, BUFFER_SIZE);
-    BAL_ASSERT(BAL_SUCCESS == error);
+
+    if (error != BAL_SUCCESS)
+    {
+        (void)fprintf(
+                stderr, "bal_engine_translate() failed (reason: %s).", bal_error_to_string(error));
+        return EXIT_FAILURE;
+    }
 
     ir_instruction_t expected[BUFFER_SIZE] = { {
                                                    .opcode              = OPCODE_CONST,
