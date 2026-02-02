@@ -36,6 +36,7 @@ add_library(Ballistic STATIC
     src/bal_assert.c
     src/bal_engine.c
     src/bal_errors.c
+    src/bal_logging.c
     src/bal_memory.c
     src/decoder.c
     src/decoder_table_gen.c
@@ -43,6 +44,7 @@ add_library(Ballistic STATIC
 
 target_include_directories(Ballistic PUBLIC include)
 target_include_directories(Ballistic PRIVATE src)
+target_compile_definitions(Ballistic PUBLIC BAL_MAX_LOG_LEVEL=4)
 
 if(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)

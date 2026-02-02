@@ -1,16 +1,17 @@
+#include "bal_attributes.h"
 #include "bal_engine.h"
 #include "bal_memory.h"
 #include <errno.h>
-#include <stdint.h>
-#include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BUFFER_SIZE 4096
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
     if (argc != 2)
     {
@@ -29,10 +30,9 @@ main (int argc, char *argv[])
 
     bal_allocator_t allocator = { 0 };
     bal_get_default_allocator(&allocator);
-    bal_memory_interface_t interface           = { 0 };
-    uint32_t               buffer[BUFFER_SIZE] = { 0 };
-    bal_error_t            error
-        = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE);
+    bal_memory_interface_t   interface           = { 0 };
+    BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0 };
+    bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE);
 
     if (error != BAL_SUCCESS)
     {
@@ -41,7 +41,7 @@ main (int argc, char *argv[])
     }
 
     bal_engine_t engine = { 0 };
-    error = bal_engine_init(&allocator, &engine);
+    error               = bal_engine_init(&allocator, &engine);
 
     if (error != BAL_SUCCESS)
     {
@@ -73,7 +73,7 @@ main (int argc, char *argv[])
         {
             (void)fprintf(stderr, "Error reading binary file.\n");
         }
-        
+
         error = bal_engine_translate(&engine, &interface, buffer, BUFFER_SIZE);
 
         if (error != BAL_SUCCESS)
@@ -83,7 +83,6 @@ main (int argc, char *argv[])
         }
 
         bal_engine_reset(&engine);
-        
     }
 
     return EXIT_SUCCESS;

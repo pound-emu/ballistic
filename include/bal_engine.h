@@ -3,6 +3,7 @@
 
 #include "bal_attributes.h"
 #include "bal_errors.h"
+#include "bal_logging.h"
 #include "bal_memory.h"
 #include "bal_types.h"
 #include <stdint.h>
@@ -105,6 +106,9 @@ typedef struct
     /// The total size of the allocated arena.
     size_t arena_size;
 
+    /// Handles logging for this engine.
+    bal_logger_t logger;
+
 } bal_engine_t;
 
 /// Initializes a Ballistic engine.
@@ -133,6 +137,8 @@ BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *e
 ///
 /// Returns [`BAL_ERROR_ENGINE_STATE_INVALID`] if `engine` is not initialized
 /// or `engine->status != BAL_SUCCESS`.
+///
+/// Returns [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if the array `engine->constants` overflows.
 BAL_HOT bal_error_t bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
                                          bal_memory_interface_t *BAL_RESTRICT interface,
                                          const uint32_t *BAL_RESTRICT arm_instruction_cursor,

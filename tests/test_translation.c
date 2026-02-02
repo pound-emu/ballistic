@@ -39,12 +39,11 @@ tests_test_translation(void)
     // MOV X0, #0
     //
     BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0xD2800540, 0xD2800000 };
+    size_t instruction_size_bytes  = 2 * sizeof(uint32_t);
     bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE);
 
     if (error != BAL_SUCCESS)
     {
-        (void)fprintf(
-            stderr, "bal_memory_init_flat() failed (reason: %s).\n", bal_error_to_string(error));
         return EXIT_FAILURE;
     }
 
@@ -53,17 +52,13 @@ tests_test_translation(void)
 
     if (error != BAL_SUCCESS)
     {
-        (void)fprintf(
-            stderr, "bal_engine_init() failed (reason: %s).\n", bal_error_to_string(error));
         return EXIT_FAILURE;
     }
 
-    error = bal_engine_translate(&engine, &interface, buffer, BUFFER_SIZE);
+    error = bal_engine_translate(&engine, &interface, buffer, instruction_size_bytes);
 
     if (error != BAL_SUCCESS)
     {
-        (void)fprintf(
-            stderr, "bal_engine_translate() failed (reason: %s).", bal_error_to_string(error));
         return EXIT_FAILURE;
     }
 

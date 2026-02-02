@@ -1,5 +1,6 @@
 #include "bal_engine.h"
 #include "bal_decoder.h"
+#include "bal_logging.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,16 +25,15 @@ typedef struct
     bal_constant_count_t    constant_count;
     bal_instruction_count_t instruction_count;
     bal_error_t             status;
+    bal_logger_t            logger;
 } bal_translation_context_t;
 
-static uint32_t extract_operand_value(const uint32_t, const bal_decoder_operand_t *);
-static uint32_t intern_constant(
-    bal_constant_t, bal_constant_t *, bal_constant_count_t *, size_t, bal_error_t *);
+static uint32_t    extract_operand_value(const uint32_t, const bal_decoder_operand_t *);
+static uint32_t    intern_constant(bal_translation_context_t *, const bal_constant_t);
 static inline void translate_const(bal_translation_context_t *,
                                    const bal_decoder_instruction_metadata_t *,
                                    uint32_t *,
                                    const bal_decoder_operand_t *);
-
 bal_error_t
 bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
 {
@@ -64,8 +64,22 @@ bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
     uint8_t *data
         = (uint8_t *)allocator->allocate(allocator, memory_alignment, total_size_with_padding);
 
+    bal_logger_t logger = { .log = bal_default_logger, .min_level = BAL_LOG_LEVEL_TRACE };
+    BAL_LOG_DEBUG(logger, "Calculating arena layout (Alignment: %zu bytes):", memory_alignment);
+    BAL_LOG_DEBUG(
+        logger, "  [0x%08zx] source_variables (%zu bytes)", (size_t)0, source_variables_size);
+    BAL_LOG_DEBUG(
+        logger, "  [0x%08zx] instructions     (%zu bytes)", offset_instructions, instructions_size);
+    BAL_LOG_DEBUG(logger,
+                  "  [0x%08zx] ssa_bit_widths   (%zu bytes)",
+                  offset_ssa_bit_widths,
+                  ssa_bit_widths_size);
+    BAL_LOG_DEBUG(
+        logger, "  [0x%08zx] constants        (%zu bytes)", offset_constants, constants_size);
+
     if (NULL == data)
     {
+        BAL_LOG_ERROR(logger, "Allocation of %zu bytes failed.", total_size_with_padding);
         engine->status = BAL_ERROR_ALLOCATION_FAILED;
         return engine->status;
     }
@@ -82,6 +96,12 @@ bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
     engine->status                = BAL_SUCCESS;
     engine->arena_base            = (void *)data;
     engine->arena_size            = total_size_with_padding;
+    engine->logger                = logger;
+
+    BAL_LOG_INFO(logger,
+                 "Initialized engine successfully. Arena: %p (%zu KB)",
+                 engine->arena_base,
+                 total_size_with_padding / 1024);
 
     (void)memset(engine->source_variables, POISON_UNINITIALIZED_MEMORY, source_variables_size);
     (void)memset(engine->instructions, POISON_UNINITIALIZED_MEMORY, instructions_size);
@@ -102,33 +122,60 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
         return BAL_ERROR_ENGINE_STATE_INVALID;
     }
 
-    bal_translation_context_t context = {
-        .ir_instruction_cursor = engine->instructions + engine->instruction_count,
-        .bit_width_cursor      = engine->ssa_bit_widths + engine->instruction_count,
-        .source_variables      = engine->source_variables,
-        .constants             = engine->constants,
-        .constants_size        = engine->constants_size,
-        .constant_count        = engine->constant_count,
-        .instruction_count     = engine->instruction_count,
-        .status                = engine->status,
-    };
+    BAL_LOG_INFO(engine->logger,
+                 "Starting JIT unit. GVA: %p, Size: %zu bytes ",
+                 (void *)arm_instruction_cursor,
+                 arm_size_bytes);
+
+    bal_translation_context_t context
+        = { .ir_instruction_cursor = engine->instructions + engine->instruction_count,
+            .bit_width_cursor      = engine->ssa_bit_widths + engine->instruction_count,
+            .source_variables      = engine->source_variables,
+            .constants             = engine->constants,
+            .constants_size        = engine->constants_size,
+            .constant_count        = engine->constant_count,
+            .instruction_count     = engine->instruction_count,
+            .status                = engine->status,
+            .logger                = engine->logger };
 
     const bal_instruction_t *BAL_RESTRICT ir_instruction_end
         = engine->instructions + engine->instructions_size;
-    const uint32_t *arm_end = arm_instruction_cursor + (arm_size_bytes / sizeof(uint32_t));
+    const uint32_t *arm_start = arm_instruction_cursor;
+    const uint32_t *arm_end   = arm_instruction_cursor + (arm_size_bytes / sizeof(uint32_t));
     uint32_t        arm_registers[BAL_OPERANDS_SIZE] = { 0 };
 
     while ((context.ir_instruction_cursor < ir_instruction_end)
            && (arm_instruction_cursor < arm_end))
     {
+        if (BAL_UNLIKELY(context.instruction_count >= (MAX_INSTRUCTIONS - 128)))
+        {
+            BAL_LOG_WARN(context.logger,
+                         "Critical buffer pressure. Inst:  %u/%d",
+                         context.instruction_count,
+                         MAX_INSTRUCTIONS);
+        }
+
         const bal_decoder_instruction_metadata_t *metadata
             = bal_decode_arm64(*arm_instruction_cursor);
 
+        size_t relative_offset = (size_t)((uintptr_t)arm_instruction_cursor - (uintptr_t)arm_start);
         if (BAL_UNLIKELY(NULL == metadata))
         {
+
+            BAL_LOG_ERROR(context.logger,
+                          "Decode failed for opcode 0x%08x at offset +0x%zx",
+                          arm_instruction_cursor,
+                          relative_offset);
             context.status = BAL_ERROR_UNKNOWN_INSTRUCTION;
             break;
         }
+
+        BAL_LOG_TRACE(context.logger,
+                      "  [+0x%04zx] 0x%08x: %-8s (SSA ID: %u)",
+                      relative_offset,
+                      arm_instruction_cursor,
+                      metadata->name,
+                      context.instruction_count);
 
         const bal_decoder_operand_t *BAL_RESTRICT operands_cursor = metadata->operands;
 
@@ -146,11 +193,15 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
                 translate_const(&context, metadata, arm_registers, operands_cursor);
                 break;
             default:
+                BAL_LOG_DEBUG(context.logger,
+                              "  SKIPPED: Opcode %s not implemented in IR layer.",
+                              metadata->name);
                 break;
         }
 
         if (BAL_UNLIKELY(context.status != BAL_SUCCESS))
         {
+            BAL_LOG_ERROR(context.logger, "  Status failure: %d", context.status);
             break;
         }
 
@@ -162,6 +213,12 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
     engine->instruction_count = context.instruction_count;
     engine->constant_count    = context.constant_count;
     engine->status            = context.status;
+
+    BAL_LOG_INFO(engine->logger,
+                 "Finished. Produced %u instructions, %u constants.",
+                 engine->instruction_count,
+                 engine->constant_count);
+
     return engine->status;
 }
 
@@ -210,27 +267,26 @@ extract_operand_value(const uint32_t instruction, const bal_decoder_operand_t *o
 }
 
 BAL_HOT static uint32_t
-intern_constant(bal_constant_t                     constant,
-                bal_constant_t *BAL_RESTRICT       constants,
-                bal_constant_count_t *BAL_RESTRICT count,
-                size_t                             constants_max_size,
-                bal_error_t *BAL_RESTRICT          status)
+intern_constant(bal_translation_context_t *BAL_RESTRICT context, bal_constant_t constant)
 {
-    if (BAL_UNLIKELY(*status != BAL_SUCCESS))
+    if (BAL_UNLIKELY(context->status != BAL_SUCCESS))
     {
-        return 0 | BAL_IS_CONSTANT_BIT_POSITION;
+        return 0;
     }
 
-    if (BAL_UNLIKELY(*count >= constants_max_size))
+    uint32_t index = context->constant_count;
+
+    if (BAL_UNLIKELY(index >= context->constants_size))
     {
-        *status = BAL_ERROR_INSTRUCTION_OVERFLOW;
-        return 0 | BAL_IS_CONSTANT_BIT_POSITION;
+        BAL_LOG_ERROR(context->logger, "Constant pool overflow.");
+        context->status = BAL_ERROR_INSTRUCTION_OVERFLOW;
+        return 0;
     }
 
-    constants[*count] = constant;
-    uint32_t index    = *count | BAL_IS_CONSTANT_BIT_POSITION;
-    (*count)++;
-    return index;
+    context->constants[index] = constant;
+    context->constant_count++;
+    BAL_LOG_DEBUG(context->logger, "  %zu -> Pool Index %u", constant, index);
+    return index | BAL_IS_CONSTANT_BIT_POSITION;
 }
 
 BAL_HOT static inline void
@@ -254,9 +310,18 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
     //
     char variant = metadata->name[3];
 
+    BAL_LOG_TRACE(context->logger,
+                  "  Variant='%c' Rd=%u Imm=0x%X Shift=%u Mask=0x%llX",
+                  variant,
+                  rd,
+                  imm16,
+                  shift,
+                  mask);
+
     if ('N' == variant)
     {
         value = (~value) & mask;
+        BAL_LOG_TRACE(context->logger, "  MOVN Inversion: New Value=0x%llX", value);
     }
 
     if ('K' == variant)
@@ -266,18 +331,21 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
         // cleared_val = Old_Rd & mask
         // new_val = cleared_val + (imm << shift)
 
-        uint32_t old_ssa    = (31 == rd) ? intern_constant(0,
-                                                        context->constants,
-                                                        &context->constant_count,
-                                                        context->constants_size,
-                                                        &context->status)
-                                         : context->source_variables[rd].current_ssa_index;
+        uint32_t old_ssa;
+
+        if (31 == rd)
+        {
+            BAL_LOG_TRACE(context->logger, "  MOVK Source is ZR. Interning 0.");
+            old_ssa = intern_constant(context, 0);
+        }
+        else
+        {
+            old_ssa = context->source_variables[rd].current_ssa_index;
+            BAL_LOG_TRACE(context->logger, "  MOVK Source: Reg X%u -> SSA v%u", rd, old_ssa);
+        }
+
         uint64_t clear_mask = (~(0xFFFFULL << shift)) & mask;
-        uint32_t mask_index = intern_constant((uint32_t)clear_mask,
-                                              context->constants,
-                                              &context->constant_count,
-                                              context->constants_size,
-                                              &context->status);
+        uint32_t mask_index = intern_constant(context, (uint32_t)clear_mask);
 
         if (BAL_UNLIKELY(context->status != BAL_SUCCESS))
         {
@@ -289,15 +357,22 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
               | ((bal_instruction_t)old_ssa << BAL_SOURCE1_SHIFT_POSITION)
               | ((bal_instruction_t)mask_index << BAL_SOURCE2_SHIFT_POSITION);
 
+        BAL_LOG_DEBUG(context->logger,
+                      "  EMIT: v%u = AND v%u, c%u (Mask: 0x%llX)",
+                      context->instruction_count,
+                      old_ssa,
+                      mask_index & ~BAL_IS_CONSTANT_BIT_POSITION,
+                      clear_mask);
+
+        uint32_t cleared_ssa = context->instruction_count;
+
+        // Advance cursor for the AND instruction.
+        //
         context->ir_instruction_cursor++;
         context->bit_width_cursor++;
         context->instruction_count++;
 
-        uint32_t value_index = intern_constant((uint32_t)value,
-                                               context->constants,
-                                               &context->constant_count,
-                                               context->constants_size,
-                                               &context->status);
+        uint32_t value_index = intern_constant(context, (uint32_t)value);
 
         // Source 1 is the result of the AND instruction.
         //
@@ -306,14 +381,13 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
             = ((bal_instruction_t)OPCODE_ADD << BAL_OPCODE_SHIFT_POSITION)
               | ((bal_instruction_t)masked_ssa << BAL_SOURCE1_SHIFT_POSITION)
               | ((bal_instruction_t)value_index << BAL_SOURCE2_SHIFT_POSITION);
+
+        BAL_LOG_DEBUG(context->logger, "  EMIT: v%u = ADD v%u, c%u (Val: 0x%llX)",
+                      context->instruction_count, cleared_ssa, value_index & ~BAL_IS_CONSTANT_BIT_POSITION, value);
     }
     else
     {
-        uint32_t constant_index = intern_constant((uint32_t)value,
-                                                  context->constants,
-                                                  &context->constant_count,
-                                                  context->constants_size,
-                                                  &context->status);
+        uint32_t constant_index = intern_constant(context, (uint32_t)value);
 
         if (BAL_UNLIKELY(context->status != BAL_SUCCESS))
         {
@@ -323,6 +397,9 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
         *context->ir_instruction_cursor
             = ((bal_instruction_t)OPCODE_CONST << BAL_OPCODE_SHIFT_POSITION)
               | ((bal_instruction_t)constant_index << BAL_SOURCE1_SHIFT_POSITION);
+
+        BAL_LOG_DEBUG(context->logger, "  EMIT: v%u = CONST %u (0x%llX)",
+                      context->instruction_count, constant_index & ~BAL_IS_CONSTANT_BIT_POSITION, value);
     }
 
     // Only update the SSA map is not writing to XZR/WZR.
@@ -330,6 +407,11 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
     if (rd != 31)
     {
         context->source_variables[rd].current_ssa_index = context->instruction_count;
+        BAL_LOG_DEBUG(context->logger, "  SSA UPDATE: X%u -> v%u", rd, context->instruction_count);
+    }
+    else 
+    {
+        BAL_LOG_TRACE(context->logger, "    SSA NO-OP: Destination is XZR");
     }
 
     context->instruction_count++;
