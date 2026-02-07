@@ -22,8 +22,8 @@ from xml.etree.ElementTree import Element
 from dataclasses import dataclass
 from typing import List, Dict, Tuple, Optional
 
-DEFAULT_DECODER_GENERATED_HEADER_NAME = "decoder_table_gen.h"
-DEFAULT_DECODER_GENERATED_SOURCE_NAME = "decoder_table_gen.c"
+DEFAULT_DECODER_GENERATED_HEADER_NAME = "bal_decoder_table_gen.h"
+DEFAULT_DECODER_GENERATED_SOURCE_NAME = "bal_decoder_table_gen.c"
 DEFAULT_OUTPUT_DIRECTORY = "../src/"
 DEFAULT_XML_DIRECTORY_PATH = "../spec/arm64_xml/"
 
@@ -33,7 +33,8 @@ DECODER_HASH_TABLE_BUCKET_STRUCT_NAME = "decoder_bucket_t"
 
 DECODER_ARM64_INSTRUCTIONS_SIZE_NAME = "BAL_DECODER_ARM64_INSTRUCTIONS_SIZE"
 DECODER_ARM64_HASH_TABLE_BUCKET_SIZE_NAME = "BAL_DECODER_ARM64_HASH_TABLE_BUCKET_SIZE"
-DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME = "g_bal_decoder_arm64_instructions"
+DECODER_ARM64_CANDIDATES_ARRAY_NAME = "g_decoder_hash_candidates"
+DECODER_ARM64_INSTRUCTIONS_ARRAY_NAME = "g_bal_decoder_arm64_instructions"
 
 DECODER_HASH_TABLE_SIZE = 2048
 
@@ -61,6 +62,12 @@ class A64Instruction:
     priority: int  # Higher number of set bits in mask = higher priority.
     array_index: int  # Position in the hash table bucket.
     operands: List[Operand]
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
 
 
 def parse_register_diagram(register_diagram: ET.Element) -> Dict[str, Tuple[int, int]]:
@@ -541,14 +548,14 @@ if __name__ == "__main__":
     print(f"Found {len(files)} XML files")
 
     all_instructions: List[A64Instruction] = []
-    files_to_ignore: List[str] = [os.path.join(xml_directory + "onebigfile.xml")]
+    file_to_ignore: str = "onebigfile.xml"
 
     for f in files:
         # Skip index and shared pseudo-code files.
         if "index" in f or "shared" in f:
             continue
 
-        if f in files_to_ignore:
+        if file_to_ignore in f:
             continue
 
         instructions: List[A64Instruction] = parse_xml_file(f)
@@ -569,14 +576,17 @@ if __name__ == "__main__":
             f"#define {DECODER_ARM64_INSTRUCTIONS_SIZE_NAME} {len(all_instructions)}\n\n"
         )
         f.write("typedef struct {\n")
-        f.write(f"    const {DECODER_METADATA_STRUCT_NAME} *const *instructions;\n")
-        f.write("    size_t count;\n")
+        f.write(f"   uint16_t index;\n")
+        f.write("    uint8_t  count;\n")
         f.write(f"}} {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME};\n\n")
+        f.write(
+            f"extern const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}];\n"
+        )
         f.write(
             f"extern const {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME} g_decoder_lookup_table[{DECODER_HASH_TABLE_SIZE}];\n\n"
         )
         f.write(
-            f"extern const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}];\n"
+                f"extern const {DECODER_METADATA_STRUCT_NAME} *const {DECODER_ARM64_CANDIDATES_ARRAY_NAME}[];\n\n"
         )
     print(f"Generated ARM decoder table header file -> {output_header_path}")
 
@@ -589,6 +599,42 @@ if __name__ == "__main__":
         decoder_generated_header_name = args.output_header
 
     buckets: Dict[int, List[A64Instruction]] = generate_hash_table(all_instructions)
+    flat_candidates: List[A64Instruction] = []
+    sequence_map: Dict[Tuple[A64Instruction, ...], int] = {}
+
+    # (start_index, count)
+    bucket_descriptors: List[Tuple[int, int]] = []
+
+    for i in range (DECODER_HASH_TABLE_SIZE):
+        candidate: List[A64Instruction] = buckets[i]
+        count: int = len(candidate)
+
+        if count == 0:
+            bucket_descriptors.append((0, 0))
+            continue
+
+        # Avoid generating duplicate hash entries.
+        candidate_tuple: Tuple[int, int] = tuple(candidate)
+
+        if candidate_tuple in sequence_map:
+            # Re-use existing sequence[candidate_tuple]
+            start_index: int  = sequence_map[candidate_tuple]
+        else:
+            # Create new sequence
+            start_index: int = len(flat_candidates)
+            flat_candidates.extend(candidate)
+            sequence_map[candidate_tuple] = start_index
+
+        if count >= 255:
+            print(f"Bucket {i} has {count} items, exceeding uint8_t limit.")
+            sys.exit(1)
+
+        bucket_descriptors.append((start_index, count))
+
+
+    if len(flat_candidates) >= 65535:
+        printf("Total candidates {len(flat_candidates)} exceeds uint16_t limit.")
+        sys.exit(1)
 
     with open(output_source_path, "w", encoding="utf-8") as f:
         f.write(f"{GENERATED_FILE_WARNING}\n\n")
@@ -597,7 +643,7 @@ if __name__ == "__main__":
         f.write(f'#include "bal_types.h"\n\n')
 
         f.write(
-            f"const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}] = {{\n"
+            f"const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}] = {{\n"
         )
 
         for inst in all_instructions:
@@ -617,33 +663,33 @@ if __name__ == "__main__":
 
         f.write("};")
 
-        # Generate the lookup table arrays first
-        array_name: str = ""
-        for i in range(DECODER_HASH_TABLE_SIZE):
-            if len(buckets[i]) > 0:
-                # Create a unique name for this bucket's array
-                array_name = f"g_bucket_{i}_instructions"
-                f.write(
-                    f"static const {DECODER_METADATA_STRUCT_NAME} *{array_name}[] = {{\n"
-                )
-                for inst in buckets[i]:
-                    f.write(
-                        f"    &{DECODER_ARM64_GLOBAL_INSTRUCTIONS_ARRAY_NAME}[{inst.array_index}],\n"
-                    )
-                f.write("};\n\n")
+        # The flat candidates array.
+        f.write(
+            f"const {DECODER_METADATA_STRUCT_NAME} *const {DECODER_ARM64_CANDIDATES_ARRAY_NAME}[] = {{\n"
+        )
+
+        for inst in flat_candidates:
+            f.write(
+                f"    &{DECODER_ARM64_INSTRUCTIONS_ARRAY_NAME}[{inst.array_index}],\n"
+            )
+
+        f.write("};\n\n")
 
         # Generate the main hash table
         f.write(
             f"const {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME} g_decoder_lookup_table[{DECODER_HASH_TABLE_SIZE}] = {{\n"
         )
+
         for i in range(DECODER_HASH_TABLE_SIZE):
-            if len(buckets[i]) > 0:
-                array_name = f"g_bucket_{i}_instructions"
+            index, count = bucket_descriptors[i]
+
+            if count > 0:
                 f.write(
-                    f"    [{i:#05x}] = {{ .instructions = {array_name}, .count = {len(buckets[i])}U }},\n"
+                    f"    [{i:#05x}] = {{ .index = {index}, .count = {count}U }},\n"
                 )
             else:
-                f.write(f"    [{i:#05x}] = {{ .instructions = NULL, .count = 0 }},\n")
+                f.write(f"    [{i:#05x}] = {{ .index = 0, .count = 0 }},\n")
+
         f.write("};\n")
 
     print(f"Generated ARM decoder table source file -> {output_source_path}")
