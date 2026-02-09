@@ -3,6 +3,7 @@
 
 #include "bal_attributes.h"
 #include "bal_errors.h"
+#include "bal_logging.h"
 #include "bal_types.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -115,7 +116,8 @@ BAL_COLD void bal_get_default_allocator(bal_allocator_t *out_allocator);
 BAL_COLD bal_error_t bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
                                           bal_memory_interface_t *BAL_RESTRICT interface,
                                           void *BAL_RESTRICT                   buffer,
-                                          size_t                               size);
+                                          size_t                               size,
+                                          bal_logger_t                         logger);
 
 /// Frees the internal sttae allocated within `interface` using the provided
 /// `allocator`.

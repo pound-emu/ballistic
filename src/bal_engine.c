@@ -25,7 +25,7 @@ typedef struct
     bal_constant_count_t    constant_count;
     bal_instruction_count_t instruction_count;
     bal_error_t             status;
-    bal_logger_t            logger;
+    bal_logger_t           *logger;
 } bal_translation_context_t;
 
 static uint32_t    extract_operand_value(const uint32_t, const bal_decoder_operand_t *);
@@ -34,8 +34,8 @@ static inline void translate_const(bal_translation_context_t *,
                                    const bal_decoder_instruction_metadata_t *,
                                    uint32_t *,
                                    const bal_decoder_operand_t *);
-bal_error_t
-bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
+BAL_COLD bal_error_t
+bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine, bal_logger_t logger)
 {
     if (NULL == allocator || NULL == engine)
     {
@@ -64,22 +64,21 @@ bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
     uint8_t *data
         = (uint8_t *)allocator->allocate(allocator, memory_alignment, total_size_with_padding);
 
-    bal_logger_t logger = { .log = bal_default_logger, .min_level = BAL_LOG_LEVEL_TRACE };
-    BAL_LOG_DEBUG(logger, "Calculating arena layout (Alignment: %zu bytes):", memory_alignment);
+    BAL_LOG_DEBUG(&logger, "Calculating arena layout (Alignment: %zu bytes):", memory_alignment);
     BAL_LOG_DEBUG(
-        logger, "  [0x%08zx] source_variables (%zu bytes)", (size_t)0, source_variables_size);
+        &logger, "  [0x%08zx] source_variables (%zu bytes)", (size_t)0, source_variables_size);
     BAL_LOG_DEBUG(
-        logger, "  [0x%08zx] instructions     (%zu bytes)", offset_instructions, instructions_size);
-    BAL_LOG_DEBUG(logger,
+        &logger, "  [0x%08zx] instructions     (%zu bytes)", offset_instructions, instructions_size);
+    BAL_LOG_DEBUG(&logger,
                   "  [0x%08zx] ssa_bit_widths   (%zu bytes)",
                   offset_ssa_bit_widths,
                   ssa_bit_widths_size);
     BAL_LOG_DEBUG(
-        logger, "  [0x%08zx] constants        (%zu bytes)", offset_constants, constants_size);
+        &logger, "  [0x%08zx] constants        (%zu bytes)", offset_constants, constants_size);
 
     if (NULL == data)
     {
-        BAL_LOG_ERROR(logger, "Allocation of %zu bytes failed.", total_size_with_padding);
+        BAL_LOG_ERROR(&logger, "Allocation of %zu bytes failed.", total_size_with_padding);
         engine->status = BAL_ERROR_ALLOCATION_FAILED;
         return engine->status;
     }
@@ -98,7 +97,7 @@ bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine)
     engine->arena_size            = total_size_with_padding;
     engine->logger                = logger;
 
-    BAL_LOG_INFO(logger,
+    BAL_LOG_INFO(&logger,
                  "Initialized engine successfully. Arena: %p (%zu KB)",
                  engine->arena_base,
                  total_size_with_padding / 1024);
@@ -122,7 +121,7 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
         return BAL_ERROR_ENGINE_STATE_INVALID;
     }
 
-    BAL_LOG_INFO(engine->logger,
+    BAL_LOG_INFO(&(engine->logger),
                  "Starting JIT unit. GVA: %p, Size: %zu bytes ",
                  (void *)arm_instruction_cursor,
                  arm_size_bytes);
@@ -136,7 +135,7 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
             .constant_count        = engine->constant_count,
             .instruction_count     = engine->instruction_count,
             .status                = engine->status,
-            .logger                = engine->logger };
+            .logger                = &engine->logger };
 
     const bal_instruction_t *BAL_RESTRICT ir_instruction_end
         = engine->instructions + engine->instructions_size;
@@ -214,7 +213,7 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
     engine->constant_count    = context.constant_count;
     engine->status            = context.status;
 
-    BAL_LOG_INFO(engine->logger,
+    BAL_LOG_INFO(&(engine->logger),
                  "Finished. Produced %u instructions, %u constants.",
                  engine->instruction_count,
                  engine->constant_count);
@@ -407,7 +406,7 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
     if (rd != 31)
     {
         context->source_variables[rd].current_ssa_index = context->instruction_count;
-        BAL_LOG_DEBUG(context->logger, "  SSA UPDATE: X%u -> v%u", rd, context->instruction_count);
+        BAL_LOG_DEBUG((context)->logger, "  SSA UPDATE: X%u -> v%u", rd, context->instruction_count);
     }
     else 
     {

@@ -44,42 +44,49 @@ BAL_COLD void bal_log_message(bal_logger_t   *logger,
                               const char     *format,
                               ...);
 
-BAL_COLD void bal_default_logger(void           *user_data,
-                                 bal_log_level_t level,
-                                 const char     *filename,
-                                 const char     *function,
-                                 int             line,
-                                 const char     *format,
-                                 va_list         args);
+/// Populates `logger` with Ballistic's default logging implementation.
+///
+/// # Safety
+///
+/// `logger` must NOT be `NULL`.
+BAL_COLD void bal_logger_init_default(bal_logger_t *logger);
 
-#define BAL_LOG(logger, level, format, ...)                                                         \
-    do                                                                                           \
-    {                                                                                            \
-        if (level <= BAL_MAX_LOG_LEVEL)                                                          \
-        {                                                                                        \
-            if ((logger).log && level <= (logger).min_level)                  \
-            {                                                                                    \
-                bal_log_message(                                                                 \
-                    &(logger), level, __FILE__, __func__, __LINE__, format, ##__VA_ARGS__); \
-            }                                                                                    \
-        }                                                                                        \
+#define BAL_LOG(logger, level, format, ...)                                                \
+    do                                                                                     \
+    {                                                                                      \
+        if (!(logger))                                                                     \
+        {                                                                                  \
+            break;                                                                         \
+        }                                                                                  \
+                                                                                           \
+        if (level <= BAL_MAX_LOG_LEVEL)                                                    \
+        {                                                                                  \
+            if ((logger)->log && level <= (logger)->min_level)                             \
+            {                                                                              \
+                bal_log_message(                                                           \
+                    (logger), level, __FILE__, __func__, __LINE__, format, ##__VA_ARGS__); \
+            }                                                                              \
+        }                                                                                  \
     } while (0)
 
-#define BAL_LOG_ERROR(logger, format, ...) BAL_LOG(logger, BAL_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
-#define BAL_LOG_WARN(logger, format, ...)  BAL_LOG(logger, BAL_LOG_LEVEL_WARN, format, ##__VA_ARGS__)
-#define BAL_LOG_INFO(logger, format, ...)  BAL_LOG(logger, BAL_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
+#define BAL_LOG_ERROR(logger, format, ...) \
+    BAL_LOG(logger, BAL_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
+#define BAL_LOG_WARN(logger, format, ...) BAL_LOG(logger, BAL_LOG_LEVEL_WARN, format, ##__VA_ARGS__)
+#define BAL_LOG_INFO(logger, format, ...) BAL_LOG(logger, BAL_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
 
 #ifndef NDEBUG
-#define BAL_LOG_DEBUG(logger, format, ...) BAL_LOG(logger, BAL_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
-#define BAL_LOG_TRACE(logger, format, ...) BAL_LOG(logger, BAL_LOG_LEVEL_TRACE, format, ##__VA_ARGS__)
+#define BAL_LOG_DEBUG(logger, format, ...) \
+    BAL_LOG(logger, BAL_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
+#define BAL_LOG_TRACE(logger, format, ...) \
+    BAL_LOG(logger, BAL_LOG_LEVEL_TRACE, format, ##__VA_ARGS__)
 #else
 #define BAL_LOG_DEBUG(logger, format, ...) \
-    do                                  \
-    {                                   \
+    do                                     \
+    {                                      \
     } while (0)
 #define BAL_LOG_TRACE(logger, format, ...) \
-    do                                  \
-    {                                   \
+    do                                     \
+    {                                      \
     } while (0)
 #endif
 

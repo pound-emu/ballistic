@@ -40,7 +40,9 @@ tests_test_translation(void)
     //
     BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0xD2800540, 0xD2800000 };
     size_t instruction_size_bytes  = 2 * sizeof(uint32_t);
-    bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE);
+    bal_logger_t logger = {0};
+    bal_logger_init_default(&logger);
+    bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE, logger);
 
     if (error != BAL_SUCCESS)
     {
@@ -48,7 +50,7 @@ tests_test_translation(void)
     }
 
     bal_engine_t engine = { 0 };
-    error               = bal_engine_init(&allocator, &engine);
+    error               = bal_engine_init(&allocator, &engine, logger);
 
     if (error != BAL_SUCCESS)
     {

@@ -113,7 +113,7 @@ typedef struct
 
 /// Initializes a Ballistic engine.
 ///
-/// Populates `engine` with empty buffers allocated with `allocator`. This is
+/// Populates `engine` with `logger` and empty buffers allocated with `allocator`. This is
 /// a high cost memory operation that reserves a lot of memory and should
 /// be called sparingly.
 ///
@@ -125,7 +125,7 @@ typedef struct
 ///
 /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot fulfill the
 /// request.
-BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine);
+BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine, bal_logger_t logger);
 
 /// Translates machine code starting at `arm_instruction_cursor` into the engine's
 /// internal IR. `interface` provides memory access handling (like instruction

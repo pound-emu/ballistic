@@ -1,5 +1,6 @@
 #include "bal_attributes.h"
 #include "bal_engine.h"
+#include "bal_logging.h"
 #include "bal_memory.h"
 #include <errno.h>
 #include <stdbool.h>
@@ -30,9 +31,11 @@ main(int argc, char *argv[])
 
     bal_allocator_t allocator = { 0 };
     bal_get_default_allocator(&allocator);
+    bal_logger_t logger = { 0 };
+    bal_logger_init_default(&logger);
     bal_memory_interface_t   interface           = { 0 };
     BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0 };
-    bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE);
+    bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE, logger);
 
     if (error != BAL_SUCCESS)
     {
@@ -41,7 +44,7 @@ main(int argc, char *argv[])
     }
 
     bal_engine_t engine = { 0 };
-    error               = bal_engine_init(&allocator, &engine);
+    error               = bal_engine_init(&allocator, &engine, logger);
 
     if (error != BAL_SUCCESS)
     {

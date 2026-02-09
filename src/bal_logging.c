@@ -1,7 +1,15 @@
 #include "bal_logging.h"
 #include <stdio.h>
 
-BAL_COLD void
+BAL_COLD static void bal_default_logger(void           *user_data,
+                                        bal_log_level_t level,
+                                        const char     *filename,
+                                        const char     *function,
+                                        int             line,
+                                        const char     *format,
+                                        va_list         args);
+
+void
 bal_log_message(bal_logger_t   *logger,
                 bal_log_level_t level,
                 const char     *filename,
@@ -16,7 +24,14 @@ bal_log_message(bal_logger_t   *logger,
     va_end(args);
 }
 
-BAL_COLD void
+void
+bal_logger_init_default(bal_logger_t *logger)
+{
+    logger->log       = bal_default_logger;
+    logger->min_level = BAL_LOG_LEVEL_TRACE;
+}
+
+BAL_COLD static void
 bal_default_logger(void           *user_data,
                    bal_log_level_t level,
                    const char     *filename,
