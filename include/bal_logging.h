@@ -13,11 +13,23 @@ typedef enum
     BAL_LOG_LEVEL_TRACE = 4,
 } bal_log_level_t;
 
+typedef struct
+{
+    /// Source file where the log occured.
+    const char *filename;
+
+    /// The function name where the log occured.
+    const char *function;
+
+    // The log level.
+    bal_log_level_t level;
+
+    // The line number where the log occured
+    int line;
+} bal_log_data_t;
+
 typedef void (*bal_log_function_t)(void           *user_data,
-                                   bal_log_level_t level,
-                                   const char     *filename,
-                                   const char     *function,
-                                   int             line,
+                                   bal_log_data_t *bal_data,
                                    const char     *format,
                                    va_list         args);
 
@@ -36,13 +48,7 @@ typedef struct
 
 #endif
 
-BAL_COLD void bal_log_message(bal_logger_t   *logger,
-                              bal_log_level_t level,
-                              const char     *filename,
-                              const char     *function,
-                              int             line,
-                              const char     *format,
-                              ...);
+BAL_COLD void bal_log_message(bal_logger_t *logger, bal_log_data_t *data, const char *format, ...);
 
 /// Populates `logger` with Ballistic's default logging implementation.
 ///
@@ -51,22 +57,25 @@ BAL_COLD void bal_log_message(bal_logger_t   *logger,
 /// `logger` must NOT be `NULL`.
 BAL_COLD void bal_logger_init_default(bal_logger_t *logger);
 
-#define BAL_LOG(logger, level, format, ...)                                                \
-    do                                                                                     \
-    {                                                                                      \
-        if (!(logger))                                                                     \
-        {                                                                                  \
-            break;                                                                         \
-        }                                                                                  \
-                                                                                           \
-        if (level <= BAL_MAX_LOG_LEVEL)                                                    \
-        {                                                                                  \
-            if ((logger)->log && level <= (logger)->min_level)                             \
-            {                                                                              \
-                bal_log_message(                                                           \
-                    (logger), level, __FILE__, __func__, __LINE__, format, ##__VA_ARGS__); \
-            }                                                                              \
-        }                                                                                  \
+#define BAL_LOG(logger, log_level, format, ...)                          \
+    do                                                                   \
+    {                                                                    \
+        if (!(logger))                                                   \
+        {                                                                \
+            break;                                                       \
+        }                                                                \
+                                                                         \
+        if (log_level <= BAL_MAX_LOG_LEVEL)                              \
+        {                                                                \
+            if ((logger)->log && log_level <= (logger)->min_level)       \
+            {                                                            \
+                bal_log_data_t data = { .filename = __FILE__,            \
+                                        .function = __func__,            \
+                                        .level    = log_level,           \
+                                        .line     = __LINE__ };          \
+                bal_log_message((logger), &data, format, ##__VA_ARGS__); \
+            }                                                            \
+        }                                                                \
     } while (0)
 
 #define BAL_LOG_ERROR(logger, format, ...) \
