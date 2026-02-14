@@ -9,6 +9,8 @@ from typing import List, Optional
 CC: str  = "clang"
 CFLAGS: List[str] = ["-Wall", "-Werror"]
 
+if os.name == "nt":
+    CFLAGS.append("-D_CRT_SECURE_NO_WARNINGS")
 
 def extract_code_blocks(filename: str) -> List[str]:
     with open(filename, "r") as f:

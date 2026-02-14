@@ -52,6 +52,7 @@ endif()
 
 if (MSVC)
     add_compile_options(/W4 /WX)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 else()
     add_compile_options(
         -Wall -Wextra -Wpedantic -Werror
@@ -72,7 +73,6 @@ endif()
 if(WIN32)
     # Disable some Windows SDK deprecation warnings
     target_compile_options(Ballistic PRIVATE -DNOMINMAX -DWIN32_LEAN_AND_MEAN)
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
 
