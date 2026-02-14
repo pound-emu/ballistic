@@ -1,3 +1,56 @@
+//! This module defines the logging system used by Ballistic. It routes log messages through a
+//! user-provided callback so users can integrate this module into their application's logging
+//! backend.
+//!
+//! # Configuration
+//!
+//! The verbosity is controled by two mechanisms:
+//!
+//! 1. Compile Time: The `BAL_MAX_LOG_LEVEL` macro determins the maximum severity compiled into
+//!    the binary. This is set in CMakeLists.txt. Logs below this level are compiled out via
+//!    dead code elimination.
+//! 2. Runtime: The `min_level` field in `bal_logger_t` filters messages dynamically.
+//!
+//! # Examples
+//!
+//! ## Default Initialization
+//!
+//! ```c
+//! #include "bal_logging.h"
+//!
+//! bal_logger_t logger = {0};
+//! bal_logger_init_default(&logger);
+//! BAL_LOG_INFO(&logger, "Engine initialized.");
+//! ```
+//!
+//! ## Custom Backend
+//!
+//! ```c
+//! #include "bal_logging.h"
+//! #include <stdio.h>
+//!
+//! void my_file_logger(void *user_data, bal_log_data_t *bal_data, const char *fmt, va_list args)
+//! {
+//!     FILE *f = (FILE *)user_data;
+//!
+//!     // Format: [LOG_LEVEL] file:line message
+//!     fprintf(f, "[%d] %s:%d ", bal_data->level, bal_data->filename, bal_data->line);
+//!     vfprintf(f, fmt, args);
+//!     fprintf(f, "\n");
+//! }
+//!
+//! // ---
+//!
+//! FILE *log_file = fopen("jit.log", "w");
+//! bal_logger_t logger = {
+//!     .user_data = log_file,
+//!     .log = my_file_logger,
+//!     .min_level = BAL_LOG_LEVEL_DEBUG
+//! };
+//!
+//! BAL_LOG_DEBUG(&logger, "Writing to custom file backend");
+//! ```
+
 #ifndef BALLISTIC_LOGGING_H
 #define BALLISTIC_LOGGING_H
 
@@ -11,10 +64,10 @@ typedef enum
     BAL_LOG_LEVEL_ERROR = 0,
 
     /// Non-critical issues that may result in degraded performance or functionality loss.
-    BAL_LOG_LEVEL_WARN  = 1,
+    BAL_LOG_LEVEL_WARN = 1,
 
     /// General operational events.
-    BAL_LOG_LEVEL_INFO  = 2,
+    BAL_LOG_LEVEL_INFO = 2,
 
     /// Information useful for debugging logic errors.
     BAL_LOG_LEVEL_DEBUG = 3,
@@ -55,14 +108,14 @@ typedef struct
 {
     /// An opaque pointer passed to the log callback. This can be used to store file handles or
     /// other context-specific data.
-    void              *user_data;
+    void *user_data;
 
     /// The callback invoked when a message needs to be logged. If this is `NULL`, logging is
     /// disabled for this context.
     bal_log_function_t log;
 
     /// The minimum severity level required for a message to be processed.
-    bal_log_level_t    min_level;
+    bal_log_level_t min_level;
 } bal_logger_t;
 
 // Remove all log code if log level not defined.
@@ -113,7 +166,7 @@ BAL_COLD void bal_logger_init_default(bal_logger_t *logger);
                 bal_log_data_t data = { .filename = __FILE__,            \
                                         .function = __func__,            \
                                         .level    = log_level,           \
-                                        .line     = __LINE__ };          \
+                                        .line     = __LINE__ };              \
                 bal_log_message((logger), &data, format, ##__VA_ARGS__); \
             }                                                            \
         }                                                                \
