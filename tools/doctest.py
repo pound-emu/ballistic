@@ -4,23 +4,24 @@ import os
 import argparse
 import subprocess
 import tempfile
+from typing import List, Optional
 
-CC = "clang"
-CFLAGS = ["-Wall", "-Werror"]
+CC: str  = "clang"
+CFLAGS: List[str] = ["-Wall", "-Werror"]
 
 
-def extract_code_blocks(filename: str):
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+def extract_code_blocks(filename: str) -> List[str]:
+    with open(filename, "r") as f:
+        lines: List[str] = f.readlines()
 
-    blocks = []
-    current_block = []
-    in_code_block = False
+    blocks: List[str] = []
+    current_block: List[str] = []
+    in_code_block: bool = False
 
     for line in lines:
-        raw = line.strip()
+        raw: str = line.strip()
 
-        content = ""
+        content: str = ""
         if raw.startswith("//!"):
             content = raw[3:]
         elif raw.startswith("///"):
@@ -50,9 +51,11 @@ def extract_code_blocks(filename: str):
     return blocks
 
 
-def test_file(header_file: str, include_directories: List[str], source_files: List[str]):
+def test_file(
+    header_file: str, include_directories: List[str], source_files: List[str]
+):
     print(f"Testing examples in {header_file}...")
-    blocks = extract_code_blocks(header_file)
+    blocks: List[str] = extract_code_blocks(header_file)
 
     success: bool = True
 
@@ -61,11 +64,12 @@ def test_file(header_file: str, include_directories: List[str], source_files: Li
         return success
 
     for i, code in enumerate(blocks):
+        test_source_file: str = ""
         if "// ---" in code:
-            parts = code.split("// ---")
-            global_section = parts[0]
-            main_section = parts[1]
-            test_source_file: str = f"""
+            parts: List[str] = code.split("// ---")
+            global_section: str = parts[0]
+            main_section: str = parts[1]
+            test_source_file = f"""
             {global_section}
             int main(void) {{
                 {main_section}
@@ -73,7 +77,7 @@ def test_file(header_file: str, include_directories: List[str], source_files: Li
             }}
             """
         else:
-            test_source_file: str = f"""
+            test_source_file = f"""
             int main(void)
             {{
                 {code}
@@ -81,12 +85,20 @@ def test_file(header_file: str, include_directories: List[str], source_files: Li
             }}
             """
 
-        with tempfile.NamedTemporaryFile(suffix='.c', mode='w', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".c", mode="w", delete=False) as tmp:
             tmp.write(test_source_file)
-            tmp_name = tmp.name
+            tmp_name: str = tmp.name
 
-        exe_name = tmp_name.replace(".c", "")
-        command: str = [CC] + ["-I"] + include_directories + CFLAGS + [tmp_name] + source_files + ["-o", exe_name]
+        exe_name: str = tmp_name.replace(".c", "")
+        command: List[str] = (
+            [CC]
+            + ["-I"]
+            + include_directories
+            + CFLAGS
+            + [tmp_name]
+            + source_files
+            + ["-o", exe_name]
+        )
         result = subprocess.run(command, capture_output=True, text=True)
 
         if result.returncode != 0:
@@ -107,13 +119,16 @@ def test_file(header_file: str, include_directories: List[str], source_files: Li
 
     return success
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run C documentation examples.")
-    parser.add_argument("header", help="The header file to parse")
-    parser.add_argument("--sources", nargs='+', help="Implementation source files to link against")
-    parser.add_argument("--includes", nargs='+', help="Include directories")
+    parser.add_argument("header", default=[], help="The header file to parse")
+    parser.add_argument(
+        "--sources", nargs="+", help="Implementation source files to link against"
+    )
+    parser.add_argument("--includes", nargs="+", default=[], help="Include directories")
 
-    args = parser.parse_args()
+    args: argparse.Namespace = parser.parse_args()
 
     if not test_file(args.header, args.includes, args.sources):
         sys.exit(1)
