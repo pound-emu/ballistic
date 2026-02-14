@@ -54,3 +54,7 @@ These scripts are solely used for building Ballistic and is called by CMake.
 ### Generate A64 Table
 
 This script parses the Official ARM Machine Readable Architecture Specification XML files in `spec/` and generates a hash table Ballistic's decoder uses to lookup instructions.
+
+### Doctest
+
+This script extract, compile, and validate code examples written in documentation. This replicates Rust doctest feature, where users can embed code in documentation using markdown. This script is can be run in the `build/` directory using `ctest --verbose -R DocTest`.

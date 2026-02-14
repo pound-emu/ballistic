@@ -131,4 +131,11 @@ set(TESTS_NAME "ballistic_tests")
     target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
     add_test(NAME DecoderTest COMMAND ${TESTS_NAME} tests/test_decoder)
     add_test(NAME TranslatorTest COMMAND ${TESTS_NAME} tests/test_translation)
+    add_test(
+        NAME DocTest
+        COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/doctest.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/bal_logging.h
+        --sources ${CMAKE_CURRENT_SOURCE_DIR}/src/bal_logging.c
+        --includes ${CMAKE_CURRENT_SOURCE_DIR}/include
+    )
 endif()
