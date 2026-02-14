@@ -108,7 +108,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_include_directories(${CDOC_NAME} PRIVATE ${CMARK_INCLUDE_DIR} ${CLANG_INCLUDE_DIR})
     target_link_libraries(${CDOC_NAME} PRIVATE ${CMARK_LIBRARY} ${CLANG_LIBRARY})
     set (PROJECT_HEADERS include/bal_engine.h include/bal_decoder.h
-        include/bal_memory.h include/bal_types.h include/bal_errors.h)
+        include/bal_memory.h include/bal_types.h include/bal_errors.h include/bal_logging.h)
 
     add_custom_target(doc ALL
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cdoc docs/cdoc ${PROJECT_HEADERS}
