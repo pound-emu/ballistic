@@ -1,3 +1,4 @@
+#include "bal_assembler.h"
 #include "bal_assert.h"
 #include "bal_attributes.h"
 #include "bal_engine.h"
@@ -31,17 +32,28 @@ static inline bool      is_constant(uint32_t);
 int
 tests_test_translation(void)
 {
+    bal_logger_t logger = { 0 };
+    bal_logger_init_default(&logger);
+
     bal_allocator_t allocator = { 0 };
     bal_get_default_allocator(&allocator);
     bal_memory_interface_t interface = { 0 };
 
-    // MOV X0, #42
-    // MOV X0, #0
+    BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0 };
+    bal_assembler_t          assembler           = { 0 };
+    bal_error_t              status = bal_assembler_init(&assembler, buffer, BUFFER_SIZE);
+
+    if (status != BAL_SUCCESS)
+    {
+        printf("%s\n", bal_error_to_string(status));
+        return EXIT_FAILURE;
+    }
+
+    // MOV X0, #4
     //
-    BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE]    = { 0xD2800540, 0xD2800000 };
-    size_t                   instruction_size_bytes = 2 * sizeof(uint32_t);
-    bal_logger_t             logger                 = { 0 };
-    bal_logger_init_default(&logger);
+    bal_emit_movz(&assembler, BAL_REGISTER_X0, 42, 0);
+
+    size_t      instruction_size_bytes = 2 * sizeof(uint32_t);
     bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE, logger);
 
     if (error != BAL_SUCCESS)

@@ -33,6 +33,7 @@ add_custom_command(
 )
 
 add_library(Ballistic STATIC
+    src/bal_assembler.c
     src/bal_assert.c
     src/bal_decoder.c
     src/bal_decoder_table_gen.c
