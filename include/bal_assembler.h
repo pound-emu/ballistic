@@ -189,7 +189,6 @@ void bal_emit_movz(bal_assembler_t     *assembler,
 ///
 /// # Safety
 ///
-/// * `rd` muse be less than 32.
 /// * `shift` must be 0, 16, 32, or 48.
 ///
 /// # Errors
@@ -210,7 +209,6 @@ void bal_emit_movk(bal_assembler_t     *assembler,
 ///
 /// # Safety
 ///
-/// * `rd` muse be less than 32.
 /// * `shift` must be 0, 16, 32, or 48.
 ///
 /// # Errors
