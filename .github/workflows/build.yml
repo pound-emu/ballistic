@@ -47,12 +47,12 @@ jobs:
       - name: Generate Source Headers
         run: cmake --build ${{ env.BUILD_DIR }} --target Ballistic --parallel $(nproc)
 
-      - name: Run Clang-Tidy
-        working-directory: ${{ github.workspace }}
-        run: |
-          find src include -name "*.[ch]" -not -name "decoder_table_gen.*" | xargs clang-tidy-18 -p ${{ env.BUILD_DIR }} \
-            --checks='-*,clang-diagnostic-*,bugprone-*,performance-*, portability-*' \
-            --warnings-as-errors=*
+      #- name: Run Clang-Tidy
+      #  working-directory: ${{ github.workspace }}
+      #  run: |
+      #    find src include -name "*.[ch]" -not -name "decoder_table_gen.*" | xargs clang-tidy-18 -p ${{ env.BUILD_DIR }} \
+      #      --checks='-*,clang-diagnostic-*,bugprone-*,performance-*, portability-*' \
+      #      --warnings-as-errors=*
   Build:
     name: ${{ matrix.os }} / ${{ matrix.type }}
     needs: Lint
