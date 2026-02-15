@@ -41,7 +41,7 @@ tests_test_translation(void)
 
     BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0 };
     bal_assembler_t          assembler           = { 0 };
-    bal_error_t              status = bal_assembler_init(&assembler, buffer, BUFFER_SIZE);
+    bal_error_t              status = bal_assembler_init(&assembler, buffer, BUFFER_SIZE, logger);
 
     if (status != BAL_SUCCESS)
     {

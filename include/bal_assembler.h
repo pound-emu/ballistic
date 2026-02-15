@@ -2,6 +2,7 @@
 #define BALLISTIC_ASSEMBLER_H
 
 #include "bal_errors.h"
+#include "bal_logging.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -40,13 +41,17 @@
 
 typedef struct
 {
-    uint32_t   *buffer;
-    size_t      capacity;
-    size_t      offset;
-    bal_error_t status;
+    uint32_t    *buffer;
+    size_t       capacity;
+    size_t       offset;
+    bal_logger_t logger;
+    bal_error_t  status;
 } bal_assembler_t;
 
-bal_error_t bal_assembler_init(bal_assembler_t *assembler, void *buffer, size_t size);
+bal_error_t bal_assembler_init(bal_assembler_t *assembler,
+                               void            *buffer,
+                               size_t           size,
+                               bal_logger_t     logger);
 
 void bal_emit_movz(bal_assembler_t *assembler, uint32_t rd, uint16_t imm, uint8_t shift);
 
