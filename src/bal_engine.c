@@ -118,6 +118,8 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
                      const uint32_t *BAL_RESTRICT         arm_instruction_cursor,
                      size_t                               arm_size_bytes)
 {
+    (void)interface;
+
     if (BAL_UNLIKELY(NULL == engine || NULL == arm_instruction_cursor))
     {
         return BAL_ERROR_ENGINE_STATE_INVALID;
@@ -366,6 +368,7 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
                       clear_mask);
 
         uint32_t cleared_ssa = context->instruction_count;
+        (void)cleared_ssa; // Remove unused variable warning from release builds.
 
         // Advance cursor for the AND instruction.
         //

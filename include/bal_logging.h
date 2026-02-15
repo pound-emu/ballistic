@@ -151,25 +151,25 @@ BAL_COLD void bal_logger_init_default(bal_logger_t *logger);
 ///
 /// The `logger` argument is the context handle, `log_level` is a `bal_log_level_t` value.
 /// `format` and the variable arguments follow standard `printf` syntax.
-#define BAL_LOG(logger, log_level, format, ...)                          \
-    do                                                                   \
-    {                                                                    \
-        if (!(logger))                                                   \
-        {                                                                \
-            break;                                                       \
-        }                                                                \
-                                                                         \
-        if (log_level <= BAL_MAX_LOG_LEVEL)                              \
-        {                                                                \
-            if ((logger)->log && log_level <= (logger)->min_level)       \
-            {                                                            \
-                bal_log_data_t data = { .filename = __FILE__,            \
-                                        .function = __func__,            \
-                                        .level    = log_level,           \
-                                        .line     = __LINE__ };              \
-                bal_log_message((logger), &data, format, ##__VA_ARGS__); \
-            }                                                            \
-        }                                                                \
+#define BAL_LOG(logger, log_level, format, ...)                         \
+    do                                                                  \
+    {                                                                   \
+        if (!(logger))                                                  \
+        {                                                               \
+            break;                                                      \
+        }                                                               \
+                                                                        \
+        if (log_level <= BAL_MAX_LOG_LEVEL)                             \
+        {                                                               \
+            if ((logger)->log && log_level <= (logger)->min_level)      \
+            {                                                           \
+                bal_log_data_t bld = { .filename = __FILE__,            \
+                                       .function = __func__,            \
+                                       .level    = log_level,           \
+                                       .line     = __LINE__ };              \
+                bal_log_message((logger), &bld, format, ##__VA_ARGS__); \
+            }                                                           \
+        }                                                               \
     } while (0)
 
 #define BAL_LOG_ERROR(logger, format, ...) \

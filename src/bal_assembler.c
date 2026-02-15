@@ -37,19 +37,19 @@ bal_assembler_init(bal_assembler_t *assembler, void *buffer, size_t size, bal_lo
 void
 bal_emit_movz(bal_assembler_t *assembler, bal_register_index_t rd, uint16_t imm, uint8_t shift)
 {
-    emit_mov(assembler, "MOVZ", rd, imm, shift, 0b10);
+    emit_mov(assembler, "MOVZ", rd, imm, shift, 0x2);
 }
 
 void
 bal_emit_movk(bal_assembler_t *assembler, bal_register_index_t rd, uint16_t imm, uint8_t shift)
 {
-    emit_mov(assembler, "MOVK", rd, imm, shift, 0b11);
+    emit_mov(assembler, "MOVK", rd, imm, shift, 0x3);
 }
 
 void
 bal_emit_movn(bal_assembler_t *assembler, bal_register_index_t rd, uint16_t imm, uint8_t shift)
 {
-    emit_mov(assembler, "MOVN", rd, imm, shift, 0b00);
+    emit_mov(assembler, "MOVN", rd, imm, shift, 0x0);
 }
 
 static inline bool
@@ -106,7 +106,7 @@ emit_mov(bal_assembler_t *assembler,
     uint32_t imm16       = imm;
     instruction |= (sf << 31);
     instruction |= (opcode << 29);
-    instruction |= (0b100101 << 23);
+    instruction |= (0x25 << 23); // 0b100101
     instruction |= (hw << 21);
     instruction |= (imm16 << 5);
     instruction |= (rd << 0);
@@ -119,6 +119,11 @@ emit_mov(bal_assembler_t *assembler,
                   rd,
                   imm,
                   shift);
+
+    // This function argument isnt used in the log trace above on release builds because the log
+    // trace is optimized out, making the compiler mark this variable as unused.
+    (void)mnemonic;
+
     assembler->buffer[assembler->offset++] = instruction;
 }
 

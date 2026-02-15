@@ -100,6 +100,8 @@ bal_memory_destroy_flat(bal_allocator_t *allocator, bal_memory_interface_t *inte
 static void *
 default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
 {
+    (void)handle;
+
     if (0 == size)
     {
         return NULL;
@@ -112,6 +114,8 @@ default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
 static void
 default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
 {
+    (void)handle;
+    (void)size;
     free(pointer);
 }
 
@@ -124,6 +128,8 @@ default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
 static void *
 default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
 {
+    (void)handle;
+
     if (0 == size)
     {
         return NULL;
@@ -136,6 +142,8 @@ default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
 static void
 default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
 {
+    (void)handle;
+    (void)size;
     _aligned_free(pointer);
 }
 

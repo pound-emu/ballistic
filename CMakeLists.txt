@@ -32,6 +32,21 @@ add_custom_command(
     COMMENT "Generating ARM64 Decoder Tables"
 )
 
+if (MSVC)
+    add_compile_options(/W4 /WX)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+else()
+    add_compile_options(
+        -Wall -Wextra -Wpedantic -Werror
+        -Wconversion -Wsign-conversion -Wshadow
+        -Wstrict-prototypes -Wmissing-prototypes
+        -Wno-gnu-zero-variadic-macro-arguments # Make formatting assert messages easier
+        -fno-strict-aliasing # Prevent common C aliasing UB
+        -fstack-protector-strong
+        -Wvla
+    )
+endif()
+
 add_library(Ballistic STATIC
     src/bal_assembler.c
     src/bal_assert.c
@@ -51,20 +66,6 @@ if(BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 endif()
 
-if (MSVC)
-    add_compile_options(/W4 /WX)
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-else()
-    add_compile_options(
-        -Wall -Wextra -Wpedantic -Werror
-        -Wconversion -Wsign-conversion -Wshadow
-        -Wstrict-prototypes -Wmissing-prototypes
-        -Wno-gnu-zero-variadic-macro-arguments # Make formatting assert messages easier
-        -fno-strict-aliasing # Prevent common C aliasing UB
-        -fstack-protector-strong
-        -Wvla
-    )
-endif()
 
 # Debugging and Sanitizers (Catch UB/Segfaults early)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
