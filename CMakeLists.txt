@@ -138,7 +138,9 @@ set(TESTS_NAME "ballistic_tests")
         NAME DocTest
         COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/doctest.py
         ${CMAKE_CURRENT_SOURCE_DIR}/include/bal_logging.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/bal_assembler.h
         --sources ${CMAKE_CURRENT_SOURCE_DIR}/src/bal_logging.c
+                  ${CMAKE_CURRENT_SOURCE_DIR}/src/bal_assembler.c
         --includes ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
 endif()

@@ -124,7 +124,7 @@ def test_file(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run C documentation examples.")
-    parser.add_argument("header", default=[], help="The header file to parse")
+    parser.add_argument("headers", nargs="+", default=[], help="The header files to parse")
     parser.add_argument(
         "--sources", nargs="+", help="Implementation source files to link against"
     )
@@ -132,5 +132,6 @@ if __name__ == "__main__":
 
     args: argparse.Namespace = parser.parse_args()
 
-    if not test_file(args.header, args.includes, args.sources):
-        sys.exit(1)
+    for header in args.headers:
+        if not test_file(header, args.includes, args.sources):
+            sys.exit(1)

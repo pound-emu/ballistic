@@ -1,3 +1,24 @@
+//! This module provides a low-level interface for generating ARM64 instructions into a
+//! pre-allocated memory buffer.
+//!
+//! # Examples
+//!
+//! ```c
+//! #include "bal_logging.h"
+//! #include "bal_assembler.h"
+//!
+//! uint32_t code[128];
+//! bal_assembler_t assembler;
+//! bal_logger_t logger = {0};
+//!
+//! bal_error_t error = bal_assembler_init(&assembler, code, 128, logger);
+//! if (error == BAL_SUCCESS)
+//! {
+//!     // MOV X0, #42
+//!     bal_emit_movz(&assembler, BAL_REGISTER_X0, 42, 0);
+//! }
+//! ```
+
 #ifndef BALLISTIC_ASSEMBLER_H
 #define BALLISTIC_ASSEMBLER_H
 
