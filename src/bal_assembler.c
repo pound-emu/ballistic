@@ -35,19 +35,19 @@ bal_assembler_init(bal_assembler_t *assembler, void *buffer, size_t size, bal_lo
 }
 
 void
-bal_emit_movz(bal_assembler_t *assembler, uint32_t rd, uint16_t imm, uint8_t shift)
+bal_emit_movz(bal_assembler_t *assembler, bal_register_index_t rd, uint16_t imm, uint8_t shift)
 {
     emit_mov(assembler, "MOVZ", rd, imm, shift, 0b10);
 }
 
 void
-bal_emit_movk(bal_assembler_t *assembler, uint32_t rd, uint16_t imm, uint8_t shift)
+bal_emit_movk(bal_assembler_t *assembler, bal_register_index_t rd, uint16_t imm, uint8_t shift)
 {
     emit_mov(assembler, "MOVK", rd, imm, shift, 0b11);
 }
 
 void
-bal_emit_movn(bal_assembler_t *assembler, uint32_t rd, uint16_t imm, uint8_t shift)
+bal_emit_movn(bal_assembler_t *assembler, bal_register_index_t rd, uint16_t imm, uint8_t shift)
 {
     emit_mov(assembler, "MOVN", rd, imm, shift, 0b00);
 }
