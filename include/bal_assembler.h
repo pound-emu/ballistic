@@ -175,8 +175,8 @@ bal_error_t bal_assembler_init(bal_assembler_t *assembler,
 ///
 /// Modifies `assembler->status` to the following if an error occurs:
 ///
-/// * [BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
-/// * [BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
+/// * [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
+/// * [`BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
 void bal_emit_movz(bal_assembler_t     *assembler,
                    bal_register_index_t rd,
                    uint16_t             imm,
@@ -196,8 +196,8 @@ void bal_emit_movz(bal_assembler_t     *assembler,
 ///
 /// Modifies `assembler->status` to the following if an error occurs:
 ///
-/// * [BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
-/// * [BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
+/// * [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
+/// * [`BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
 void bal_emit_movk(bal_assembler_t     *assembler,
                    bal_register_index_t rd,
                    uint16_t             imm,
@@ -217,8 +217,8 @@ void bal_emit_movk(bal_assembler_t     *assembler,
 ///
 /// Modifies `assembler->status` to the following if an error occurs:
 ///
-/// * [BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
-/// * [BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
+/// * [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
+/// * [`BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
 void bal_emit_movn(bal_assembler_t     *assembler,
                    bal_register_index_t rd,
                    uint16_t             imm,
