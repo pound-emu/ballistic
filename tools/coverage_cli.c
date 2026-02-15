@@ -1,23 +1,23 @@
 #include "bal_decoder.h"
 #include <errno.h>
-#include <stdint.h>
-#include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define INSTRUCTION_TRACKER_SIZE 2048 // Not sure what exact value to pur here.
 
 typedef struct
 {
-    const char  *name;
-    int counter;
+    const char *name;
+    int         counter;
 } instruction_tracker_t;
 
 int compare_trackers(const void *, const void *);
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
     if (argc != 2)
     {
@@ -29,7 +29,7 @@ main (int argc, char *argv[])
     FILE       *file     = fopen(filepath, "rb");
 
     if (NULL == file)
-    { 
+    {
         (void)fprintf(stderr, "fopen() failed to open file.");
         return EXIT_FAILURE;
     }
@@ -41,7 +41,7 @@ main (int argc, char *argv[])
 
     for (;;)
     {
-        size_t bytes_read =fread(&instruction, sizeof(instruction), count, file);
+        size_t bytes_read = fread(&instruction, sizeof(instruction), count, file);
 
         if (0 == bytes_read)
         {
@@ -62,8 +62,7 @@ main (int argc, char *argv[])
             (void)fprintf(stderr, "Error reading binary file.");
         }
 
-        const bal_decoder_instruction_metadata_t *metadata
-            = bal_decode_arm64(instruction);
+        const bal_decoder_instruction_metadata_t *metadata = bal_decode_arm64(instruction);
 
         if (NULL == metadata)
         {
@@ -80,8 +79,7 @@ main (int argc, char *argv[])
                     break;
                 }
 
-                bool is_names_equivalent
-                    = (0 == strcmp(tracker[i].name, metadata->name));
+                bool is_names_equivalent = (0 == strcmp(tracker[i].name, metadata->name));
 
                 if (true == is_names_equivalent)
                 {
@@ -92,10 +90,7 @@ main (int argc, char *argv[])
         }
     }
 
-    qsort(tracker,
-          INSTRUCTION_TRACKER_SIZE,
-          sizeof(instruction_tracker_t),
-          compare_trackers);
+    qsort(tracker, INSTRUCTION_TRACKER_SIZE, sizeof(instruction_tracker_t), compare_trackers);
 
     (void)printf("Top 20 most common instructions:\n");
 
@@ -113,8 +108,9 @@ main (int argc, char *argv[])
 }
 
 int
-compare_trackers (const void *a, const void *b)
+compare_trackers(const void *a, const void *b)
 {
-    return ((const instruction_tracker_t *)b)->counter - ((const instruction_tracker_t *)a)->counter;
- ;
+    return ((const instruction_tracker_t *)b)->counter
+           - ((const instruction_tracker_t *)a)->counter;
+    ;
 }

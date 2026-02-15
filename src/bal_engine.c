@@ -61,14 +61,16 @@ bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine, bal_logger_t l
     size_t total_size_with_padding
         = BAL_ALIGN_UP((offset_constants + constants_size), memory_alignment);
 
-    uint8_t *data
-        = (uint8_t *)allocator->allocate(allocator, memory_alignment, total_size_with_padding);
+    uint8_t *data = (uint8_t *)allocator->allocate(
+        allocator->handle, memory_alignment, total_size_with_padding);
 
     BAL_LOG_DEBUG(&logger, "Calculating arena layout (Alignment: %zu bytes):", memory_alignment);
     BAL_LOG_DEBUG(
         &logger, "  [0x%08zx] source_variables (%zu bytes)", (size_t)0, source_variables_size);
-    BAL_LOG_DEBUG(
-        &logger, "  [0x%08zx] instructions     (%zu bytes)", offset_instructions, instructions_size);
+    BAL_LOG_DEBUG(&logger,
+                  "  [0x%08zx] instructions     (%zu bytes)",
+                  offset_instructions,
+                  instructions_size);
     BAL_LOG_DEBUG(&logger,
                   "  [0x%08zx] ssa_bit_widths   (%zu bytes)",
                   offset_ssa_bit_widths,
@@ -245,7 +247,7 @@ bal_engine_destroy(bal_allocator_t *allocator, bal_engine_t *engine)
 {
     // No argument error handling. Segfault if user passes NULL.
 
-    allocator->free(allocator, engine->arena_base, engine->arena_size);
+    allocator->free(allocator->handle, engine->arena_base, engine->arena_size);
     engine->arena_base       = NULL;
     engine->source_variables = NULL;
     engine->instructions     = NULL;
@@ -381,8 +383,12 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
               | ((bal_instruction_t)masked_ssa << BAL_SOURCE1_SHIFT_POSITION)
               | ((bal_instruction_t)value_index << BAL_SOURCE2_SHIFT_POSITION);
 
-        BAL_LOG_DEBUG(context->logger, "  EMIT: v%u = ADD v%u, c%u (Val: 0x%llX)",
-                      context->instruction_count, cleared_ssa, value_index & ~BAL_IS_CONSTANT_BIT_POSITION, value);
+        BAL_LOG_DEBUG(context->logger,
+                      "  EMIT: v%u = ADD v%u, c%u (Val: 0x%llX)",
+                      context->instruction_count,
+                      cleared_ssa,
+                      value_index & ~BAL_IS_CONSTANT_BIT_POSITION,
+                      value);
     }
     else
     {
@@ -397,8 +403,11 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
             = ((bal_instruction_t)OPCODE_CONST << BAL_OPCODE_SHIFT_POSITION)
               | ((bal_instruction_t)constant_index << BAL_SOURCE1_SHIFT_POSITION);
 
-        BAL_LOG_DEBUG(context->logger, "  EMIT: v%u = CONST %u (0x%llX)",
-                      context->instruction_count, constant_index & ~BAL_IS_CONSTANT_BIT_POSITION, value);
+        BAL_LOG_DEBUG(context->logger,
+                      "  EMIT: v%u = CONST %u (0x%llX)",
+                      context->instruction_count,
+                      constant_index & ~BAL_IS_CONSTANT_BIT_POSITION,
+                      value);
     }
 
     // Only update the SSA map is not writing to XZR/WZR.
@@ -406,9 +415,10 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
     if (rd != 31)
     {
         context->source_variables[rd].current_ssa_index = context->instruction_count;
-        BAL_LOG_DEBUG((context)->logger, "  SSA UPDATE: X%u -> v%u", rd, context->instruction_count);
+        BAL_LOG_DEBUG(
+            (context)->logger, "  SSA UPDATE: X%u -> v%u", rd, context->instruction_count);
     }
-    else 
+    else
     {
         BAL_LOG_TRACE(context->logger, "    SSA NO-OP: Destination is XZR");
     }

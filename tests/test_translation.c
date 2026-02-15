@@ -1,5 +1,5 @@
-#include "bal_attributes.h"
 #include "bal_assert.h"
+#include "bal_attributes.h"
 #include "bal_engine.h"
 #include "bal_errors.h"
 #include "bal_memory.h"
@@ -38,9 +38,9 @@ tests_test_translation(void)
     // MOV X0, #42
     // MOV X0, #0
     //
-    BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE] = { 0xD2800540, 0xD2800000 };
-    size_t instruction_size_bytes  = 2 * sizeof(uint32_t);
-    bal_logger_t logger = {0};
+    BAL_ALIGNED(16) uint32_t buffer[BUFFER_SIZE]    = { 0xD2800540, 0xD2800000 };
+    size_t                   instruction_size_bytes = 2 * sizeof(uint32_t);
+    bal_logger_t             logger                 = { 0 };
     bal_logger_init_default(&logger);
     bal_error_t error = bal_memory_init_flat(&allocator, &interface, buffer, BUFFER_SIZE, logger);
 

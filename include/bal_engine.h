@@ -19,7 +19,7 @@
 ///        opc             src1         src2         src3
 
 /// Opcode bitfield least significant bit.
-#define BAL_OPCODE_SHIFT_POSITION  51U
+#define BAL_OPCODE_SHIFT_POSITION 51U
 
 /// Source1 bitfield least significant bit.
 #define BAL_SOURCE1_SHIFT_POSITION 34U
@@ -53,7 +53,7 @@ typedef struct
 /// Holds the Intermediate Representation buffers, SSA state, and other
 /// important metadata. The structure is divided into hot and cold data aligned
 /// to 64 bytes. Both hot and cold data lives on their own cache lines.
-typedef struct 
+typedef struct
 {
     /* Hot Data */
 
@@ -125,7 +125,9 @@ typedef struct
 ///
 /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot fulfill the
 /// request.
-BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator, bal_engine_t *engine, bal_logger_t logger);
+BAL_COLD bal_error_t bal_engine_init(bal_allocator_t *allocator,
+                                     bal_engine_t    *engine,
+                                     bal_logger_t     logger);
 
 /// Translates machine code starting at `arm_instruction_cursor` into the engine's
 /// internal IR. `interface` provides memory access handling (like instruction

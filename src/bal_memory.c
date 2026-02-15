@@ -3,8 +3,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-static void                  *default_allocate(void *, size_t, size_t);
-static void                   default_free(void *, void *, size_t);
+static void                  *default_allocate(bal_allocator_handle_t, size_t, size_t);
+static void                   default_free(bal_allocator_handle_t, void *, size_t);
 BAL_HOT static const uint8_t *bal_translate_flat(void *, bal_guest_address_t, size_t *);
 
 typedef struct
@@ -20,9 +20,9 @@ static_assert(0 == sizeof(flat_translation_interface_t) % 16, "Struct must be al
 void
 bal_get_default_allocator(bal_allocator_t *out_allocator)
 {
-    out_allocator->allocator = NULL;
-    out_allocator->allocate  = default_allocate;
-    out_allocator->free      = default_free;
+    out_allocator->handle   = NULL;
+    out_allocator->allocate = default_allocate;
+    out_allocator->free     = default_free;
 }
 
 BAL_COLD bal_error_t
@@ -36,9 +36,9 @@ bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
     if (NULL == allocator || NULL == interface || NULL == buffer || 0 == size)
     {
         BAL_LOG_ERROR(&logger,
-                          "Memory init failed. Invalid arguments (Buffer: %p, Size: %zu).",
-                          buffer,
-                          size);
+                      "Memory init failed. Invalid arguments (Buffer: %p, Size: %zu).",
+                      buffer,
+                      size);
 
         return BAL_ERROR_INVALID_ARGUMENT;
     }
@@ -58,7 +58,7 @@ bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
     size_t                        memory_alignment_bytes = 16U;
     flat_translation_interface_t *flat_interface
         = (flat_translation_interface_t *)allocator->allocate(
-            allocator, memory_alignment_bytes, sizeof(flat_translation_interface_t));
+            allocator->handle, memory_alignment_bytes, sizeof(flat_translation_interface_t));
 
     if (NULL == flat_interface)
     {
@@ -92,13 +92,13 @@ bal_memory_destroy_flat(bal_allocator_t *allocator, bal_memory_interface_t *inte
         return;
     }
 
-    allocator->free(allocator, interface->context, sizeof(flat_translation_interface_t));
+    allocator->free(allocator->handle, interface->context, sizeof(flat_translation_interface_t));
 }
 
 #if BAL_PLATFORM_POSIX
 
 static void *
-default_allocate(void *allocator, size_t alignment, size_t size)
+default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
 {
     if (0 == size)
     {
@@ -110,7 +110,7 @@ default_allocate(void *allocator, size_t alignment, size_t size)
 }
 
 static void
-default_free(void *allocator, void *pointer, size_t size)
+default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
 {
     free(pointer);
 }
@@ -122,7 +122,7 @@ default_free(void *allocator, void *pointer, size_t size)
 #include <malloc.h>
 
 static void *
-default_allocate(void *allocator, size_t alignment, size_t size)
+default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
 {
     if (0 == size)
     {
@@ -134,7 +134,7 @@ default_allocate(void *allocator, size_t alignment, size_t size)
 }
 
 static void
-default_free(void *allocator, void *pointer, size_t size)
+default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
 {
     _aligned_free(pointer);
 }

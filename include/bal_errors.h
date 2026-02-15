@@ -25,7 +25,7 @@ typedef enum
 } bal_error_t;
 
 /// Converts the enum into a readable string for error handling.
-BAL_COLD const char* bal_error_to_string(bal_error_t error);
+BAL_COLD const char *bal_error_to_string(bal_error_t error);
 
 #endif /* BAL_ERRORS_H */
 

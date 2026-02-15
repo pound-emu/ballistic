@@ -28,7 +28,13 @@ jobs:
           python-version: '3.11'
 
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y clang-tidy-18 cmake ninja-build libclang-18-dev libcmark-dev pkg-config
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy-18 clang-format-18 cmake ninja-build libclang-18-dev libcmark-dev pkg-config
+
+      - name: Run Clang-Format
+        run: | 
+          find src include tests tools -name "*.[ch]" \
+            -not -name "bal_decoder_table_gen.*" \
+                                                | xargs clang-format-18 --dry-run --Werror --style=file:.clang-format
 
       - name: Generate Compilation Database
         run: |
@@ -45,7 +51,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           find src include -name "*.[ch]" -not -name "decoder_table_gen.*" | xargs clang-tidy-18 -p ${{ env.BUILD_DIR }} \
-            --checks='-*,clang-diagnostic-*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-reserved-identifier' \
+            --checks='-*,clang-diagnostic-*,bugprone-*,performance-*, portability-*' \
             --warnings-as-errors=*
   Build:
     name: ${{ matrix.os }} / ${{ matrix.type }}
@@ -67,7 +73,7 @@ jobs:
             cc: clang-cl
             cxx: clang-cl
             flags_debug: "/Zi /Od -Wno-unknown-argument"
-            deps_cmd: choco install ninja ccache
+            deps_cmd: choco install ccache
             
           - os: macos-14
             cc: $(brew --prefix llvm@18)/bin/clang

@@ -8,8 +8,12 @@
 #define ASSERT_MESSAGE_BUFFER_SIZE 1024
 
 void
-bal_internal_assert_fail(
-    const char *file, int line, const char *func, const char *expr_str, const char *user_msg, ...)
+bal_internal_assert_fail(const char *file,
+                         int         line,
+                         const char *func,
+                         const char *expr_str, // NOLINT
+                         const char *user_msg, // NOLINT
+                         ...)
 {
     char assert_format[]
         = " \

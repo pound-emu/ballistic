@@ -8,6 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+struct bal_allocator_state_s;
+typedef struct bal_allocator_state_s *bal_allocator_handle_t;
+
 /// A function signature for allocating aligned memory.
 ///
 /// Implementations must allocate a block of memory of at least `size` bytes
@@ -17,7 +20,9 @@
 ///
 /// Returns a pointer to the allocated memory, or `NULL` if the request could
 /// not be fulfilled.
-typedef void *(*bal_allocate_function_t)(void *allocator, size_t alignment, size_t size);
+typedef void *(*bal_allocate_function_t)(bal_allocator_handle_t allocator,
+                                         size_t                 alignment,
+                                         size_t                 size);
 
 /// A function signature for releasing memory.
 ///
@@ -25,7 +30,7 @@ typedef void *(*bal_allocate_function_t)(void *allocator, size_t alignment, size
 /// previously allocated by the corresponding allocate function. The `size`
 /// parameter indicates the size of the allocation being freed. Access to the
 /// heap state is provided via `allocator`.
-typedef void (*bal_free_function_t)(void *allocator, void *pointer, size_t size);
+typedef void (*bal_free_function_t)(bal_allocator_handle_t allocator, void *pointer, size_t size);
 
 /// Translates a Guest Virtual Address (GVA) to a Host Virtual Address (HVA).
 ///
@@ -52,7 +57,7 @@ typedef struct
 {
     /// An opaque pointer defining the state or tracking information for the
     /// heap.
-    void *allocator;
+    bal_allocator_handle_t handle;
 
     /// The callback invoked to allocate aligned memory.
     ///
