@@ -2,15 +2,15 @@
   The Ballistic JIT Engine
 </h1>
 
-<p align="center"><em>“The world's fastest ARM recompiler"</em></p>
+<p align="center"><em>„The world's fastest ARM recompiler“</em></p>
 
 # Overview
 
-This is a rewrite the dynarmic recompiler, with the goal of fixing its many flaws.
+This is a rewrite of the dynarmic recompiler, with the goal of fixing its many flaws.
 
 # Building Ballistic
 
-## Install Dependancies
+## Install Dependencies
 
 ### macOS
 

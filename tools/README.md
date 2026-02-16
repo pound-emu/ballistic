@@ -1,10 +1,10 @@
 # Tools
 
-This folder holds scritps needed to build Ballistic and standalone programs used for testing Ballistic.
+This folder holds scripts needed to build Ballistic and standalone programs used for testing Ballistic.
 
-## Standlone Programs
+## Standalone Programs
 
-These programs will appear in directory you compile Ballistic with.
+These programs will appear in the directory you compile Ballistic in.
 
 ### Ballistic CLI
 
@@ -12,7 +12,7 @@ This is used by developers to test Ballistic's translation loop.
 
 ### CDoc
 
-This creates rustdoc like documentation for C code. CDoc completely relies on
+This creates rustdoc-like documentation for C code. CDoc completely relies on
 Clang and LLVM so only Unix systems are supported. Builing CDoc on Windows is
 not supported at this time.
 
@@ -33,7 +33,7 @@ Done! Open ../docs/cdoc/index.html
 
 **Disclaimer**: I have absolutely zero motivation to create a documentation
 generator so `cdoc.c` is made completely with AI. The code is messy but the
-generated HTML files look beautiful. 
+generated HTML files look beautiful.
 
 ### Coverage CLI
 
@@ -49,12 +49,12 @@ Mnemonic: ADD - Mask: 0x7F200000 - Expected: 0x0B000000
 
 ## Scripts
 
-These scripts are solely used for building Ballistic and is called by CMake.
+These scripts are solely used for building Ballistic and are called by CMake.
 
 ### Generate A64 Table
 
-This script parses the Official ARM Machine Readable Architecture Specification XML files in `spec/` and generates a hash table Ballistic's decoder uses to lookup instructions.
+This script parses the Official ARM Machine Readable Architecture Specification XML files in `spec/` and generates a hash table that's used by Ballistic's decoder to lookup instructions.
 
 ### Doctest
 
-This script extract, compile, and validate code examples written in documentation. This replicates Rust doctest feature, where users can embed code in documentation using markdown. This script is can be run in the `build/` directory using `ctest --verbose -R DocTest`.
+This script extracts, compiles, and validates code examples written in the documentation. This replicates Rust's doctest feature, where users can embed code in documentation using markdown. This script can be run in the `build/` directory using `ctest --verbose -R DocTest`.

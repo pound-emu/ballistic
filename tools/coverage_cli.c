@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INSTRUCTION_TRACKER_SIZE 2048 // Not sure what exact value to pur here.
+#define INSTRUCTION_TRACKER_SIZE 2048 // Not sure what exact value to put here.
 
 typedef struct
 {

@@ -12,7 +12,7 @@
 
 # Structured SSA Model
 
-This replicates [Dynarmic's](https://github.com/pound-emu/dynarmic) IR layer 
+This replicates [Dynarmic's](https://github.com/pound-emu/dynarmic) IR layer
 but it respects SSA by using Block Arguments. Branches push values into the
 target scope like function parameters.
 
@@ -22,7 +22,7 @@ target scope like function parameters.
 
 ```c
 // This struct is *only* used for SSA construction. It maps the program'
-// original state (like Guest Registers) to the current SSA variable. 
+// original state (like Guest Registers) to the current SSA variable.
 //
 typedef struct
 {
@@ -82,7 +82,7 @@ This was created to find out how many variables will be modified in
 typedef struct
 {
     uint32_t type;          // BLOCK_TYPE_IF, BLOCK_TYPE_LOOP
-    uint32_t start_index;   
+    uint32_t start_index;
     int32_t  yield_arity;   // How many SSA variables to create when merging.
                             // -1 = Unknown (First branch).
 } block_scope_t;
@@ -123,7 +123,7 @@ IF (A)
     // stack_depth = 2
     //
     IF(B)
-        
+
         // We peek at the top of stack.
         //
         // block_scope_stack[1].yield_arity == -1
@@ -142,7 +142,7 @@ IF (A)
         //
         // block_scope_stack[1].yield_arity == 1
         //
-        // Does this current yield have 1 value? Yes. So we do not modify the
+        // Does this current yield have 1 value? Yes. We do not modify the arity.
         YIELD x
 
     // We pop the stack, and retrive `yield_arity = 1`.
@@ -183,7 +183,7 @@ a = MERGE     // End Outer IF Block.
 
 ## Control Instructions
 
-Control Instructions sefines nested scopes (Basic Blocks). They produce SSA
+Control Instructions defines nested scopes (Basic Blocks). They produce SSA
 variables. These will replace phi-nodes and terminals.
 
 1. `OPCODE_IF`
@@ -199,12 +199,11 @@ variables. These will replace phi-nodes and terminals.
 
 3. `OPCODE_BLOCK_ARG`
     * **Input**: Immediate Index.
-    * **Output**: Defines a valid SSA variable representing  the *Nth* argument
+    * **Output**: Defines a valid SSA variable representing the *Nth* argument
       passed to the block.
     * This must be the first instruction(s) inside a `LOOP` body.
-    * On the first iteration, it takes the value from `OPCODE_LOOP` inputs.
-      On subsequent iterations, it takes the value from `OPCODE_CONTINUE`
-      inputs.
+    * On the first iteration, it takes the input value from `OPCODE_LOOP`.
+      On subsequent iterations, it takes the input value from `OPCODE_CONTINUE`.
 
 4. `OPCODE_MERGE` 
     * **Input**: None. Implicitly pops values from `block_scope_stack[]`.
@@ -236,7 +235,7 @@ variables. These will replace phi-nodes and terminals.
 
 * `OPCODE_ARG_EXTENSION`
     * **Role**: Holds 3 operands that are pushed to the next instruction.
-    * **Output**: `TYPE_VOID
+    * **Output**: `TYPE_VOID`
     * This can ONLY be used by `OPCODE_CONTINUE` and `OPCODE_YIELD`.
 
 ### Scenario: `OPCODE_YIELD v1, v2, v3, v4, v5`
@@ -279,7 +278,7 @@ the exact same number of values with the exact same types.
 
 If the source code has an `IF` without an `ELSE`, Ballistic must generate an
 `ELSE` block. For every variable yielded in the `THEN` block, the `ELSE` block
-must be yield the variable before the `IF` started.
+must yield the variable before the `IF` started.
 
 ### Rule 1.2: Loop Arguments
 
@@ -313,7 +312,7 @@ stream.
    2nd, 3rd... Nth Phi variables for next iteration.
 
 Example: If `LOOP_OPCODE` defines `[v1, v2]`, and `OPCODE_CONTINUE` passes 
-`[v8, v9]`, then `v8` flows into `v1`, and v9` flows into `v2`.
+`[v8, v9]`, then `v8` flows into `v1`, and `v9` flows into `v2`.
 
 ### Rule 1.5: Block Termination
 
@@ -325,7 +324,7 @@ or `OPCODE_END_BLOCK` based on reachability.
 
 * IF **ALL** paths contain `OPCODE_BREAK`, `OPCODE_CONTINUE`, or
   `OPCODE_RETURN`, all paths are unreachable. Emit `OPCODE_END_BLOCK`
-  only. 
+  only.
 
 ## Data Flow Rules
 
@@ -333,7 +332,7 @@ or `OPCODE_END_BLOCK` based on reachability.
 
 Every instruction defines exactly one SSA ID (or Void). Instructions with
 multiple return values and instruction arguments are handled via
-[extension instructions](#extension-instructions).
+[Extension Instructions](#extension-instructions).
 
 ### Rule 2.2: Contiguous Extension Instructions
 
@@ -465,7 +464,7 @@ OPCODE_IF (v_cond)
     OPCODE_YIELD v3
 
 OPCODE_ELSE
-    
+
     OPCODE_YIELD v0
 
 // Merge the IF exit values (v3 and v0 into v4).
@@ -485,7 +484,7 @@ OPCODE_LOOP (v4)
     // Loop condition check.
     //
     v6 = OPCODE_CMP_LT v5, v1
-    
+
     IF (v6)
 
         // Cloned body.
@@ -494,9 +493,9 @@ OPCODE_LOOP (v4)
         v7 = OPCODE_ADD v5, 1
 
         OPCODE_CONTINUE v7
-    
+
     OPCODE_ELSE
-        
+
         OPCODE_BREAK v5
 
     OPCODE_END_BLOCK
@@ -533,12 +532,12 @@ v_result = OPCODE_SELECT v_cond, v_true, v_false
 
 ## Emitting Yields In `ELSE` Blocks
 
-Whe you reach the end of the `THEN` block, you have a list of dirty variables
+When you reach the end of the `THEN` block, you have a list of dirty variables
 (variables that changed and got yielded).
 
 When generating an `ELSE` block, you must iterate through the dirty list.
 
-1. Did the `THEN` block yield a new variable for register `R`.
+1. Did the `THEN` block yield a new variable for register `R`?
 2. If yes, does the `ELSE` block have a new value for `R`?
 3. If no, emit `OPCODE_YIELD R` where `R` is the register before entering the
    `IF` block.
@@ -605,7 +604,7 @@ v1 = OPCODE_CONST 100
 //
 v2 = OPCODE_CONST 0
 
-// Iterator definition
+// Iterator definition.
 //
 v3 = OPCODE_CONST 0
 
@@ -634,7 +633,7 @@ OPCODE_LOOP (v2, v3)
     // Decide to continue or exit.
     //
     OPCODE_IF (v6)
-    
+
         // val = array[i]
         //
         v7 = OPCODE_LOAD v0, v5
@@ -645,7 +644,7 @@ OPCODE_LOOP (v2, v3)
         v9 = OPCODE_CMP_GT v7, v8
 
         OPCODE_IF (v9)
-        
+
             // sum += val
             //
             v10 = OPCODE_ADD v4, v7
@@ -653,14 +652,14 @@ OPCODE_LOOP (v2, v3)
             // v10 -> v11
             //
             OPCODE_YIELD v10
-        
+
         OPCODE_ELSE
 
             // v4 -> v11
             //
             OPCODE_YIELD v4
 
-        // Merges v10 and v4 into v11
+        // Merges v10 and v4 into v11.
         //
         v11 = OPCODE_MERGE
 
@@ -674,7 +673,7 @@ OPCODE_LOOP (v2, v3)
         // v13 (New i)   -> v5 (Phi i)
         //
         OPCODE_CONTINUE v12, v13
-    
+
     OPCODE_ELSE
 
         // Exit loop.
@@ -685,7 +684,7 @@ OPCODE_LOOP (v2, v3)
 
 OPCODE_END_BLOCK // Terminantes the entire loop.
 
-// The merge is required ti catch the BREAK value.
+// The merge is required to catch the BREAK value.
 // Merges v4 into v14.
 //
 v14 = OPCODE_MERGE
@@ -705,7 +704,7 @@ OPCODE_RETURN v14
 We use **Implicit Indexing**:
 
 1. When we create an instruction at `instructions[100]`, we have implicitly
-   created the variable definition in ssa arrays such as `ssa_types[]`.
+   created the variable definition in SSA arrays such as `ssa_types[]`.
 2. We do not "check" if it is created. The act of incrementing
    `instruction_count` creates it.
 

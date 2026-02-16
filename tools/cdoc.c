@@ -176,7 +176,6 @@ item_exists(FileContext *ctx, const char *name)
 }
 
 // --- 3. LINK RESOLUTION ---
-// --- 3. LINK RESOLUTION ---
 
 // NEW: Helper to find any symbol (Item, Enum Variant, or Struct.Field)
 // Returns 1 if found, setting out_file and out_anchor. 0 otherwise.

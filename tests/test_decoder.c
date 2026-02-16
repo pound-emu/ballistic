@@ -84,8 +84,8 @@ tests_test_decoder(void)
                 {
                     ref_result = local_candidates[k].metadata;
 
-                    // Collision Check. Does the next candidate also matches
-                    // and has the same priority?
+                    // Collision Check. Does the next candidate also match
+                    // and is of the same priority?
                     //
                     if (BAL_UNLIKELY(k + 1 < candidate_count))
                     {
@@ -103,7 +103,7 @@ tests_test_decoder(void)
                         }
                     }
 
-                    // Found hight priority match.
+                    // Found high priority match.
                     //
                     break;
                 }
