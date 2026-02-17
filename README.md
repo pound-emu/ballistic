@@ -15,16 +15,14 @@ This is a rewrite of the dynarmic recompiler, with the goal of fixing its many f
 ### macOS
 
 ```bash
-brew install cmake python3
-brew install cmark llvm
+brew install cmake python3 cmark llvm
 ```
 
 ### Debian/Ubuntu
 
 ```bash
 sudo apt update
-sudo apt install build-essential cmake python3
-sudo apt install libcmark-dev libclang-dev llvm-dev
+sudo apt install build-essential cmake python3 libcmark-dev libclang-dev llvm-dev
 ```
 
 ### Fedora
