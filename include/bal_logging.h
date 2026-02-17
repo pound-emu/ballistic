@@ -49,6 +49,7 @@
 //! };
 //!
 //! BAL_LOG_DEBUG(&logger, "Writing to custom file backend");
+//! fclose(log_file);
 //! ```
 
 #ifndef BALLISTIC_LOGGING_H
