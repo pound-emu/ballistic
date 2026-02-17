@@ -39,7 +39,7 @@ uint16_t ssa_use_counts[???];
 ## Constants
 
 ```c
-uint32_t constant_pool[???];
+uint64_t constant_pool[???];
 ```
 
 ## Instructions
