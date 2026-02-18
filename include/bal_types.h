@@ -17,6 +17,8 @@ typedef uint8_t  bal_bit_width_t;
 
 typedef enum
 {
+    /// This opcode represents a volotile load of a guest register.
+    OPCODE_GET_REGISTER,
     OPCODE_CONST,
     OPCODE_MOV,
     OPCODE_ADD,
