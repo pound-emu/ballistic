@@ -8,6 +8,12 @@
 
 This is a rewrite of the dynarmic recompiler, with the goal of fixing its many flaws.
 
+# Immediate Goals
+
+- [ ] Support `MOVZ`, `MOVK`, `MOVN` instructions.
+- [ ] Support `ADD` instructions.
+- [ ] Implement backend.
+
 # Building Ballistic
 
 ## Install Dependencies
