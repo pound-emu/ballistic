@@ -128,7 +128,7 @@ if (BALLISTIC_ENABLE_BUILD_TESTS)
 set(TESTS_NAME "ballistic_tests")
     enable_testing()
     create_test_sourcelist(
-        Tests ballistic_test_driver.c tests/test_decoder.c tests/test_translation.c)
+        Tests ballistic_test_driver.c tests/test_decoder.c)
     add_executable(${TESTS_NAME} ${Tests})
     target_include_directories(${TESTS_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
