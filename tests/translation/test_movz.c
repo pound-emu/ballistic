@@ -49,9 +49,8 @@ test_movz(test_context_t *context)
                     goto end;
                 }
 
-                uint32_t ssa_index
-                    = (ir[ir_index] >> BAL_SOURCE1_SHIFT_POSITION) & (BAL_SOURCE_SIZE - 1U);
-                uint32_t pool_index         = ssa_index & ~(BAL_IS_CONSTANT_BIT_POSITION);
+                uint32_t pool_index
+                    = (ir[ir_index] >> BAL_SOURCE1_SHIFT_POSITION) & BAL_SOURCE_MASK;
                 uint64_t expected_immediate = (uint64_t)immediates[i] << shifts[s];
                 uint64_t actual_immediate   = context->engine.constants[pool_index];
 
@@ -63,7 +62,7 @@ test_movz(test_context_t *context)
                             context->assembler.buffer[assembler_buffer_index],
                             expected_immediate,
                             actual_immediate);
-                    fprintf(stderr, "   SSA Index: %u, Pool Index: %u\n", ssa_index, pool_index);
+                    fprintf(stderr, "   Pool Index: %u\n", pool_index);
                     goto end;
                 }
                 ++ir_index;
