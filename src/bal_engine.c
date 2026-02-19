@@ -292,6 +292,37 @@ intern_constant(bal_translation_context_t *BAL_RESTRICT context, bal_constant_t 
     return index | BAL_IS_CONSTANT_BIT_POSITION;
 }
 
+BAL_HOT static inline uint32_t
+get_or_create_ssa_index(bal_translation_context_t *context, uint64_t register_index)
+{
+    uint32_t ssa_index = context->source_variables[register_index].current_ssa_index;
+
+    const uint32_t invalid_ssa_index = 0xFFFFFFFF;
+
+    if (ssa_index != invalid_ssa_index)
+    {
+        return ssa_index;
+    }
+
+    bal_instruction_t instruction
+        = ((bal_instruction_t)OPCODE_GET_REGISTER << BAL_OPCODE_SHIFT_POSITION)
+          | ((bal_instruction_t)register_index << BAL_SOURCE1_SHIFT_POSITION);
+
+    *context->ir_instruction_cursor                             = instruction;
+    ssa_index                                                   = context->instruction_count;
+    context->source_variables[register_index].current_ssa_index = ssa_index;
+
+    BAL_LOG_DEBUG(context->logger,
+                  "  EMIT: v%lu = GET_REGISTER X%lu",
+                  context->instruction_count,
+                  register_index);
+
+    context->instruction_count++;
+    context->ir_instruction_cursor++;
+    context->bit_width_cursor++;
+    return ssa_index;
+}
+
 BAL_HOT static inline void
 translate_const(bal_translation_context_t *BAL_RESTRICT                context,
                 const bal_decoder_instruction_metadata_t *BAL_RESTRICT metadata,
@@ -343,7 +374,7 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
         }
         else
         {
-            old_ssa = context->source_variables[rd].current_ssa_index;
+            old_ssa = get_or_create_ssa_index(context, rd);
             BAL_LOG_TRACE(context->logger, "  MOVK Source: Reg X%lu -> SSA v%lu", rd, old_ssa);
         }
 
