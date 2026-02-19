@@ -61,7 +61,7 @@ The following executables will be created in the `build/` directory:
 *   `ballistic_cli` (Used for Ballistic development)
 *   `decoder_cli` (Instruction decoding tool)
 *   `cdoc` (Documentation generator)
-*   `ballistic_tests` (Test suite)
+*   `test_*` (Test suite, run with `ctest`)
 
 See [tools/](tools/) for more information on these executables.
 
