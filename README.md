@@ -10,7 +10,7 @@ This is a rewrite of the dynarmic recompiler, with the goal of fixing its many f
 
 # Immediate Goals
 
-- [ ] Support `MOVZ`, `MOVK`, `MOVN` instructions.
+- [X] Support `MOVZ`, `MOVK`, `MOVN` instructions.
 - [ ] Support `ADD` instructions.
 - [ ] Implement backend.
 
