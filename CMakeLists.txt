@@ -125,17 +125,14 @@ endif()
 # Compile Tests
 # -----------------------------------------------------------------------------
 if (BALLISTIC_ENABLE_BUILD_TESTS)
-set(TESTS_NAME "ballistic_tests")
     enable_testing()
-    create_test_sourcelist(
-        Tests ballistic_test_driver.c tests/test_decoder.c tests/test_translation.c)
-    add_executable(${TESTS_NAME} ${Tests})
-    target_include_directories(${TESTS_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(${TESTS_NAME} PRIVATE ${PROJECT_NAME})
-    add_test(NAME DecoderTest COMMAND ${TESTS_NAME} tests/test_decoder)
-    add_test(NAME TranslatorTest COMMAND ${TESTS_NAME} tests/test_translation)
+    set(DECODER_NAME test_decoder)
+    add_executable(${DECODER_NAME} tests/test_decoder.c)
+    target_include_directories(${DECODER_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(${DECODER_NAME} PRIVATE ${PROJECT_NAME})
+    add_test(NAME ${DECODER_NAME} COMMAND ${DECODER_NAME} tests/test_decoder)
     add_test(
-        NAME DocTest
+        NAME doc_test
         COMMAND Python3::Interpreter ${CMAKE_SOURCE_DIR}/tools/doctest.py
         ${CMAKE_CURRENT_SOURCE_DIR}/include/bal_logging.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/bal_assembler.h
@@ -143,4 +140,13 @@ set(TESTS_NAME "ballistic_tests")
                   ${CMAKE_CURRENT_SOURCE_DIR}/src/bal_assembler.c
         --includes ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
+
+    set(TRANSLATION_TESTS movz movn movk)
+    foreach(test_name ${TRANSLATION_TESTS})
+        set(target_name "test_${test_name}")
+        add_executable(${target_name} "tests/translation/${target_name}.c")
+        target_link_libraries(${target_name} PRIVATE Ballistic)
+        target_include_directories(${target_name} PRIVATE tests/translation)
+        add_test(NAME ${target_name} COMMAND ${target_name})
+    endforeach()
 endif()

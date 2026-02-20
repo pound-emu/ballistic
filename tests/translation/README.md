@@ -1,0 +1,1 @@
+By default the translation tests logs WARN and ERROR messages. If you are debuging tests and want to change to log level, go to `setup.h` and change the minimum log level in `test_setup()`. Then run in your build directory `ctest --verbose -R test_name`.

@@ -30,9 +30,12 @@
 /// The maximum value for an Opcode.
 #define BAL_OPCODE_SIZE (1U << 11U)
 
-/// The maximum value for an Operand Index.
-/// Bit 17 is reserved for the "Is Constant" flag.
-#define BAL_SOURCE_SIZE (1U << 16U)
+/// The mask for any source field. This does not include the Is Constant flag at Bit 16.
+#define BAL_SOURCE_MASK ((1U << 16U) - 1U)
+
+/// The mask for any source bitfield. This includes the Is Constant flag at Bit 16.
+/// Developers should clear Bit 16 after applying this mask to get the raw source.
+#define BAL_SOURCE_MASK_WITH_FLAG ((1U << 17U) - 1U)
 
 /// The bit position for the is constant flag in a bal_instruction_t.
 #define BAL_IS_CONSTANT_BIT_POSITION (1U << 16U)
