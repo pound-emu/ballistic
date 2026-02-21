@@ -74,7 +74,7 @@ bal_memory_init_flat(bal_allocator_t *BAL_RESTRICT        allocator,
     interface->context        = flat_interface;
     interface->translate      = bal_translate_flat;
 
-    BAL_LOG_DEBUG(&logger, "Flat interface created successfully at %p.", (void *)flat_interface);
+    BAL_LOG_INFO(&logger, "Flat interface created successfully at %p.", (void *)flat_interface);
 
     return BAL_SUCCESS;
 }

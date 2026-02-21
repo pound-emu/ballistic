@@ -173,7 +173,7 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT           engine,
             break;
         }
 
-        BAL_LOG_TRACE(context.logger,
+        BAL_LOG_DEBUG(context.logger,
                       "  [+0x%04zx] 0x%08x: %-8s (SSA ID: %u)",
                       relative_offset,
                       arm_instruction_cursor,
@@ -288,7 +288,7 @@ intern_constant(bal_translation_context_t *BAL_RESTRICT context, bal_constant_t 
 
     context->constants[index] = constant;
     context->constant_count++;
-    BAL_LOG_DEBUG(context->logger, "  0X%08X -> Pool Index %u", constant, index);
+    BAL_LOG_TRACE(context->logger, "  0X%08X -> Pool Index %u", constant, index);
     return index | BAL_IS_CONSTANT_BIT_POSITION;
 }
 
@@ -449,7 +449,7 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
     if (rd != 31)
     {
         context->source_variables[rd].current_ssa_index = context->instruction_count;
-        BAL_LOG_DEBUG(
+        BAL_LOG_TRACE(
             (context)->logger, "  SSA UPDATE: X%lu -> v%lu", rd, context->instruction_count);
     }
     else
