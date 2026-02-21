@@ -25,7 +25,7 @@ If I am tracking down a bug two years from now using `git bisect`, and I land on
 Before you push, run an interactive rebase with the --exec flag to test every commit in your PR automatically:
 
 ```console
-git rebase -i main --exec "make -j$(nproc) && ctest"
+git rebase -i main --exec "cd build && make -j$(nproc) && ctest"
 ```
 
 I will also run this command on your commits and if it fails I will reject your PR.
