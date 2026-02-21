@@ -366,15 +366,18 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
         // new_val = cleared_val + (imm << shift)
 
         uint64_t old_ssa;
+        uint64_t old_ssa_with_flag;
 
         if (31 == rd)
         {
             BAL_LOG_TRACE(context->logger, "  MOVK Source is ZR. Interning 0.");
-            old_ssa = intern_constant(context, 0);
+            old_ssa_with_flag = intern_constant(context, 0);
+            old_ssa           = old_ssa_with_flag & ~BAL_IS_CONSTANT_BIT_POSITION;
         }
         else
         {
-            old_ssa = get_or_create_ssa_index(context, rd);
+            old_ssa_with_flag = get_or_create_ssa_index(context, rd);
+            old_ssa           = old_ssa_with_flag & ~BAL_IS_CONSTANT_BIT_POSITION;
             BAL_LOG_TRACE(context->logger, "  MOVK Source: Reg X%lu -> SSA v%lu", rd, old_ssa);
         }
 
@@ -388,7 +391,7 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
 
         *context->ir_instruction_cursor
             = ((bal_instruction_t)OPCODE_AND << BAL_OPCODE_SHIFT_POSITION)
-              | ((bal_instruction_t)old_ssa << BAL_SOURCE1_SHIFT_POSITION)
+              | ((bal_instruction_t)old_ssa_with_flag << BAL_SOURCE1_SHIFT_POSITION)
               | ((bal_instruction_t)mask_index << BAL_SOURCE2_SHIFT_POSITION);
 
         BAL_LOG_DEBUG(context->logger,
@@ -399,7 +402,11 @@ translate_const(bal_translation_context_t *BAL_RESTRICT                context,
                       clear_mask);
 
         uint64_t cleared_ssa = context->instruction_count;
-        (void)cleared_ssa; // Remove unused variable warning from release builds.
+
+        // Remove unused variable warning from release builds.
+        //
+        (void)old_ssa;
+        (void)cleared_ssa;
 
         // Advance cursor for the AND instruction.
         //
