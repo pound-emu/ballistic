@@ -22,6 +22,9 @@ typedef enum
     // IR Errors.
     //
     BAL_ERROR_INSTRUCTION_OVERFLOW = -100,
+
+    /// The decoded register type does not match the expected type.
+    BAL_ERROR_INCORRECT_REGISTER_TYPE = -101,
 } bal_error_t;
 
 /// Converts the enum into a readable string for error handling.

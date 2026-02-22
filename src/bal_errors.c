@@ -25,6 +25,9 @@ bal_error_to_string(bal_error_t error)
         case BAL_ERROR_INSTRUCTION_OVERFLOW:
             string = "instructions array overflowed";
             break;
+        case BAL_ERROR_INCORRECT_REGISTER_TYPE:
+            string = "incorrect register type";
+            break;
         case BAL_SUCCESS:
             string = "there is no error";
             break;
