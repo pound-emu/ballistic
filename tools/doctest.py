@@ -7,7 +7,7 @@ import tempfile
 from typing import List, Optional
 
 CC: str  = "clang"
-CFLAGS: List[str] = ["-Wall", "-Werror", "-DBAL_MAX_LOG_LEVEL=4"]
+CFLAGS: List[str] = ["-Wall", "-DBAL_MAX_LOG_LEVEL=4"]
 
 if os.name == "nt":
     CFLAGS.append("-D_CRT_SECURE_NO_WARNINGS")

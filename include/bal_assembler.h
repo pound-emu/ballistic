@@ -24,6 +24,7 @@
 
 #include "bal_errors.h"
 #include "bal_logging.h"
+#include "bal_types.h"
 #include <stddef.h>
 #include <stdint.h>
 
