@@ -6,7 +6,7 @@ test_movn(test_context_t *context)
 {
     int                        return_code = EXIT_FAILURE;
     const bal_register_index_t registers[] = {
-        BAL_REGISTER_X0, BAL_REGISTER_X1, BAL_REGISTER_X15, BAL_REGISTER_X30, BAL_REGISTER_XZR,
+        BAL_REGISTER_X0, BAL_REGISTER_X1, BAL_REGISTER_X15, BAL_REGISTER_X30, BAL_REGISTER_X31,
     };
     const uint16_t immediates[] = { 0, 1, 0xFFFF, 0xAAAA, 0x5555, 0x1234 };
     const uint8_t  shifts[]     = { 0, 16, 32, 48 };
