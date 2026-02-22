@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-#define BAL_OPERANDS_SIZE     4
+#define BAL_OPERANDS_SIZE     5
 #define BAL_OPERAND_BIT_WIDTH 5
 
     /// The type of an instruction operand.

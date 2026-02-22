@@ -182,7 +182,7 @@ def derive_operand_type(text: str, hover: str) -> str:
     h = hover.lower()
     # Immediate checks
     if any(
-        k in h for k in ["immediate", "amount", "offset", "index", "label", "shift"]
+        k in h for k in ["immediate", "amount", "offset", "index", "label", "shift", "option"]
     ) or t.startswith("#"):
         return "BAL_OPERAND_TYPE_IMMEDIATE"
 
@@ -273,7 +273,7 @@ def parse_operands(
             if operand not in operands:
                 operands.append(operand)
 
-        if len(operands) >= 4:
+        if len(operands) >= 5:
             break
 
     return operands
@@ -650,7 +650,7 @@ if __name__ == "__main__":
             ir_opcode: str = derive_opcode(inst.mnemonic)
             operands_str: str = ""
 
-            for i in range(4):
+            for i in range(5):
                 if i < len(inst.operands):
                     operand: Operand = inst.operands[i]
                     operands_str += f"{{ {operand.type_enum}, {operand.bit_position}, {operand.bit_width} }},\n"
