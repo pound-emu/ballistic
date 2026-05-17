@@ -119,7 +119,7 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
     reset_register_allocator(compiler);
     void *host_address = compiler->assembler.rx_buffer + compiler->assembler.offset;
 
-    // Setup host frame pointer.
+    // Setup block.
     //
     bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_RBP);
     bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_RBX);
