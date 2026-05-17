@@ -10,9 +10,12 @@ This is a rewrite of the dynarmic recompiler, with the goal of fixing its many f
 
 # Immediate Goals
 
-- [X] Support `MOVZ`, `MOVK`, `MOVN` instructions.
-- [ ] Support `ADD` instructions.
-- [ ] Implement backend.
+- [ ] Create Tier 1 backend compiler.
+- [ ] Create Tier 2 backend compiler.
+- [ ] Support `MOVZ`, `MOVK`, `MOVN` instructions on both compilers.
+- [ ] Add more peephole optimizations.
+- [ ] Have 100% branch coverage.
+- [ ] Have a config to change Ballistic behavior at runtime.
 
 # Building Ballistic
 
