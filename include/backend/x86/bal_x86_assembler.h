@@ -104,6 +104,21 @@ extern "C"
                                        size_t                  size,
                                        bal_logger_t            logger);
 
+    /// Emits a bitwise AND instruction between two 64-bit registers.
+    ///
+    /// Assembly equivalent: `and destination, source`.
+    ///
+    /// # Safety
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`.
+    /// - `assembler->status != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_and_r64_r64(bal_x86_assembler_t *assembler,
+                                  bal_x86_register_t   destination,
+                                  bal_x86_register_t   source);
+
     /// Emits a memory load using the 32-bit displacement `offset`.
     ///
     /// Assembler equivalent: `mov destination, [rbp + offset]`

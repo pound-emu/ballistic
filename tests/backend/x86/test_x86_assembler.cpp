@@ -120,6 +120,7 @@ TEST_F(Backendx86Assembler, Internal_BitwiseMasking)
 
 TEST_F(Backendx86Assembler, Public_NullContext_NoCrash)
 {
+    bal_x86_emit_and_r64_r64(nullptr, BAL_X86_RAX, BAL_X86_RAX);
     bal_x86_emit_load_r64_rbp_offset(nullptr, BAL_X86_RAX, 0);
     bal_x86_emit_store_r64_rbp_offset(nullptr, BAL_X86_RAX, 0);
     bal_x86_emit_mov_r64_r64(nullptr, BAL_X86_RAX, BAL_X86_RAX);
@@ -140,6 +141,14 @@ TEST_F(Backendx86Assembler, Public_BadStatus_NoEmit)
 TEST_F(Backendx86Assembler, Public_InvalidRegister_NoEmit)
 {
     const auto bad_register = (bal_x86_register_t)99;
+    bal_x86_emit_and_r64_r64(&assembler, bad_register, BAL_X86_RAX);
+    EXPECT_EQ(assembler.status, BAL_ERROR_INVALID_ARGUMENT);
+
+    assembler.status = BAL_SUCCESS;
+    bal_x86_emit_and_r64_r64(&assembler, BAL_X86_RAX, bad_register);
+    EXPECT_EQ(assembler.status, BAL_ERROR_INVALID_ARGUMENT);
+
+    assembler.status = BAL_SUCCESS;
     bal_x86_emit_load_r64_rbp_offset(&assembler, bad_register, 0);
     EXPECT_EQ(assembler.status, BAL_ERROR_INVALID_ARGUMENT);
 
@@ -207,6 +216,26 @@ TEST_F(Backendx86Assembler, Encode_Pop_HighReg)
     EXPECT_EQ(assembler.offset, 2);
     EXPECT_EQ(assembler.buffer[0], 0x41); // REX.B
     EXPECT_EQ(assembler.buffer[1], 0x5F); // 0x58 + 7
+}
+
+TEST_F(Backendx86Assembler, Encode_AndRegToReg_LowLow)
+{
+    bal_x86_emit_and_r64_r64(&assembler, BAL_X86_RAX, BAL_X86_RBX);
+    EXPECT_EQ(assembler.status, BAL_SUCCESS);
+    EXPECT_EQ(assembler.offset, 3);
+    EXPECT_EQ(assembler.buffer[0], 0x48); // REX.W
+    EXPECT_EQ(assembler.buffer[1], 0x23); // Opcode
+    EXPECT_EQ(assembler.buffer[2], 0xC3); // ModRM: 0xC0 | 0 << 3 | 3
+}
+
+TEST_F(Backendx86Assembler, Encode_AndRegToReg_HighLow)
+{
+    bal_x86_emit_and_r64_r64(&assembler, BAL_X86_R15, BAL_X86_R14);
+    EXPECT_EQ(assembler.status, BAL_SUCCESS);
+    EXPECT_EQ(assembler.offset, 3);
+    EXPECT_EQ(assembler.buffer[0], 0x4D); // REX.W | REX.R | REX.B
+    EXPECT_EQ(assembler.buffer[1], 0x23); // Opcode
+    EXPECT_EQ(assembler.buffer[2], 0xFE); // ModRM: 0xC0 | 7 << 3 | 6
 }
 
 TEST_F(Backendx86Assembler, Encode_MovRegToReg_LowLow)
