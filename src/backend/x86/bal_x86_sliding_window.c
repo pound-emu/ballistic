@@ -1,6 +1,8 @@
 #include "backend/x86/bal_x86_sliding_window.h"
 #include <string.h>
 
+#define ASSEMBLER_TEMPORARY_REGISTER BAL_X86_R11
+
 BAL_HOT static void flush_single_macro(bal_x86_assembler_t   *assembler,
                                        const bal_x86_macro_t *macro);
 BAL_HOT static void run_peephole_optimizer(bal_sliding_window_t *window);
@@ -62,7 +64,7 @@ bal_sliding_window_push(bal_sliding_window_t *window, const bal_x86_macro_t macr
     }
 
     BAL_LOG_DEBUG(&window->assembler->logger,
-                  "Pushing macro opcode %d (dest: r%d, src: r%d, imm/off: 0x%llX)",
+                  "Pushing macro opcode id %d (dest: r%d, src: r%d, imm/off: 0x%llX)",
                   macro.opcode,
                   macro.destination,
                   macro.source,
@@ -132,6 +134,16 @@ flush_single_macro(bal_x86_assembler_t *assembler, const bal_x86_macro_t *macro)
         case BAL_X86_MACRO_STORE:
             bal_x86_emit_store_r64_rbp_offset(
                 assembler, macro->source, (int32_t)macro->immediate_or_offset);
+            break;
+        case BAL_X86_MACRO_AND_REGISTER_IMMEDIATE:
+            bal_x86_emit_mov_r64_imm64(
+                assembler, ASSEMBLER_TEMPORARY_REGISTER, macro->immediate_or_offset);
+            bal_x86_emit_and_r64_r64(assembler, macro->destination, ASSEMBLER_TEMPORARY_REGISTER);
+            break;
+        case BAL_X86_MACRO_OR_REGISTER_IMMEDIATE:
+            bal_x86_emit_mov_r64_imm64(
+                assembler, ASSEMBLER_TEMPORARY_REGISTER, macro->immediate_or_offset);
+            bal_x86_emit_or_r64_r64(assembler, macro->destination, ASSEMBLER_TEMPORARY_REGISTER);
             break;
         default:
             BAL_LOG_ERROR(&assembler->logger,

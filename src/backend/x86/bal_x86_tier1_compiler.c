@@ -19,7 +19,7 @@
 // the argument passing.
 //
 static const bal_x86_register_t SCRATCH_REGISTERS[]
-    = { BAL_X86_RAX, BAL_X86_RCX, BAL_X86_RDX, BAL_X86_R8, BAL_X86_R9, BAL_X86_R10, BAL_X86_R11 };
+    = { BAL_X86_RAX, BAL_X86_RCX, BAL_X86_RDX, BAL_X86_R8, BAL_X86_R9, BAL_X86_R10 };
 
 #define SCRATCH_REGISTERS_SIZE (sizeof(SCRATCH_REGISTERS) / sizeof(SCRATCH_REGISTERS[0]))
 
@@ -29,7 +29,9 @@ static bal_x86_register_t allocate_x86_register(bal_tier1_compiler_t *compiler,
 static void               flush_dirty_registers(bal_tier1_compiler_t *compiler);
 static void               terminate_block(bal_tier1_compiler_t *compiler);
 static uint32_t extract_operand_value(uint32_t instruction, const bal_decoder_operand_t *operand);
-static void     translate_movz(bal_tier1_compiler_t *compiler, const uint32_t *arm_operands);
+static void     translate_mov(bal_tier1_compiler_t                     *compiler,
+                              const bal_decoder_instruction_metadata_t *metadata,
+                              const uint32_t                           *arm_operands);
 
 bal_error_t
 bal_tier1_compiler_init(bal_tier1_compiler_t         *compiler,
@@ -198,16 +200,31 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
 
             switch (metadata->ir_opcode)
             {
-                case OPCODE_CONST:
+                case OPCODE_CONST:;
                     // TODO: implement support for the rest MOV instructions.
-                    translate_movz(compiler, arm_instruction_operands);
+                    const char variant = metadata->name[3];
+
+                    if (BAL_LIKELY(variant == 'N') || BAL_LIKELY(variant == 'K')
+                        || BAL_LIKELY(variant == 'Z'))
+                    {
+                        translate_mov(compiler, metadata, arm_instruction_operands);
+                        break;
+                    }
+
+                    BAL_LOG_ERROR(logger,
+                                  "Aborting function: Invalid CONST instruction detected: %s",
+                                  metadata->name);
+                    is_block_terminated = true;
+
                     break;
                 case OPCODE_RETURN:
                     BAL_LOG_DEBUG(logger, "Block terminated by RET");
                     is_block_terminated = true;
                     break;
                 default:
-                    BAL_LOG_ERROR(logger, "Tier 1 Unsupported Opcode: %s", metadata->name);
+                    BAL_LOG_ERROR(logger,
+                                  " Aborting function: Tier 1 Unsupported Opcode: %s",
+                                  metadata->name);
                     is_block_terminated = true;
                     break;
             }
@@ -374,22 +391,64 @@ extract_operand_value(const uint32_t instruction, const bal_decoder_operand_t *o
     const uint32_t bits = instruction >> operand->bit_position & mask;
     return bits;
 }
-
 void
-translate_movz(bal_tier1_compiler_t *compiler, const uint32_t *arm_operands)
+translate_mov(bal_tier1_compiler_t                     *compiler,
+              const bal_decoder_instruction_metadata_t *metadata,
+              const uint32_t                           *arm_operands)
 {
-    const uint8_t  rd    = (uint8_t)arm_operands[0];
-    const uint64_t imm16 = arm_operands[1];
-    const uint64_t hw    = arm_operands[2];
-    const uint64_t shift = hw * 16;
+    const uint8_t  rd      = (uint8_t)arm_operands[0];
+    const uint64_t imm16   = arm_operands[1];
+    const uint64_t hw      = arm_operands[2];
+    const uint64_t shift   = hw * 16;
+    const uint64_t mask    = metadata->operands[0].type == BAL_OPERAND_TYPE_REGISTER_32
+                                 ? 0xFFFFFFFFULL
+                                 : 0xFFFFFFFFFFFFFFFFULL;
+    const char     variant = metadata->name[3];
 
-    const uint64_t           value     = imm16 << shift;
-    const bal_x86_register_t x86_rd    = allocate_x86_register(compiler, rd);
-    const bal_x86_macro_t    mov_macro = {
-        .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
-        .destination         = x86_rd,
-        .immediate_or_offset = value,
-    };
-    bal_sliding_window_push(&compiler->window, mov_macro);
+    if ('Z' == variant)
+    {
+        const uint64_t           value  = imm16 << shift & mask;
+        const bal_x86_register_t x86_rd = allocate_x86_register(compiler, rd);
+
+        const bal_x86_macro_t mov_macro = {
+            .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = value,
+        };
+        bal_sliding_window_push(&compiler->window, mov_macro);
+        compiler->is_dirty[rd] = true;
+    }
+    else if ('N' == variant)
+    {
+        const uint64_t           value     = ~(imm16 << shift) & mask;
+        const bal_x86_register_t x86_rd    = allocate_x86_register(compiler, rd);
+        const bal_x86_macro_t    mov_macro = {
+            .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = value,
+        };
+        bal_sliding_window_push(&compiler->window, mov_macro);
+        compiler->is_dirty[rd] = true;
+    }
+    else
+    {
+        // MOVK: Keep existing bits, overwrite 16 bits.
+        //
+        const bal_x86_register_t x86_rd       = allocate_x86_register(compiler, rd);
+        const uint64_t           clear_mask   = ~(0xFFFFULL << shift) & mask;
+        const uint64_t           insert_value = imm16 << shift & mask;
+        const bal_x86_macro_t    and_macro    = {
+            .opcode              = BAL_X86_MACRO_AND_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = clear_mask,
+        };
+        const bal_x86_macro_t or_macro = {
+            .opcode              = BAL_X86_MACRO_OR_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = insert_value,
+        };
+        bal_sliding_window_push(&compiler->window, and_macro);
+        bal_sliding_window_push(&compiler->window, or_macro);
+    }
     compiler->is_dirty[rd] = true;
 }
