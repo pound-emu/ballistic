@@ -1,6 +1,7 @@
 #ifndef BALLISTIC_ENGINE_H
 #define BALLISTIC_ENGINE_H
 
+#include "backend/bal_cpu.h"
 #include "bal_attributes.h"
 #include "bal_errors.h"
 #include "bal_logging.h"
@@ -46,6 +47,9 @@ extern "C"
 /// The bit position for the is constant flag in a bal_instruction_t.
 #define BAL_IS_CONSTANT_BIT_POSITION (1U << 16U)
 
+/// The engine is currently executing guest code.
+#define BAL_ENGINE_FLAG_RUNNING 1
+
     /// Represents the mapping of a Guest Register to an SSA variable.
     /// This is only used during Single Static Assignment construction
     /// to track variable definitions across basic blocks.
@@ -64,52 +68,51 @@ extern "C"
     /// to 64 bytes. Both hot and cold data lives on their own cache lines.
     BAL_ALIGNED(64) typedef struct
     {
-        /// The base pointer returned during the underlying heap allocation. This
-        /// is required to correctly free the engine's internal arrays.
-        void *arena_base;
+        /// The guest CPU state.
+        bal_cpu_t *cpu;
 
-        /// The current number of instructions emitted.
-        ///
-        /// This tracks the current position in `instructions` and `ssa_bit_widths`
-        /// arrays.
-        bal_instruction_count_t instruction_count;
+        /// The allocator used for all internal engine memory.
+        const bal_allocator_t *allocator;
 
-        /// The number of constants emitted.
-        ///
-        /// This tracks the current position in the `constants` array.
-        bal_constant_count_t constant_count;
+        /// The memory interface for all guest-to-host address translation.
+        const bal_memory_interface_t *memory_interface;
 
-        /// The current error state of the Engine.
+        /// Opaque pointer to the internal engine's state.
+        void *engine_state;
+
+        /// Handles logging for this engine.
+        bal_logger_t logger;
+
+        /// The current error state of the engine.
         ///
         /// If an operation fails, this field is set to a specific error code.
         /// See [`bal_opcode_t`]. Once set to an error state, subsequent operation
         /// on this engine will silently fail until [`bal_engine_reset`] is called.
         bal_error_t status;
 
-        /// Handles logging for this engine.
-        bal_logger_t logger;
-
+        /// Execution flags (e.g., `BAL_ENGINE_FLAG_RUNNING`).
+        uint32_t flags;
     } bal_engine_t;
 
     static_assert(sizeof(bal_engine_t) <= 64, "Engine must fit in a L1 Cache line");
 
     /// Initializes a Ballistic engine.
     ///
-    /// Populates `engine` with `logger` and empty buffers allocated with `allocator`. This is
-    /// a high-cost memory operation that reserves a lot of memory and should
-    /// be called sparingly.
-    ///
-    /// Returns [`BAL_SUCCESS`] if the engine iz ready for use.
-    ///
     /// # Errors
+    ///
+    /// Returns [`BAL_SUCCESS`] if the engine is ready for use.
     ///
     /// Returns [`BAL_ERROR_INVALID_ARGUMENT`] if the pointers are `NULL`.
     ///
-    /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot fulfill the
-    /// request.
-    BAL_COLD bal_error_t bal_engine_init(const bal_allocator_t *allocator,
-                                         bal_engine_t          *engine,
-                                         bal_logger_t           logger);
+    /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot allocate a memory buffer.
+    BAL_COLD bal_error_t bal_engine_init(bal_engine_t                 *engine,
+                                         bal_cpu_t                    *cpu,
+                                         const bal_allocator_t        *allocator,
+                                         const bal_memory_interface_t *memory_interface,
+                                         bal_logger_t                  logger);
+
+    /// The sole entry point for executing guest code.
+    BAL_HOT bal_error_t bal_engine_run(bal_engine_t *engine);
 
     /// Translates machine code starting at `guest_address_start` into the engine's
     /// internal IR. `interface` provides memory access handling (like instruction

@@ -1,11 +1,13 @@
 #include "bal_engine.h"
+#include "backend/x86/bal_x86_tier1_compiler.h"
 #include "bal_decoder.h"
 #include "bal_logging.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 
-#define MAX_INSTRUCTIONS 65536
+#define MAX_INSTRUCTIONS 65535
 
 // Not sure what exact value to put here.
 //
@@ -23,12 +25,30 @@
 #define INSTRUCTIONS_SIZE_BYTES     MAX_INSTRUCTIONS * sizeof(bal_instruction_t)
 #define CONSTANTS_SIZE_BYTES        MAX_INSTRUCTIONS * sizeof(bal_instruction_t)
 #define MEMORY_ALIGNMENT            64U
-#define OFFSET_INSTRUCTIONS         BAL_ALIGN_UP(SOURCE_VARIABLES_SIZE_BYTES, MEMORY_ALIGNMENT)
+
+#define OFFSET_INSTRUCTIONS BAL_ALIGN_UP(SOURCE_VARIABLES_SIZE_BYTES, MEMORY_ALIGNMENT)
 #define OFFSET_SSA_BIT_WIDTHS \
     BAL_ALIGN_UP((OFFSET_INSTRUCTIONS + INSTRUCTIONS_SIZE_BYTES), MEMORY_ALIGNMENT)
 #define OFFSET_CONSTANTS \
     BAL_ALIGN_UP((OFFSET_SSA_BIT_WIDTHS + SSA_BIT_WIDTHS_SIZE_BYTES), MEMORY_ALIGNMENT)
 #define ARENA_SIZE_BYTES BAL_ALIGN_UP((OFFSET_CONSTANTS + CONSTANTS_SIZE_BYTES), MEMORY_ALIGNMENT)
+
+#define TIER1_BUFFER_SIZE_BYTES (1024 * 1024 * 16) // 16 MiB
+
+typedef struct
+{
+    // Tier 1 State
+
+    bal_tier1_compiler_t    tier1_compiler;
+    bal_executable_buffer_t tier1_buffer;
+    size_t                  tier1_buffer_size;
+
+    // Tier 2 State
+
+    void                   *ir_arena_base;
+    bal_instruction_count_t instruction_count;
+    bal_constant_count_t    constant_count;
+} internal_engine_state_t;
 
 typedef struct
 {
@@ -41,9 +61,9 @@ typedef struct
     bal_instruction_count_t instruction_count;
     bal_error_t             status;
     bal_logger_t           *logger;
-} bal_translation_context_t;
+} bal_tier2_translation_context_t;
 
-static_assert(sizeof(bal_translation_context_t) <= 64, "Context must fit in  1 cache line");
+static_assert(sizeof(bal_tier2_translation_context_t) <= 64, "Context must fit in  1 cache line");
 
 // static uint32_t extract_operand_value(uint32_t, const bal_decoder_operand_t *);
 // static uint32_t intern_constant(bal_translation_context_t *, bal_constant_t);
@@ -56,14 +76,154 @@ static_assert(sizeof(bal_translation_context_t) <= 64, "Context must fit in  1 c
 // static void     translate_return(bal_translation_context_t *, const uint32_t *);
 
 BAL_COLD bal_error_t
-bal_engine_init(const bal_allocator_t *allocator, bal_engine_t *engine, bal_logger_t logger)
+bal_engine_init(bal_engine_t *BAL_RESTRICT                 engine,
+                bal_cpu_t *BAL_RESTRICT                    cpu,
+                const bal_allocator_t *BAL_RESTRICT        allocator,
+                const bal_memory_interface_t *BAL_RESTRICT memory_interface,
+                const bal_logger_t                         logger)
 {
-    if (NULL == allocator || NULL == engine)
+    // Check every pointer that will be used in the Engine.
+    // This is tedious, but I currently don't give a fuck. Telling the user exactly what's
+    // wrong is way better than seeing a random segfault in your terminal then going on Github
+    // asking me why Ballistic is crashing on your system.
+
+    if (BAL_UNLIKELY(NULL == engine))
     {
         return BAL_ERROR_INVALID_ARGUMENT;
     }
 
-    uint8_t *data = allocator->allocate(allocator->handle, MEMORY_ALIGNMENT, ARENA_SIZE_BYTES);
+    if (BAL_UNLIKELY(NULL == cpu))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: CPU is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->allocate))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Allocate() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->free))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Free() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->allocate_executable))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Allocate_Executable() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->protect_rw))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Protect_RW() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->protect_rx))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Protect_RX() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->free_executable))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Free_Executable function is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == memory_interface))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Memory_Interface is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == memory_interface->context))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Memory_Interface->Context is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == memory_interface->translate))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Memory_Interface->Translate function is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    internal_engine_state_t *BAL_RESTRICT internal_engine_state
+        = allocator->allocate(allocator->handle, MEMORY_ALIGNMENT, sizeof(internal_engine_state_t));
+
+    if (BAL_UNLIKELY(NULL == internal_engine_state))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to allocate Internal Engine State");
+        engine->status = BAL_ERROR_ALLOCATION_FAILED;
+        return engine->status;
+    }
+
+    (void)memset(internal_engine_state, 0, sizeof(internal_engine_state_t));
+
+    internal_engine_state->ir_arena_base
+        = allocator->allocate(allocator->handle, MEMORY_ALIGNMENT, ARENA_SIZE_BYTES);
+
+    if (BAL_UNLIKELY(NULL == internal_engine_state->ir_arena_base))
+    {
+        allocator->free(allocator->handle, internal_engine_state, sizeof(internal_engine_state_t));
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to allocate Internal IR Arena");
+        engine->status = BAL_ERROR_ALLOCATION_FAILED;
+    }
+
+    (void)memset(
+        internal_engine_state->ir_arena_base, POISON_UNINITIALIZED_MEMORY, ARENA_SIZE_BYTES);
+    internal_engine_state->instruction_count = 0;
+    internal_engine_state->constant_count    = 0;
+    internal_engine_state->tier1_buffer_size = TIER1_BUFFER_SIZE_BYTES;
+    internal_engine_state->tier1_buffer      = allocator->allocate_executable(
+        allocator->handle, 4096, internal_engine_state->tier1_buffer_size);
+
+    if (NULL == internal_engine_state->tier1_buffer.rw_pointer)
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to allocate Internal Tier 1 Buffer");
+        engine->status = BAL_ERROR_ALLOCATION_FAILED;
+        return engine->status;
+    }
+
+    const bal_error_t status = bal_tier1_compiler_init(&internal_engine_state->tier1_compiler,
+                                                       internal_engine_state->tier1_buffer,
+                                                       internal_engine_state->tier1_buffer_size,
+                                                       logger);
+
+    if (status != BAL_SUCCESS)
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to initialize Tier1 Compiler");
+        allocator->free(allocator->handle,
+                        &internal_engine_state->tier1_buffer,
+                        sizeof(internal_engine_state_t));
+        allocator->free(allocator->handle,
+                        internal_engine_state->ir_arena_base,
+                        sizeof(internal_engine_state_t));
+        allocator->free(allocator->handle, internal_engine_state, sizeof(internal_engine_state_t));
+        engine->status = status;
+        return engine->status;
+    }
 
     BAL_LOG_DEBUG(&logger, "Calculating arena layout (Alignment: %zu bytes):", MEMORY_ALIGNMENT);
     BAL_LOG_DEBUG(&logger,
@@ -83,25 +243,56 @@ bal_engine_init(const bal_allocator_t *allocator, bal_engine_t *engine, bal_logg
                   OFFSET_CONSTANTS,
                   CONSTANTS_SIZE_BYTES);
 
-    if (NULL == data)
-    {
-        BAL_LOG_ERROR(&logger, "Allocation of %zu bytes failed.", ARENA_SIZE_BYTES);
-        engine->status = BAL_ERROR_ALLOCATION_FAILED;
-        return engine->status;
-    }
-
-    engine->constant_count    = 0;
-    engine->instruction_count = 0;
-    engine->status            = BAL_SUCCESS;
-    engine->arena_base        = (void *)data;
-    engine->logger            = logger;
-
     BAL_LOG_INFO(&logger,
                  "Initialized engine successfully. Arena: %p (%zu KB)",
-                 engine->arena_base,
+                 internal_engine_state->ir_arena_base,
                  ARENA_SIZE_BYTES / 1024);
+    engine->cpu              = cpu;
+    engine->allocator        = allocator;
+    engine->memory_interface = memory_interface;
+    engine->engine_state     = internal_engine_state;
+    engine->logger           = logger;
+    engine->status           = BAL_SUCCESS;
+    engine->flags            = 0;
+    return engine->status;
+}
 
-    (void)memset(engine->arena_base, POISON_UNINITIALIZED_MEMORY, ARENA_SIZE_BYTES);
+bal_error_t
+bal_engine_run(bal_engine_t *engine)
+{
+    internal_engine_state_t *internal_engine_state = engine->engine_state;
+    engine->flags |= BAL_ENGINE_FLAG_RUNNING;
+
+    while (engine->flags & BAL_ENGINE_FLAG_RUNNING)
+    {
+        // TODO: Lookup PC in a Block Cache Map
+        //
+        bal_guest_address_t pc = engine->cpu->pc;
+        engine->allocator->protect_rw(engine->allocator->handle,
+                                      internal_engine_state->tier1_buffer,
+                                      internal_engine_state->tier1_buffer_size);
+
+        void *entry_point = bal_tier1_compiler_translate(
+            &internal_engine_state->tier1_compiler, engine->memory_interface, pc, MAX_INSTRUCTIONS);
+
+        if (BAL_UNLIKELY(NULL == entry_point))
+        {
+            BAL_LOG_ERROR(&engine->logger,
+                          "Aborting function: Failed to compile block at PC 0x%0llX",
+                          (unsigned long long)pc);
+            engine->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+            engine->flags &= (uint32_t)~BAL_ENGINE_FLAG_RUNNING;
+            break;
+        }
+
+        engine->allocator->protect_rx(engine->allocator->handle,
+                                      internal_engine_state->tier1_buffer,
+                                      internal_engine_state->tier1_buffer_size);
+        const bal_jit_block_t compiled_block = entry_point;
+        BAL_LOG_INFO(&engine->logger, "Executing JIT Block at %p", entry_point);
+        compiled_block(engine->cpu);
+        engine->flags &= (uint32_t)~BAL_ENGINE_FLAG_RUNNING;
+    }
 
     return engine->status;
 }
