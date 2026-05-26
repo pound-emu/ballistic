@@ -110,10 +110,10 @@ init_project(ProjectContext *proj)
 {
     proj->count     = 0;
     proj->capacity  = 10;
-    proj->files     = malloc(sizeof(FileContext) * proj->capacity);
+    proj->files     = calloc(proj->capacity, sizeof(FileContext));
     proj->reg_count = 0;
     proj->reg_cap   = 100;
-    proj->registry  = malloc(sizeof(DocItem *) * proj->reg_cap);
+    proj->registry  = calloc(proj->reg_cap, sizeof(DocItem *));
 }
 
 FileContext *
@@ -129,7 +129,7 @@ add_file(ProjectContext *proj, const char *filepath)
     ctx->file_doc    = NULL;
     ctx->count       = 0;
     ctx->capacity    = 32;
-    ctx->items       = malloc(sizeof(DocItem) * ctx->capacity);
+    ctx->items       = calloc(ctx->capacity, sizeof(DocItem));
     return ctx;
 }
 
@@ -390,7 +390,7 @@ resolve_links(ProjectContext *proj, const char *text, const char *current_file)
                 char name[128];
                 if (name_len < 127)
                 {
-                    strncpy(name, start, name_len);
+                    memcpy(name, start, name_len);
                     name[name_len] = '\0';
 
                     const char *target_file, *target_anchor;
@@ -399,11 +399,11 @@ resolve_links(ProjectContext *proj, const char *text, const char *current_file)
                         if (current_file && strcmp(target_file, current_file) == 0)
                         {
                             out_len
-                                += sprintf(output + out_len, "[`%s`](#%s)", name, target_anchor);
+                                += snprintf(output + out_len, cap - out_len, "[`%s`](#%s)", name, target_anchor);
                         }
                         else
                         {
-                            out_len += sprintf(output + out_len,
+                            out_len += snprintf(output + out_len, cap - out_len,
                                                "[`%s`](%s.html#%s)",
                                                name,
                                                target_file,
@@ -435,9 +435,10 @@ clean_comment(const char *raw)
     }
     size_t len     = strlen(raw);
     char  *output  = malloc(len + 1);
-    char  *out_ptr = output;
-    char  *temp    = my_strdup(raw);
-    char  *line    = strtok(temp, "\n");
+    char  *out_ptr  = output;
+    char  *temp     = my_strdup(raw);
+    char  *saveptr;
+    char  *line     = strtok_r(temp, "\n", &saveptr);
 
     while (line != NULL)
     {
@@ -464,7 +465,7 @@ clean_comment(const char *raw)
         }
         else if (strncmp(p, "*/", 2) == 0)
         {
-            line = strtok(NULL, "\n");
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
         else if (*p == '*')
@@ -478,7 +479,7 @@ clean_comment(const char *raw)
 
         if (strncmp(p, "// ---", 6) == 0)
         {
-            line = strtok(NULL, "\n");
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
 
@@ -487,7 +488,7 @@ clean_comment(const char *raw)
             *out_ptr++ = *p++;
         }
         *out_ptr++ = '\n';
-        line       = strtok(NULL, "\n");
+        line       = strtok_r(NULL, "\n", &saveptr);
     }
     *out_ptr = '\0';
     free(temp);
@@ -530,7 +531,7 @@ parse_file_level_docs(FileContext *ctx, const char *real_path)
             {
                 continue;
             }
-            strcat(buffer, p);
+            strcat_s(buffer, 50000, p);
         }
     }
     fclose(f);
@@ -643,7 +644,7 @@ main_visitor(CXCursor cursor, CXCursor parent, CXClientData client_data)
 
         int num         = clang_Cursor_getNumArguments(cursor);
         item->arg_count = num;
-        item->args      = malloc(sizeof(Field) * num);
+        item->args      = calloc(num, sizeof(Field));
         for (int i = 0; i < num; i++)
         {
             CXCursor arg       = clang_Cursor_getArgument(cursor, i);
@@ -936,7 +937,7 @@ render_sidebar_section(FILE *f, FileContext *ctx, ItemKind kind, const char *tit
     }
 
     // Create a temporary array of pointers
-    DocItem **ptrs = malloc(sizeof(DocItem *) * count);
+    DocItem **ptrs = calloc(count, sizeof(DocItem *));
     size_t    idx  = 0;
     for (size_t i = 0; i < ctx->count; i++)
     {
@@ -1259,7 +1260,7 @@ main(int argc, char **argv)
             {
                 clang_inc_path[--len] = '\0';
             }
-            strcat(clang_inc_path, "/include");
+            strcat_s(clang_inc_path, sizeof(clang_inc_path), "/include");
             if (dir_exists(clang_inc_path))
             {
                 found_inc = 1;
@@ -1281,7 +1282,7 @@ main(int argc, char **argv)
         {
             if (dir_exists(common_paths[i]))
             {
-                strcpy(clang_inc_path, common_paths[i]);
+                strcpy_s(clang_inc_path, sizeof(clang_inc_path), common_paths[i]);
                 found_inc = 1;
                 break;
             }
