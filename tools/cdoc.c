@@ -110,10 +110,10 @@ init_project(ProjectContext *proj)
 {
     proj->count     = 0;
     proj->capacity  = 10;
-    proj->files     = malloc(sizeof(FileContext) * proj->capacity);
+    proj->files     = calloc(proj->capacity, sizeof(FileContext));
     proj->reg_count = 0;
     proj->reg_cap   = 100;
-    proj->registry  = malloc(sizeof(DocItem *) * proj->reg_cap);
+    proj->registry  = calloc(proj->reg_cap, sizeof(DocItem *));
 }
 
 FileContext *
@@ -129,7 +129,7 @@ add_file(ProjectContext *proj, const char *filepath)
     ctx->file_doc    = NULL;
     ctx->count       = 0;
     ctx->capacity    = 32;
-    ctx->items       = malloc(sizeof(DocItem) * ctx->capacity);
+    ctx->items       = calloc(ctx->capacity, sizeof(DocItem));
     return ctx;
 }
 
@@ -390,12 +390,18 @@ resolve_links(ProjectContext *proj, const char *text, const char *current_file)
                 char name[128];
                 if (name_len < 127)
                 {
-                    strncpy(name, start, name_len);
+                    memcpy(name, start, name_len);
                     name[name_len] = '\0';
 
                     const char *target_file, *target_anchor;
                     if (find_link_target(proj, name, &target_file, &target_anchor))
                     {
+                        size_t needed = strlen(name) + strlen(target_anchor) + strlen(target_file) + 16;
+                        if (out_len + needed >= cap)
+                        {
+                            cap    = out_len + needed + 512;
+                            output = realloc(output, cap);
+                        }
                         if (current_file && strcmp(target_file, current_file) == 0)
                         {
                             out_len
