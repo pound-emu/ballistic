@@ -1,5 +1,6 @@
 #include "bal_assembler.h"
 #include <stdbool.h>
+#include <string.h>
 
 static bool can_emit(bal_assembler_t *assembler);
 static void emit_mov(bal_assembler_t *, const char *, uint32_t, uint16_t, uint8_t, uint32_t);
@@ -37,6 +38,19 @@ bal_assembler_init(bal_assembler_t   *assembler,
     BAL_LOG_INFO(
         &logger, "Assembler initialized. Buffer: %p, Capacity: %zu instructions.", buffer, size);
     return BAL_SUCCESS;
+}
+
+void
+bal_assembler_reset(bal_assembler_t *assembler)
+{
+    if (BAL_UNLIKELY(NULL == assembler))
+    {
+        return;
+    }
+
+    assembler->offset = 0;
+    assembler->status = BAL_SUCCESS;
+    (void)memset(assembler->buffer, 0, assembler->capacity * sizeof(uint32_t));
 }
 
 void
@@ -242,16 +256,7 @@ bal_emit_b(bal_assembler_t *assembler, const int32_t offset)
 
     // WARNING: Cast to uint32_t safely applies bitwise masking to negative values.
     const uint32_t imm26       = (uint32_t)(offset / 4) & 0x03FFFFFF;
-    uint32_t       instruction = 0;
-
-    if (0 == imm26)
-    {
-        instruction = hard_coded_bits;
-    }
-    else
-    {
-        instruction = hard_coded_bits / imm26;
-    }
+    const uint32_t instruction = hard_coded_bits | imm26;
 
     const char *mnemonic = "B";
     BAL_LOG_TRACE(&assembler->logger,

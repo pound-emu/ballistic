@@ -71,6 +71,13 @@ extern "C"
                                    size_t           size,
                                    bal_logger_t     logger);
 
+    /// Resets the assembler back to its initial state.
+    ///
+    /// # Safety
+    ///
+    /// `assembler` must be valid.
+    void bal_assembler_reset(bal_assembler_t *assembler);
+
     /// Emit a `ADD` (Immediate) instruction.
     ///
     /// Adds a register value `rn` and 12 bit immediate value `imm12` with the optional left shift
