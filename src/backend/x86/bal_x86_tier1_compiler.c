@@ -44,8 +44,29 @@ static void     translate_jump(bal_tier1_compiler_t                     *compile
                                bal_guest_address_t                      *target_pc);
 static void     translate_mov(bal_tier1_compiler_t                     *compiler,
                               const bal_decoder_instruction_metadata_t *metadata,
-                              uint32_t                                  instruction);
+                              const uint32_t                            instruction);
+static void     translate_mov_orr(bal_tier1_compiler_t                     *compiler,
+                                  const bal_decoder_instruction_metadata_t *metadata,
+                                  const uint32_t                            instruction);
+static void     handle_orr_immediate(bal_tier1_compiler_t                     *compiler,
+                                     const bal_decoder_instruction_metadata_t *metadata,
+                                     const uint32_t                            instruction);
+static void     handle_orr_shifted_register(bal_tier1_compiler_t                     *compiler,
+                                             const bal_decoder_instruction_metadata_t *metadata,
+                                             const uint32_t                            instruction);
+BAL_HOT static void emit_orr_shifted_raw(bal_tier1_compiler_t             *compiler,
+                                      const bal_x86_register_t         x86_rd,
+                                      const bal_x86_register_t         x86_rn,
+                                      const bal_x86_register_t         x86_rm,
+                                      const uint32_t                   imm6,
+                                      const uint32_t                   shift_type,
+                                      const int32_t                    datasize,
+                                      const bool                       has_x86_rn);
 
+static uint64_t decode_bitmask_immediate(const uint32_t N,
+                                         const uint32_t immr,
+                                         const uint32_t imms,
+                                         const int32_t  datasize);
 bal_error_t
 bal_tier1_compiler_init(bal_tier1_compiler_t         *compiler,
                         const bal_executable_buffer_t executable_buffer,
@@ -268,8 +289,10 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
 
             switch (metadata->ir_opcode)
             {
+                case OPCODE_MOV:
+                    translate_mov_orr(compiler, metadata, instruction);
+                    break;
                 case OPCODE_CONST:;
-                    // TODO: implement support for the rest MOV instructions.
                     const char variant = metadata->name[3];
 
                     if (BAL_LIKELY(variant == 'N') || BAL_LIKELY(variant == 'K')
@@ -566,16 +589,18 @@ translate_jump(bal_tier1_compiler_t *BAL_RESTRICT                     compiler,
     (void)compiler;
 }
 
-void
+BAL_HOT static void
 translate_mov(bal_tier1_compiler_t                     *compiler,
               const bal_decoder_instruction_metadata_t *metadata,
               const uint32_t                            instruction)
 {
+    // WARNING: Cast to uint8_t is safe because ARM64 register indices
+    // are in the range [0, 31].
     const uint8_t  rd      = (uint8_t)extract_operand_value(instruction, &metadata->operands[0]);
     const uint64_t imm16   = extract_operand_value(instruction, &metadata->operands[1]);
     const uint64_t hw      = extract_operand_value(instruction, &metadata->operands[2]);
     const uint64_t shift   = hw * 16ULL;
-    const uint64_t mask    = metadata->operands[0].type == BAL_OPERAND_TYPE_REGISTER_32
+    const uint64_t mask    = BAL_OPERAND_TYPE_REGISTER_32 == metadata->operands[0].type
                                  ? 0xFFFFFFFFULL
                                  : 0xFFFFFFFFFFFFFFFFULL;
     const char     variant = metadata->name[3];
@@ -633,3 +658,426 @@ translate_mov(bal_tier1_compiler_t                     *compiler,
     }
     compiler->is_dirty[rd] = true;
 }
+
+BAL_HOT static uint64_t
+decode_bitmask_immediate(const uint32_t N,
+                         const uint32_t immr,
+                         const uint32_t imms,
+                         const int32_t  datasize)
+{
+    // WARNING: N, immr, imms are extracted from the raw ARM64 instruction's
+    // bitmask immediate fields. datasize must be 32 or 64.
+
+    // Compute the highest set bit in N:imms to find the element size.
+    // For 64-bit: 7 bit value (N + imms[5:0]).
+    // For 32-bit: 5 bit value (imms[4:0]), N is ignored.
+    //
+    uint32_t test = (N << 6U) | imms;
+
+    if (32 == datasize)
+    {
+        // WARNING: For 32-bit, only the lower 5 bits of imms are used.
+        test &= 0x1FU;
+    }
+
+    // WARNING: All-ones in the relevant bits means all-ones result.
+    if (((64 == datasize) && (0x7FU == test)) || ((32 == datasize) && (0x1FU == test)))
+    {
+        return (64 == datasize) ? ~0ULL : 0xFFFFFFFFULL;
+    }
+
+    // Find the highest set bit in 'test' to determine the element size.
+    //
+    const uint32_t max_bit = (64 == datasize) ? 6U : 4U;
+    int32_t       len      = 0;
+
+    for (uint32_t i = max_bit; i != UINT32_MAX; --i)
+    {
+        if (test & (1U << i))
+        {
+            // WARNING: Cast uint32_t i (max 6) to int32_t is safe.
+            len = (int32_t)i;
+            break;
+        }
+    }
+
+    // WARNING: esize must be at least 2. Enforce len >= 1.
+    if (0 == len)
+    {
+        len = 1;
+    }
+
+    const int32_t  esize  = 1 << len;
+
+    // WARNING: Cast len (0-6) to uint64_t for safe shift.
+    const uint64_t levels = (1ULL << (uint64_t)len) - 1ULL;
+
+    // WARNING: Narrowing cast from uint64_t to int32_t is safe because
+    // levels is at most 63, and AND with levels guarantees the result fits.
+    const int32_t S = (int32_t)((uint64_t)imms & levels);
+    const int32_t R = (int32_t)((uint64_t)immr & levels);
+
+    // Create (S + 1) consecutive 1 bits, rotate right by R.
+    //
+    uint64_t mask = 0ULL;
+
+    // WARNING: (S + 1) can be up to 64. 1ULL << 64 is undefined behavior.
+    if ((uint64_t)(S + 1) >= 64ULL)
+    {
+        mask = ~0ULL;
+    }
+    else
+    {
+        // WARNING: Cast to uint64_t prevents undefined shift behavior.
+        mask = (1ULL << (uint64_t)(S + 1)) - 1ULL;
+    }
+
+    if (0U != (uint32_t)R)
+    {
+        // WARNING: Casts to uint64_t ensure safe 64-bit rotation.
+        mask = (mask >> (uint64_t)R) | (mask << (uint64_t)(esize - R));
+    }
+
+    // WARNING: Mask to esize bits when esize is smaller than 64.
+    if (esize < 64)
+    {
+        // WARNING: Cast esize to uint64_t for safe shift.
+        mask &= (1ULL << (uint64_t)esize) - 1ULL;
+    }
+
+    // Replicate the pattern to fill the full datasize.
+    //
+    int32_t current_esize = esize;
+
+    while (current_esize < datasize)
+    {
+        mask = (mask << current_esize) | mask;
+        current_esize *= 2;
+    }
+
+    // WARNING: For 32-bit operations, clear the upper 32 bits.
+    if (32 == datasize)
+    {
+        mask &= 0xFFFFFFFFULL;
+    }
+
+    return mask;
+}
+
+BAL_HOT static void
+translate_mov_orr(bal_tier1_compiler_t                     *compiler,
+                  const bal_decoder_instruction_metadata_t *metadata,
+                  const uint32_t                            instruction)
+{
+    // WARNING: The decoder maps 11 ORR encodings to OPCODE_MOV.
+    // 7 are NEON/SIMD (rejected here), 4 are scalar (handled below).
+
+    const bal_logger_t *BAL_RESTRICT logger = &compiler->logger;
+
+    // Step 1: SIMD detection. Reject REGISTER_128 or non-standard width.
+    //
+    for (uint32_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
+    {
+        const uint16_t type = metadata->operands[i].type;
+        const uint16_t bw   = metadata->operands[i].bit_width;
+
+        if (BAL_UNLIKELY(BAL_OPERAND_TYPE_REGISTER_128 == type))
+        {
+            BAL_LOG_ERROR(logger,
+                          "Unsupported SIMD ORR variant: %s", metadata->name);
+            compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+            return;
+        }
+
+        if (BAL_UNLIKELY((BAL_OPERAND_TYPE_NONE != type)
+                         && (BAL_OPERAND_TYPE_IMMEDIATE != type)
+            && (BAL_OPERAND_TYPE_CONDITION != type)
+            // WARNING: 5 is the bit width of ARM register indices (32 regs).
+            && (5 != bw)))
+        {
+            BAL_LOG_ERROR(logger,
+                          "Unsupported SIMD ORR variant: %s", metadata->name);
+            compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+            return;
+        }
+    }
+
+    // Step 2: Count defined operands.
+    //
+    uint32_t operand_count = 0;
+
+    for (uint32_t i = 0; i < BAL_OPERANDS_SIZE; ++i)
+    {
+        if (BAL_OPERAND_TYPE_NONE != metadata->operands[i].type)
+        {
+            ++operand_count;
+        }
+    }
+
+    // Step 3: Dispatch based on operand count.
+    //
+    if (2 == operand_count)
+    {
+        handle_orr_immediate(compiler, metadata, instruction);
+        return;
+    }
+
+    if (5 == operand_count)
+    {
+        handle_orr_shifted_register(compiler, metadata, instruction);
+        return;
+    }
+
+    // Step 4: Fallback for unexpected operand counts.
+    //
+    BAL_LOG_ERROR(logger,
+                  "Unsupported OPCODE_MOV variant"
+                  " with %u operands: %s",
+                  operand_count,
+                  metadata->name);
+    compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+}
+
+BAL_HOT static void
+handle_orr_immediate(bal_tier1_compiler_t                     *compiler,
+                     const bal_decoder_instruction_metadata_t *metadata,
+                     const uint32_t                            instruction)
+{
+    const uint32_t rd
+        = extract_operand_value(instruction, &metadata->operands[0]);
+    const uint32_t rn
+        = extract_operand_value(instruction, &metadata->operands[1]);
+
+    // WARNING: N:immr:imms are not exposed by the decoder. Extract
+    // them directly from the raw instruction word.
+    const uint32_t N    = (instruction >> 22U) & 1U;
+    const uint32_t immr = (instruction >> 16U) & 0x3FU;
+    const uint32_t imms = (instruction >> 10U) & 0x3FU;
+    const int32_t  datasize
+        = (BAL_OPERAND_TYPE_REGISTER_64
+           == metadata->operands[0].type) ? 64 : 32;
+
+    const uint64_t mask
+        = decode_bitmask_immediate(N, immr, imms, datasize);
+
+    if (31 == rn)
+    {
+        // MOV Wd/Xd, #imm alias (Rn = XZR).
+        // WARNING: Cast rd to uint8_t is safe (range [0, 31]).
+        const bool               skip_load = true;
+        const bal_x86_register_t x86_rd
+            = allocate_x86_register(compiler, (uint8_t)rd, skip_load);
+        const bal_x86_macro_t mov_macro = {
+            .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = mask,
+        };
+        bal_sliding_window_push(&compiler->window, mov_macro);
+    }
+    else
+    {
+        // General ORR Wd/Xd, Wn/Xn, #imm.
+        // WARNING: Casts to uint8_t are safe (range [0, 31]).
+        const bal_x86_register_t x86_rn
+            = allocate_x86_register(compiler, (uint8_t)rn, false);
+        const bal_x86_register_t x86_rd
+            = allocate_x86_register(compiler, (uint8_t)rd, true);
+
+        if (x86_rd != x86_rn)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rn,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+
+        const bal_x86_macro_t or_macro = {
+            .opcode              = BAL_X86_MACRO_OR_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = mask,
+        };
+        bal_sliding_window_push(&compiler->window, or_macro);
+
+        // WARNING: For 32-bit operations, zero-extend the result to
+        // clear the upper 32 bits of the x86 register.
+        if (32 == datasize)
+        {
+            const bal_x86_macro_t and_macro = {
+                .opcode = BAL_X86_MACRO_AND_REGISTER_IMMEDIATE,
+                .destination = x86_rd,
+                .immediate_or_offset = 0xFFFFFFFFULL,
+            };
+            bal_sliding_window_push(&compiler->window, and_macro);
+        }
+    }
+
+    compiler->is_dirty[rd] = true;
+}
+
+BAL_HOT static void
+handle_orr_shifted_register(bal_tier1_compiler_t                     *compiler,
+                             const bal_decoder_instruction_metadata_t *metadata,
+                             const uint32_t                            instruction)
+{
+    // WARNING: Casts to uint8_t are safe (range [0, 31]).
+    const uint32_t rd
+        = extract_operand_value(instruction, &metadata->operands[0]);
+    const uint32_t rn
+        = extract_operand_value(instruction, &metadata->operands[1]);
+    const uint32_t imm6
+        = extract_operand_value(instruction, &metadata->operands[2]);
+    const uint32_t rm
+        = extract_operand_value(instruction, &metadata->operands[3]);
+    const uint32_t shift_type
+        = extract_operand_value(instruction, &metadata->operands[4]);
+
+    // MOV Xd/Wd, Xm (register copy: ORR Xd, XZR, Xm).
+    //
+    if ((31 == rn) && (0 == imm6) && (0 == shift_type))
+    {
+        // WARNING: Casts to uint8_t are safe (range [0, 31]).
+        const bal_x86_register_t x86_rm
+            = allocate_x86_register(compiler, (uint8_t)rm, false);
+        const bal_x86_register_t x86_rd
+            = allocate_x86_register(compiler, (uint8_t)rd, true);
+
+        // WARNING: Skip identity move when x86_rd == x86_rm.
+        if (x86_rd != x86_rm)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rm,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+
+        // WARNING: For 32-bit operations, zero-extend the result.
+        const int32_t regcopy_datasize
+            = (BAL_OPERAND_TYPE_REGISTER_64
+               == metadata->operands[0].type) ? 64 : 32;
+
+        if (32 == regcopy_datasize)
+        {
+            const bal_x86_macro_t and_macro = {
+                .opcode = BAL_X86_MACRO_AND_REGISTER_IMMEDIATE,
+                .destination = x86_rd,
+                .immediate_or_offset = 0xFFFFFFFFULL,
+            };
+            bal_sliding_window_push(&compiler->window, and_macro);
+        }
+
+        compiler->is_dirty[rd] = true;
+        return;
+    }
+
+    // General ORR Xd, Xn, Xm {shift_type #imm6}.
+    //
+    if (BAL_UNLIKELY(shift_type > 2))
+    {
+        BAL_LOG_ERROR(&compiler->logger,
+                      "Unsupported ORR shift type: %u", shift_type);
+        compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+        return;
+    }
+
+    const int32_t datasize
+        = (BAL_OPERAND_TYPE_REGISTER_64
+           == metadata->operands[0].type) ? 64 : 32;
+
+    // WARNING: Allocate sources before dest to avoid register aliasing.
+    // WARNING: When rn == 31 (XZR), do NOT load from x[31].
+    //
+    // WARNING: Casts to uint8_t are safe (range [0, 31]).
+    const bal_x86_register_t x86_rm
+        = allocate_x86_register(compiler, (uint8_t)rm, false);
+    bal_x86_register_t x86_rn    = BAL_X86_INVALID;
+    bool               has_x86_rn = false;
+
+    if (31 != rn)
+    {
+        x86_rn    = allocate_x86_register(compiler, (uint8_t)rn, false);
+        has_x86_rn = true;
+    }
+
+    const bal_x86_register_t x86_rd
+        = allocate_x86_register(compiler, (uint8_t)rd, true);
+
+    emit_orr_shifted_raw(compiler, x86_rd, x86_rn, x86_rm,
+                         imm6, shift_type, datasize, has_x86_rn);
+
+    compiler->is_dirty[rd] = true;
+}
+
+BAL_HOT static void
+emit_orr_shifted_raw(bal_tier1_compiler_t             *compiler,
+                     const bal_x86_register_t          x86_rd,
+                     const bal_x86_register_t          x86_rn,
+                     const bal_x86_register_t          x86_rm,
+                     const uint32_t                    imm6,
+                     const uint32_t                    shift_type,
+                     const int32_t                     datasize,
+                     const bool                        has_x86_rn)
+{
+    // Flush window so R11 is free for raw assembler emission.
+    //
+    bal_sliding_window_flush_all(&compiler->window);
+
+    // Copy Rm to R11 and shift it.
+    //
+    bal_x86_emit_mov_r64_r64(&compiler->assembler, BAL_X86_R11, x86_rm);
+
+    // WARNING: imm6 is at most 63, safe to cast to uint8_t.
+    switch (shift_type)
+    {
+        case 0:
+            bal_x86_emit_shl_r64_imm8(
+                &compiler->assembler, BAL_X86_R11, (uint8_t)imm6);
+            break;
+        case 1:
+            bal_x86_emit_shr_r64_imm8(
+                &compiler->assembler, BAL_X86_R11, (uint8_t)imm6);
+            break;
+        case 2:
+            bal_x86_emit_sar_r64_imm8(
+                &compiler->assembler, BAL_X86_R11, (uint8_t)imm6);
+            break;
+        default:
+            break;
+    }
+
+    if (false == has_x86_rn)
+    {
+        // WARNING: No Rn (XZR case). Xd = Rm << shift.
+        bal_x86_emit_mov_r64_r64(
+            &compiler->assembler, x86_rd, BAL_X86_R11);
+    }
+    else
+    {
+        // WARNING: Skip identity move when x86_rd == x86_rn.
+        if (x86_rd != x86_rn)
+        {
+            bal_x86_emit_mov_r64_r64(
+                &compiler->assembler, x86_rd, x86_rn);
+        }
+
+        bal_x86_emit_or_r64_r64(
+            &compiler->assembler, x86_rd, BAL_X86_R11);
+    }
+
+    // WARNING: For 32-bit operations, zero-extend the result.
+    if (32 == datasize)
+    {
+        const bal_x86_macro_t and_macro = {
+            .opcode              = BAL_X86_MACRO_AND_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = 0xFFFFFFFFULL,
+        };
+        bal_sliding_window_push(&compiler->window, and_macro);
+        bal_sliding_window_flush_all(&compiler->window);
+    }
+}
+
+/*** end of file ***/

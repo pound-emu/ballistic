@@ -372,6 +372,66 @@ extern "C"
                                            bal_x86_register_t   source,
                                            int32_t              offset);
 
+    /// Emits a 64-bit left shift by an immediate amount.
+    ///
+    /// Assembly equivalent: `shl reg64, imm8`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`.
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_shl_r64_imm8(bal_x86_assembler_t *assembler,
+                                   bal_x86_register_t   reg,
+                                   uint8_t              imm8);
+
+    /// Emits a 64-bit right shift by an immediate amount.
+    ///
+    /// Assembly equivalent: `shr reg64, imm8`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`.
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_shr_r64_imm8(bal_x86_assembler_t *assembler,
+                                   bal_x86_register_t   reg,
+                                   uint8_t              imm8);
+
+    /// Emits a 64-bit arithmetic right shift by an immediate amount.
+    ///
+    /// Assembly equivalent: `sar reg64, imm8`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`.
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_sar_r64_imm8(bal_x86_assembler_t *assembler,
+                                   bal_x86_register_t   reg,
+                                   uint8_t              imm8);
+
+    /// Emits a 64-bit rotate right by an immediate amount.
+    ///
+    /// Assembly equivalent: `ror reg64, imm8`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`.
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_ror_r64_imm8(bal_x86_assembler_t *assembler,
+                                   bal_x86_register_t   reg,
+                                   uint8_t              imm8);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -731,6 +731,9 @@ bal_engine_translate_tier2(bal_engine_t *BAL_RESTRICT                 engine,
                 case OPCODE_CONST:
                     translate_const(&context, metadata, arm_instruction_operands);
                     break;
+                case OPCODE_MOV:
+                    translate_mov_ir(&context, metadata, arm_instruction_operands);
+                    break;
                 case OPCODE_SUB:
                     translate_sub(&context, metadata, arm_instruction_operands);
                     break;
@@ -907,6 +910,23 @@ get_or_create_ssa_index(bal_translation_context_t *context, const uint64_t regis
     context->ir_instruction_cursor++;
     context->bit_width_cursor++;
     return ssa_index;
+}
+
+static void
+translate_mov_ir(bal_translation_context_t                *context,
+                  const bal_decoder_instruction_metadata_t *metadata,
+                  const uint32_t                           *arm_registers)
+{
+    // WARNING: This function is behind #if 0 and is not currently compiled.
+    // Full IR emission for OPCODE_MOV will be implemented when the Tier 2
+    // compiler frontend is enabled.
+    //
+    BAL_LOG_DEBUG(context->logger,
+                  "  SKIPPED: OPCODE_MOV not yet implemented in IR layer: %s",
+                  metadata->name);
+    (void)context;
+    (void)metadata;
+    (void)arm_registers;
 }
 
 BAL_HOT static void
@@ -1134,3 +1154,5 @@ translate_sub(bal_translation_context_t                *context,
     context->instruction_count++;
 }
 #endif
+
+/*** end of file ***/

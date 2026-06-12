@@ -459,6 +459,231 @@ bal_x86_emit_store_r64_rbp_offset(bal_x86_assembler_t     *assembler,
 }
 
 void
+bal_x86_emit_shl_r64_imm8(bal_x86_assembler_t     *assembler,
+                          const bal_x86_register_t reg,
+                          const uint8_t            imm8)
+{
+    if (BAL_UNLIKELY(NULL == assembler))
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(assembler->status != BAL_SUCCESS))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Aborting function: assembler status != BAL_SUCCESS");
+        return;
+    }
+
+    const bool is_valid_register_result = is_valid_register(reg);
+
+    if (BAL_UNLIKELY(false == is_valid_register_result))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Invalid register: %d", reg);
+        assembler->status = BAL_ERROR_INVALID_ARGUMENT;
+        return;
+    }
+
+    const size_t instruction_size_bytes = 4;
+    const bool   can_emit_status        = can_emit(assembler, instruction_size_bytes);
+
+    if (BAL_UNLIKELY(false == can_emit_status))
+    {
+        return;
+    }
+
+    BAL_LOG_DEBUG(&assembler->logger, "[+0x%04zx] shl r%d, %u", assembler->offset, reg, imm8);
+
+    // WARNING: reg is verified by is_valid_register() to fall within
+    // the safe enum range [0, 15].
+    const uint8_t b          = (uint8_t)reg >> 3;
+    const size_t  old_offset = assembler->offset;
+
+    // WARNING: Cast literal 4U to bal_x86_register_t for the ModRM reg
+    // field. This is the x86 SHL opcode extension (/4), not a register index.
+    emit_rex(assembler->buffer, &assembler->offset, 1U, 0U, b);
+    emit8(assembler->buffer, &assembler->offset, 0xC1U);
+    emit_modrm_register(assembler->buffer, &assembler->offset, (bal_x86_register_t)4U, reg);
+    emit8(assembler->buffer, &assembler->offset, imm8);
+
+    // WARNING: Cast bytes_emitted and instruction_size_bytes to int for %d
+    // format in BAL_ASSERT_MSG, matching the existing codebase pattern.
+    // Both values are guaranteed to fit in int (max 4 bytes).
+    const size_t bytes_emitted = assembler->offset - old_offset;
+    BAL_ASSERT_MSG(bytes_emitted == instruction_size_bytes,
+                   "Bytes emitted %d does not match instruction size %d",
+                   (int)bytes_emitted,
+                   (int)instruction_size_bytes);
+}
+
+void
+bal_x86_emit_shr_r64_imm8(bal_x86_assembler_t     *assembler,
+                          const bal_x86_register_t reg,
+                          const uint8_t            imm8)
+{
+    if (BAL_UNLIKELY(NULL == assembler))
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(assembler->status != BAL_SUCCESS))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Aborting function: assembler status != BAL_SUCCESS");
+        return;
+    }
+
+    const bool is_valid_register_result = is_valid_register(reg);
+
+    if (BAL_UNLIKELY(false == is_valid_register_result))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Invalid register: %d", reg);
+        assembler->status = BAL_ERROR_INVALID_ARGUMENT;
+        return;
+    }
+
+    const size_t instruction_size_bytes = 4;
+    const bool   can_emit_status        = can_emit(assembler, instruction_size_bytes);
+
+    if (BAL_UNLIKELY(false == can_emit_status))
+    {
+        return;
+    }
+
+    BAL_LOG_DEBUG(&assembler->logger, "[+0x%04zx] shr r%d, %u", assembler->offset, reg, imm8);
+
+    // WARNING: reg is verified by is_valid_register() to fall within
+    // the safe enum range [0, 15].
+    const uint8_t b          = (uint8_t)reg >> 3;
+    const size_t  old_offset = assembler->offset;
+
+    // WARNING: Cast literal 5U to bal_x86_register_t for the ModRM reg
+    // field. This is the x86 SHR opcode extension (/5), not a register index.
+    emit_rex(assembler->buffer, &assembler->offset, 1U, 0U, b);
+    emit8(assembler->buffer, &assembler->offset, 0xC1U);
+    emit_modrm_register(assembler->buffer, &assembler->offset, (bal_x86_register_t)5U, reg);
+    emit8(assembler->buffer, &assembler->offset, imm8);
+
+    // WARNING: Casts to int for %d format in BAL_ASSERT_MSG are safe because
+    // both values are at most 4 (instruction size in bytes).
+    const size_t bytes_emitted = assembler->offset - old_offset;
+    BAL_ASSERT_MSG(bytes_emitted == instruction_size_bytes,
+                   "Bytes emitted %d does not match instruction size %d",
+                   (int)bytes_emitted,
+                   (int)instruction_size_bytes);
+}
+
+void
+bal_x86_emit_sar_r64_imm8(bal_x86_assembler_t     *assembler,
+                          const bal_x86_register_t reg,
+                          const uint8_t            imm8)
+{
+    if (BAL_UNLIKELY(NULL == assembler))
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(assembler->status != BAL_SUCCESS))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Aborting function: assembler status != BAL_SUCCESS");
+        return;
+    }
+
+    const bool is_valid_register_result = is_valid_register(reg);
+
+    if (BAL_UNLIKELY(false == is_valid_register_result))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Invalid register: %d", reg);
+        assembler->status = BAL_ERROR_INVALID_ARGUMENT;
+        return;
+    }
+
+    const size_t instruction_size_bytes = 4;
+    const bool   can_emit_status        = can_emit(assembler, instruction_size_bytes);
+
+    if (BAL_UNLIKELY(false == can_emit_status))
+    {
+        return;
+    }
+
+    BAL_LOG_DEBUG(&assembler->logger, "[+0x%04zx] sar r%d, %u", assembler->offset, reg, imm8);
+
+    // WARNING: reg is verified by is_valid_register() to fall within
+    // the safe enum range [0, 15].
+    const uint8_t b          = (uint8_t)reg >> 3;
+    const size_t  old_offset = assembler->offset;
+
+    // WARNING: Cast literal 7U to bal_x86_register_t for the ModRM reg
+    // field. This is the x86 SAR opcode extension (/7), not a register index.
+    emit_rex(assembler->buffer, &assembler->offset, 1U, 0U, b);
+    emit8(assembler->buffer, &assembler->offset, 0xC1U);
+    emit_modrm_register(assembler->buffer, &assembler->offset, (bal_x86_register_t)7U, reg);
+    emit8(assembler->buffer, &assembler->offset, imm8);
+
+    // WARNING: Casts to int for %d format in BAL_ASSERT_MSG are safe because
+    // both values are at most 4 (instruction size in bytes).
+    const size_t bytes_emitted = assembler->offset - old_offset;
+    BAL_ASSERT_MSG(bytes_emitted == instruction_size_bytes,
+                   "Bytes emitted %d does not match instruction size %d",
+                   (int)bytes_emitted,
+                   (int)instruction_size_bytes);
+}
+
+void
+bal_x86_emit_ror_r64_imm8(bal_x86_assembler_t     *assembler,
+                          const bal_x86_register_t reg,
+                          const uint8_t            imm8)
+{
+    if (BAL_UNLIKELY(NULL == assembler))
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(assembler->status != BAL_SUCCESS))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Aborting function: assembler status != BAL_SUCCESS");
+        return;
+    }
+
+    const bool is_valid_register_result = is_valid_register(reg);
+
+    if (BAL_UNLIKELY(false == is_valid_register_result))
+    {
+        BAL_LOG_ERROR(&assembler->logger, "Invalid register: %d", reg);
+        assembler->status = BAL_ERROR_INVALID_ARGUMENT;
+        return;
+    }
+
+    const size_t instruction_size_bytes = 4;
+    const bool   can_emit_status        = can_emit(assembler, instruction_size_bytes);
+
+    if (BAL_UNLIKELY(false == can_emit_status))
+    {
+        return;
+    }
+
+    BAL_LOG_DEBUG(&assembler->logger, "[+0x%04zx] ror r%d, %u", assembler->offset, reg, imm8);
+
+    // WARNING: reg is verified by is_valid_register() to fall within
+    // the safe enum range [0, 15].
+    const uint8_t b          = (uint8_t)reg >> 3;
+    const size_t  old_offset = assembler->offset;
+
+    // WARNING: Cast literal 1U to bal_x86_register_t for the ModRM reg
+    // field. This is the x86 ROR opcode extension (/1), not a register index.
+    emit_rex(assembler->buffer, &assembler->offset, 1U, 0U, b);
+    emit8(assembler->buffer, &assembler->offset, 0xC1U);
+    emit_modrm_register(assembler->buffer, &assembler->offset, (bal_x86_register_t)1U, reg);
+    emit8(assembler->buffer, &assembler->offset, imm8);
+
+    // WARNING: Casts to int for %d format in BAL_ASSERT_MSG are safe because
+    // both values are at most 4 (instruction size in bytes).
+    const size_t bytes_emitted = assembler->offset - old_offset;
+    BAL_ASSERT_MSG(bytes_emitted == instruction_size_bytes,
+                   "Bytes emitted %d does not match instruction size %d",
+                   (int)bytes_emitted,
+                   (int)instruction_size_bytes);
+}
+
+void
 bal_x86_emit_mov_r64_r64(bal_x86_assembler_t     *assembler,
                          const bal_x86_register_t destination,
                          const bal_x86_register_t source)
