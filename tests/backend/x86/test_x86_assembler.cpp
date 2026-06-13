@@ -123,6 +123,7 @@ TEST_F(Backendx86Assembler, Public_NullContext_NoCrash)
     bal_x86_emit_add_mem64_rbp_offset_imm(nullptr, 0, 0);
     bal_x86_emit_add_r64_imm32(nullptr, BAL_X86_RAX, 0);
     bal_x86_emit_add_r64_r64(nullptr, BAL_X86_RAX, BAL_X86_RBX);
+    bal_x86_emit_sub_r64_r64(nullptr, BAL_X86_RAX, BAL_X86_RBX);
     bal_x86_emit_and_r64_r64(nullptr, BAL_X86_RAX, BAL_X86_RAX);
     bal_x86_emit_jcc_rel32(nullptr, BAL_X86_COND_A, 0);
     bal_x86_emit_jmp_r64(nullptr, BAL_X86_RAX);
@@ -144,6 +145,10 @@ TEST_F(Backendx86Assembler, Public_BadStatus_NoEmit)
     assembler.status = BAL_ERROR_INVALID_ARGUMENT;
     bal_x86_emit_ret(&assembler);
     EXPECT_EQ(assembler.offset, 0);
+
+    assembler.status = BAL_ERROR_INVALID_ARGUMENT;
+    bal_x86_emit_sub_r64_r64(&assembler, BAL_X86_RAX, BAL_X86_RBX);
+    EXPECT_EQ(assembler.offset, 0);
 }
 
 TEST_F(Backendx86Assembler, Public_InvalidRegister_NoEmit)
@@ -162,6 +167,14 @@ TEST_F(Backendx86Assembler, Public_InvalidRegister_NoEmit)
 
     assembler.status = BAL_SUCCESS;
     bal_x86_emit_add_r64_r64(&assembler, BAL_X86_RAX, bad_register);
+    EXPECT_EQ(assembler.status, BAL_ERROR_INVALID_ARGUMENT);
+
+    assembler.status = BAL_SUCCESS;
+    bal_x86_emit_sub_r64_r64(&assembler, bad_register, BAL_X86_RAX);
+    EXPECT_EQ(assembler.status, BAL_ERROR_INVALID_ARGUMENT);
+
+    assembler.status = BAL_SUCCESS;
+    bal_x86_emit_sub_r64_r64(&assembler, BAL_X86_RAX, bad_register);
     EXPECT_EQ(assembler.status, BAL_ERROR_INVALID_ARGUMENT);
 
     assembler.status = BAL_SUCCESS;
@@ -340,6 +353,26 @@ TEST_F(Backendx86Assembler, Encode_AddRegToReg_HighHigh)
     EXPECT_EQ(assembler.offset, 3);
     EXPECT_EQ(assembler.buffer[0], 0x4D); // REX.W | REX.R | REX.B
     EXPECT_EQ(assembler.buffer[1], 0x03); // Opcode
+    EXPECT_EQ(assembler.buffer[2], 0xFE); // ModRM
+}
+
+TEST_F(Backendx86Assembler, Encode_SubRegToReg_LowLow)
+{
+    bal_x86_emit_sub_r64_r64(&assembler, BAL_X86_RAX, BAL_X86_RBX);
+    EXPECT_EQ(assembler.status, BAL_SUCCESS);
+    EXPECT_EQ(assembler.offset, 3);
+    EXPECT_EQ(assembler.buffer[0], 0x48); // REX.W
+    EXPECT_EQ(assembler.buffer[1], 0x2B); // Opcode
+    EXPECT_EQ(assembler.buffer[2], 0xC3); // ModRM
+}
+
+TEST_F(Backendx86Assembler, Encode_SubRegToReg_HighHigh)
+{
+    bal_x86_emit_sub_r64_r64(&assembler, BAL_X86_R15, BAL_X86_R14);
+    EXPECT_EQ(assembler.status, BAL_SUCCESS);
+    EXPECT_EQ(assembler.offset, 3);
+    EXPECT_EQ(assembler.buffer[0], 0x4D); // REX.W | REX.R | REX.B
+    EXPECT_EQ(assembler.buffer[1], 0x2B); // Opcode
     EXPECT_EQ(assembler.buffer[2], 0xFE); // ModRM
 }
 
