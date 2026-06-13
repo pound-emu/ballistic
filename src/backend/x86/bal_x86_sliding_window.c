@@ -12,13 +12,14 @@ static const char *const BAL_X86_MACRO_NAMES[] = {
     "JCC_RELATIVE",
     "JMP_REGISTER",
     "JMP_RELATIVE",
-    "OR_REGISTER_IMMEDIATE",
+    "LOAD",
     "MOV_REGISTER_IMMEDIATE",
     "MOV_REGISTER_REGISTER",
-    "LOAD",
-    "STORE",
+    "OR_REGISTER_IMMEDIATE",
+    "SUB_REGISTER_REGISTER",
     "RET",
     "SETCC",
+    "STORE",
 };
 
 static inline const char *
@@ -250,6 +251,9 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
                 assembler, ASSEMBLER_TEMPORARY_REGISTER, immediate_or_offset);
             bal_x86_emit_or_r64_r64(assembler, destination, ASSEMBLER_TEMPORARY_REGISTER);
             break;
+        case BAL_X86_MACRO_SUB_REGISTER_REGISTER:
+            bal_x86_emit_sub_r64_r64(assembler, destination, source);
+            break;
         case BAL_X86_MACRO_STORE:
             // WARNING: The displacement offset refers to the structural members within bal_cpu_t.
             // This struct is statically bounded to 264 bytes, which fits inside a signed 32-bit
@@ -266,6 +270,8 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
             break;
     }
 }
+
+/*** end of file ***/
 
 void
 run_peephole_optimizer(bal_sliding_window_t *BAL_RESTRICT window)
@@ -334,3 +340,7 @@ run_peephole_optimizer(bal_sliding_window_t *BAL_RESTRICT window)
         }
     }
 }
+
+/*** end of file ***/
+
+

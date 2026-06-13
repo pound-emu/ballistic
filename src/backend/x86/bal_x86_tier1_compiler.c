@@ -45,6 +45,10 @@ static void     translate_jump(bal_tier1_compiler_t                     *compile
 static void     translate_mov(bal_tier1_compiler_t                     *compiler,
                               const bal_decoder_instruction_metadata_t *metadata,
                               uint32_t                                  instruction);
+static void     translate_sub(bal_tier1_compiler_t                     *compiler,
+                              const bal_decoder_instruction_metadata_t *metadata,
+                              uint32_t                                  instruction,
+                              bool                                     *is_terminated);
 
 bal_error_t
 bal_tier1_compiler_init(bal_tier1_compiler_t         *compiler,
@@ -306,6 +310,10 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
 
                     is_pc_dynamic       = true;
                     is_block_terminated = true;
+                    break;
+                case OPCODE_SUB:
+                    translate_sub(compiler, metadata, instruction,
+                                  &is_block_terminated);
                     break;
                 case OPCODE_TRAP:
                     BAL_LOG_INFO(logger,
@@ -633,3 +641,101 @@ translate_mov(bal_tier1_compiler_t                     *compiler,
     }
     compiler->is_dirty[rd] = true;
 }
+
+static void
+translate_sub(bal_tier1_compiler_t                     *compiler,
+              const bal_decoder_instruction_metadata_t *metadata,
+              const uint32_t                            instruction,
+              bool                                     *is_terminated)
+{
+    const uint32_t shift_amount
+        = extract_operand_value(instruction, &metadata->operands[2]);
+    const uint32_t shift_type
+        = extract_operand_value(instruction, &metadata->operands[4]);
+    const bool is_32bit
+        = (metadata->operands[0].type == BAL_OPERAND_TYPE_REGISTER_32);
+
+    if (BAL_UNLIKELY(shift_amount != 0 || shift_type != 0 || is_32bit))
+    {
+        BAL_LOG_ERROR(&compiler->logger,
+                      "Aborting function: Tier 1 Unsupported Opcode: %s "
+                      "(shifted or 32-bit SUB)",
+                      metadata->name);
+        *is_terminated = true;
+        return;
+    }
+
+    // WARNING: ARM register indices are 5 bits (0-31),
+    // safe to truncate to uint8_t.
+    const uint8_t rd
+        = (uint8_t)extract_operand_value(instruction, &metadata->operands[0]);
+    // WARNING: ARM register indices are 5 bits (0-31),
+    // safe to truncate to uint8_t.
+    const uint8_t rn
+        = (uint8_t)extract_operand_value(instruction, &metadata->operands[1]);
+    // WARNING: ARM register indices are 5 bits (0-31),
+    // safe to truncate to uint8_t.
+    const uint8_t rm
+        = (uint8_t)extract_operand_value(instruction, &metadata->operands[3]);
+
+    // NOTE: Load both source registers before clobbering the destination.
+    const bool               do_load   = false;
+    const bal_x86_register_t x86_rn
+        = allocate_x86_register(compiler, rn, do_load);
+    const bal_x86_register_t x86_rm
+        = allocate_x86_register(compiler, rm, do_load);
+
+    if (rd == rm)
+    {
+        // NOTE: Rd aliases Rm — x86 SUB is non-commutative.
+        // Use R11 as scratch: R11 = Rn - Rm, then Rd = R11.
+        //
+        const bool               load_rd = false;
+        const bal_x86_register_t x86_rd
+            = allocate_x86_register(compiler, rd, load_rd);
+        const bal_x86_macro_t mov_to_temp = {
+            .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+            .destination = BAL_X86_R11,
+            .source      = x86_rn,
+        };
+        bal_sliding_window_push(&compiler->window, mov_to_temp);
+        const bal_x86_macro_t sub_from_temp = {
+            .opcode      = BAL_X86_MACRO_SUB_REGISTER_REGISTER,
+            .destination = BAL_X86_R11,
+            .source      = x86_rm,
+        };
+        bal_sliding_window_push(&compiler->window, sub_from_temp);
+        const bal_x86_macro_t mov_result = {
+            .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+            .destination = x86_rd,
+            .source      = BAL_X86_R11,
+        };
+        bal_sliding_window_push(&compiler->window, mov_result);
+    }
+    else
+    {
+        bal_x86_register_t x86_rd = x86_rn;
+
+        if (rd != rn)
+        {
+            const bool               skip_load = true;
+            x86_rd = allocate_x86_register(compiler, rd, skip_load);
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rn,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+
+        const bal_x86_macro_t sub_macro = {
+            .opcode      = BAL_X86_MACRO_SUB_REGISTER_REGISTER,
+            .destination = x86_rd,
+            .source      = x86_rm,
+        };
+        bal_sliding_window_push(&compiler->window, sub_macro);
+    }
+
+    compiler->is_dirty[rd] = true;
+}
+
