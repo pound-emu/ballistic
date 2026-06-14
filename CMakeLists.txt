@@ -183,6 +183,10 @@ endif ()
 # Compile Tools
 # -----------------------------------------------------------------------------
 message(STATUS "[Ballistic] Configuring developer tools...")
+set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+list(APPEND CMAKE_BUILD_RPATH "$ORIGIN/../../lib/${BALLISTIC_PLATFORM}")
+add_external_subdirectory(extern/LuaJIT-2.1)
+
 set(DECODER_CLI_NAME "decoder_cli")
 add_executable(${DECODER_CLI_NAME} tools/decoder_cli.c)
 target_link_libraries(${DECODER_CLI_NAME} PRIVATE ${PROJECT_NAME})
@@ -301,7 +305,6 @@ if (BALLISTIC_BUILD_TESTS)
         gtest_discover_tests(${target_name})
     endforeach ()
 
-    add_external_subdirectory(extern/LuaJIT-2.1)
 
     add_test(
             NAME doctest

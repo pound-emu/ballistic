@@ -244,65 +244,69 @@ local function test_file(header_file)
     end
 end
 
-local args = { ... }
+local function main(...)
+    local args = { ... }
 
-if #args == 0 then
-    log_error("Aborting script: no header files provided to parse.")
-    os.exit(1)
-end
-
-is_windows = package.config:sub(1, 1) == "\\"
-exe_extension = is_windows and ".exe" or ""
-compiler = os.getenv("DOCTEST_CC") or os.getenv("CC") or "clang"
-compiler_flags = os.getenv("DOCTEST_CFLAGS") or "-w"
-use_lto = os.getenv("DOCTEST_LTO") == "ON" or os.getenv("DOCTEST_LTO") == "1" or os.getenv("DOCTEST_LTO") == "TRUE"
-lto_flag = ""
-
-if use_lto and not is_windows then
-    lto_flag = "-flto"
-    log_info("Link-Time Optimization detected, appending -flto flag")
-end
-
-project_root = "."
-string_index = args[1]:find("[/\\]include[/\\]")
-
-if string_index then
-    project_root = args[1]:sub(1, string_index - 1);
-
-    if project_root == "" then
-        project_root = "."
+    if #args == 0 then
+        log_error("Aborting script: no header files provided to parse.")
+        os.exit(1)
     end
-end
 
-include_directory = project_root .. "/include"
-source_directory = project_root .. "/src"
+    is_windows = package.config:sub(1, 1) == "\\"
+    exe_extension = is_windows and ".exe" or ""
+    compiler = os.getenv("DOCTEST_CC") or os.getenv("CC") or "clang"
+    compiler_flags = os.getenv("DOCTEST_CFLAGS") or "-w"
+    use_lto = os.getenv("DOCTEST_LTO") == "ON" or os.getenv("DOCTEST_LTO") == "1" or os.getenv("DOCTEST_LTO") == "TRUE"
+    lto_flag = ""
 
-compiler_flags = compiler_flags:gsub("\n", " ")
-library_directory = os.getenv("DOCTEST_LIB_DIR") or "."
-library_link_flags = ""
-is_msvc = is_windows and compiler:match("cl%.exe$")
-
-if is_msvc then
-    library_link_flags = string.format('/LIBPATH:"%s" Ballistic.lib', library_directory)
-else
-    library_link_flags = string.format('-L"%s" -lBallistic', library_directory)
-end
-
-local all_passed = true
-
-for _, header in ipairs(args) do
-    local test_file_status = test_file(header)
-    log_info("===============================================")
-
-    if not test_file_status then
-        all_passed = false
+    if use_lto and not is_windows then
+        lto_flag = "-flto"
+        log_info("Link-Time Optimization detected, appending -flto flag")
     end
+
+    project_root = "."
+    string_index = args[1]:find("[/\\]include[/\\]")
+
+    if string_index then
+        project_root = args[1]:sub(1, string_index - 1);
+
+        if project_root == "" then
+            project_root = "."
+        end
+    end
+
+    include_directory = project_root .. "/include"
+    source_directory = project_root .. "/src"
+
+    compiler_flags = compiler_flags:gsub("\n", " ")
+    library_directory = os.getenv("DOCTEST_LIB_DIR") or "."
+    library_link_flags = ""
+    is_msvc = is_windows and compiler:match("cl%.exe$")
+
+    if is_msvc then
+        library_link_flags = string.format('/LIBPATH:"%s" Ballistic.lib', library_directory)
+    else
+        library_link_flags = string.format('-L"%s" -lBallistic', library_directory)
+    end
+
+    local all_passed = true
+
+    for _, header in ipairs(args) do
+        local test_file_status = test_file(header)
+        log_info("===============================================")
+
+        if not test_file_status then
+            all_passed = false
+        end
+    end
+
+    if not all_passed then
+        log_error("One or more doctests failed.")
+        os.exit(1)
+    end
+
+    log_info("All doctests passed successfully.")
+    os.exit(0)
 end
 
-if not all_passed then
-    log_error("One or more doctests failed.")
-    os.exit(1)
-end
-
-log_info("All doctests passed successfully.")
-os.exit(0)
+main(...)

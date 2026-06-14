@@ -77,153 +77,53 @@ extern "C"
         load_directory(dialog);
     }
 
-    bool dashboard_file_dialog_draw(bal_file_dialog_t *dialog)
+    void dashboard_file_dialog_refresh(bal_file_dialog_t *dialog)
     {
         if (BAL_UNLIKELY(NULL == dialog))
         {
-            return false;
+            return;
         }
 
-        bool result = false;
-
-        if (true == dialog->just_opened)
-        {
-            ImGui::OpenPopup("Select Directory");
-            dialog->just_opened = false;
-        }
-
-        ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_Appearing);
-
-        if (ImGui::BeginPopupModal(
-                "Select Directory", &dialog->is_open, ImGuiWindowFlags_NoCollapse))
-        {
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Path:");
-            ImGui::SameLine();
-
-            const float back_button_width
-                = ImGui::CalcTextSize("Back").x + (ImGui::GetStyle().FramePadding.x * 2.0F);
-            const float ballistic_button_width
-                = ImGui::CalcTextSize("*").x + (ImGui::GetStyle().FramePadding.x * 2.0F);
-            const float spacing    = ImGui::GetStyle().ItemSpacing.x;
-            const float text_width = ImGui::GetContentRegionAvail().x - back_button_width
-                                     - ballistic_button_width - (spacing * 2);
-
-            ImGui::SetNextItemWidth(text_width);
-            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-            ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, ImGui::GetStyle().FrameRounding);
-
-            if (ImGui::InputText("##path_input",
-                                 dialog->current_path,
-                                 FILE_ENTRY_PATH_SIZE,
-                                 ImGuiInputTextFlags_EnterReturnsTrue
-                                     | ImGuiInputTextFlags_AutoSelectAll))
-            {
-                ImGui::SetKeyboardFocusHere(-1);
-                load_directory(dialog);
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("*"))
-            {
-                (void)memset(dialog->current_path, 0, sizeof(dialog->current_path));
-                path_append(dialog->current_path, BALLISTIC_DIRECTORY);
-                load_directory(dialog);
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Back"))
-            {
-                path_append(dialog->current_path, "..");
-                load_directory(dialog);
-            }
-
-            ImGui::PopStyleVar();
-            ImGui::PopStyleColor();
-            ImGui::SameLine();
-
-            ImGui::Separator();
-            ImGui::BeginChild(
-                "##dir_list", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 10), true);
-
-            {
-                const bal_file_entry_t *BAL_RESTRICT entries      = dialog->file_entries;
-                char *BAL_RESTRICT                   current_path = dialog->current_path;
-
-                for (uint32_t i = 0; i < dialog->file_entries_count; ++i)
-                {
-                    const bal_file_entry_t *BAL_RESTRICT entry = entries + i;
-                    ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0, 0.5f));
-                    ImGui::PushID((int)i);
-                    if ('.' == entry->name[0] && '.' == entry->name[1] && '\0' == entry->name[2])
-                    {
-                        if (ImGui::Selectable("[ .. ]", false, 0, ImVec2(0, 20)))
-                        {
-                            path_append(current_path, "..");
-                            load_directory(dialog);
-                        }
-                    }
-                    else
-                    {
-                        if (ImGui::Selectable(entry->name,
-                                              false,
-                                              ImGuiSelectableFlags_AllowDoubleClick,
-                                              ImVec2(0, 20)))
-                        {
-                            if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-                            {
-                                path_append(current_path, entry->name);
-                                load_directory(dialog);
-                            }
-                        }
-                    }
-
-                    ImGui::PopStyleVar();
-                    ImGui::PopID();
-                }
-            }
-
-            ImGui::EndChild();
-
-            if (ImGui::Button("Select Current Directory"))
-            {
-                fast_strcpy(dialog->selected_path, dialog->current_path);
-                result          = true;
-                dialog->is_open = false;
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Cancel"))
-            {
-                dialog->is_open = false;
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::EndPopup();
-        }
-
-        return result;
+        load_directory(dialog);
     }
-}
 
-const char *
-dashboard_file_dialog_get_current_path(const bal_file_dialog_t *dialog)
-{
-    if (BAL_UNLIKELY(NULL == dialog))
+    void dashboard_file_dialog_append_path(bal_file_dialog_t *BAL_RESTRICT dialog,
+                                           const char *BAL_RESTRICT        name)
     {
-        return "";
+        if (BAL_UNLIKELY(NULL == dialog))
+        {
+            return;
+        }
+
+        path_append(dialog->current_path, name);
     }
 
-    if (BAL_UNLIKELY(NULL == dialog->selected_path))
+    BAL_EXPORT void dashboard_file_dialog_navigate_home(bal_file_dialog_t *dialog)
     {
-        return "";
+        if (BAL_UNLIKELY(NULL == dialog))
+        {
+            return;
+        }
+
+        (void)memset(dialog->current_path, 0, sizeof(dialog->current_path));
+        path_append(dialog->current_path, BALLISTIC_DIRECTORY);
+        load_directory(dialog);
     }
 
-    return dialog->selected_path;
+    const char *dashboard_file_dialog_get_current_path(const bal_file_dialog_t *dialog)
+    {
+        if (BAL_UNLIKELY(NULL == dialog))
+        {
+            return "";
+        }
+
+        if (BAL_UNLIKELY(NULL == dialog->selected_path))
+        {
+            return "";
+        }
+
+        return dialog->selected_path;
+    }
 }
 
 int
@@ -399,11 +299,6 @@ load_directory(bal_file_dialog_t *BAL_RESTRICT dialog)
         if ('.' == dirent->d_name[0])
         {
             if ('\0' == dirent->d_name[1])
-            {
-                continue;
-            }
-
-            if ('.' == dirent->d_name[1] && '\0' == dirent->d_name[2])
             {
                 continue;
             }

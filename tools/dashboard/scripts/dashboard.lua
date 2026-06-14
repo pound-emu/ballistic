@@ -6,15 +6,111 @@ package.path = package.path .. ";" .. script_dir .. "?.lua"
 
 local ffi = require("ffi")
 local imgui = require("imgui.glfw")
+local dialog_ffi = require("generated.dashboard_file_dialog_ffi")
+local dashboard = dialog_ffi.Dashboard
 
-ffi.cdef [[
-typedef struct bal_file_dialog_t bal_file_dialog_t;
-void dashboard_file_dialog_open(bal_file_dialog_t* dialog);
-bool dashboard_file_dialog_draw(bal_file_dialog_t* dialog);
-const char *dashboard_file_dialog_get_current_path(bal_file_dialog_t *dialog);
-]]
+local function dashboard_render_file_dialog(p_file_dialog)
+    if p_file_dialog == nil then
+        return false
+    end
 
-local C = ffi.C
+    local dialog = ffi.cast("bal_file_dialog_t*", p_file_dialog)
+
+    if dialog.just_opened then
+        imgui.OpenPopup("Select Directory")
+        dialog.just_opened = false
+    end
+
+    local result = false
+    local is_open = ffi.new("bool[1]", dialog.is_open)
+    imgui.SetNextWindowSize(imgui.ImVec2(600, 400), imgui.lib.ImGuiCond_Appearing)
+
+    if imgui.BeginPopupModal("Select Directory", is_open, imgui.lib.ImGuiWindowFlags_NoCollapse) then
+        dialog.is_open = is_open[0]
+        imgui.TextUnformatted("Path:")
+        imgui.SameLine()
+        local back_button_width = imgui.CalcTextSize("Back").x + (imgui.GetStyle().FramePadding.x * 2.0)
+        local ballistic_button_width = imgui.CalcTextSize("*").x + (imgui.GetStyle().FramePadding.x * 2.0)
+        local spacing = imgui.GetStyle().ItemSpacing.x
+        local text_width = imgui.GetContentRegionAvail().x - back_button_width - ballistic_button_width - (spacing * 2)
+        imgui.SetNextItemWidth(text_width)
+        imgui.PushStyleColor(imgui.lib.ImGuiCol_ChildBg, imgui.GetStyleColorVec4(imgui.lib.ImGuiCol_FrameBg)[1])
+        imgui.PushStyleVar(imgui.lib.ImGuiStyleVar_ChildRounding, imgui.GetStyle().FrameRounding)
+        local input_flags = bit.bor(imgui.lib.ImGuiInputTextFlags_EnterReturnsTrue, imgui.lib
+                                                                                         .ImGuiInputTextFlags_AutoSelectAll)
+
+        if imgui.InputText("##path_input", dialog.current_path, 1024, input_flags) then
+            imgui.SetKeyboardFocusHere(-1)
+            dashboard.dashboard_file_dialog_refresh(dialog)
+        end
+
+        imgui.SameLine()
+
+        if imgui.Button("*") then
+            dashboard.dashboard_file_dialog_navigate_home(dialog)
+        end
+
+        imgui.SameLine()
+
+        if imgui.Button("Back") then
+            dashboard.dashboard_file_dialog_append_path(dialog, "..")
+            dashboard.dashboard_file_dialog_refresh(dialog)
+        end
+
+        imgui.PopStyleColor()
+        imgui.PopStyleVar()
+        imgui.Separator()
+        local child_height = -imgui.GetFrameHeightWithSpacing() - 10
+        imgui.BeginChild("##dir_list", imgui.ImVec2(0, child_height), true)
+
+        for i = 0, dialog.file_entries_count - 1 do
+            local entry = dialog.file_entries[i]
+            imgui.PushStyleVar(imgui.lib.ImGuiStyleVar_SelectableTextAlign, imgui.ImVec2(0, 0.5))
+            imgui.PushID(i)
+            local name = ffi.string(entry.name)
+
+            if name == ".." then
+                if imgui.Selectable("[..]", false, 0, imgui.ImVec2(0, 20)) then
+                    dashboard.dashboard_file_dialog_append_path(dialog, "..")
+                    dashboard.dashboard_file_dialog_refresh(dialog)
+                end
+            else
+                if imgui.Selectable(name, false, imgui.lib.ImGuiSelectableFlags_AllowDoubleClick, imgui.ImVec2(0, 20))
+                then
+                    if imgui.IsMouseDoubleClicked(imgui.lib.ImGuiMouseButton_Left) then
+                        dashboard.dashboard_file_dialog_append_path(dialog, name)
+                        dashboard.dashboard_file_dialog_refresh(dialog)
+                    end
+                end
+            end
+
+            imgui.PopID()
+            imgui.PopStyleVar()
+        end
+
+        imgui.EndChild()
+
+        if imgui.Button("Select Current Directory") then
+            ffi.copy(dialog.selected_path, dialog.current_path, 1024)
+            result = true
+            dialog.is_open = false
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.SameLine()
+
+        if imgui.Button("Cancel") then
+            dialog.is_open = false
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.EndPopup()
+    else
+        dialog.is_open = is_open[0]
+    end
+
+    return result
+end
 
 function dashboard_render(host_context, p_file_dialog)
     imgui.SetCurrentContext(host_context)
@@ -44,14 +140,14 @@ function dashboard_render(host_context, p_file_dialog)
     imgui.PushStyleVar(imgui.lib.ImGuiStyleVar_FrameRounding, 8.0)
 
     if imgui.Button("Generate Minimal Working Example", imgui.ImVec2(button_width, button_height)) then
-        C.dashboard_file_dialog_open(p_file_dialog)
+        dashboard.dashboard_file_dialog_open(p_file_dialog)
     end
 
     imgui.PopStyleColor(3)
     imgui.PopStyleVar(1)
 
-    if C.dashboard_file_dialog_draw(p_file_dialog) then
-        local selected_path = ffi.string(C.dashboard_file_dialog_get_current_path(p_file_dialog))
+    if dashboard_render_file_dialog(p_file_dialog) then
+        local selected_path = ffi.string(dashboard.dashboard_file_dialog_get_current_path(p_file_dialog))
         print("Directory chosen: " .. selected_path)
     end
 

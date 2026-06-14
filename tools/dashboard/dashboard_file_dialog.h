@@ -9,6 +9,7 @@
 
 #ifdef __cplusplus
 extern "C"
+
 {
 #endif // __cplusplus
 
@@ -33,16 +34,18 @@ extern "C"
         bool              just_opened;
         char              current_path[FILE_ENTRY_PATH_SIZE];
         char              selected_path[FILE_ENTRY_PATH_SIZE];
-        uint8_t           pad[42];
+        uint8_t           pad[46];
     } bal_file_dialog_t;
 
     static_assert(0 == sizeof(bal_file_dialog_t) % 64,
                   "Struct size mismatch: Must be a multiple of 64 bytes");
 
-    BAL_EXPORT void        dashboard_file_dialog_init(bal_file_dialog_t *dialog);
-    BAL_EXPORT void        dashboard_file_dialog_shutdown(bal_file_dialog_t *dialog);
-    BAL_EXPORT void        dashboard_file_dialog_open(bal_file_dialog_t *dialog);
-    BAL_EXPORT bool        dashboard_file_dialog_draw(bal_file_dialog_t *dialog);
+    BAL_EXPORT void dashboard_file_dialog_init(bal_file_dialog_t *dialog);
+    BAL_EXPORT void dashboard_file_dialog_shutdown(bal_file_dialog_t *dialog);
+    BAL_EXPORT void dashboard_file_dialog_open(bal_file_dialog_t *dialog);
+    BAL_EXPORT void dashboard_file_dialog_refresh(bal_file_dialog_t *dialog);
+    BAL_EXPORT void dashboard_file_dialog_append_path(bal_file_dialog_t *dialog, const char *name);
+    BAL_EXPORT void dashboard_file_dialog_navigate_home(bal_file_dialog_t *dialog);
     BAL_EXPORT const char *dashboard_file_dialog_get_current_path(const bal_file_dialog_t *dialog);
 
 #ifdef __cplusplus

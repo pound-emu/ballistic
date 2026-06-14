@@ -7,6 +7,20 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(FFI_GENERATOR_SCRIPT ${CMAKE_SOURCE_DIR}/tools/generate_ffi.lua)
+set(DASHBOARD_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/dashboard_file_dialog.h)
+set(GENERATED_FFI_BINDINGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generated/dashboard_file_dialog_ffi.lua)
+
+add_custom_command(
+        OUTPUT ${GENERATED_FFI_BINDINGS}
+        COMMAND $<TARGET_FILE:luajit_exe> "${FFI_GENERATOR_SCRIPT}" "${DASHBOARD_HEADER}" "${GENERATED_FFI_BINDINGS}"
+        DEPENDS ${FFI_GENEERATOR_SCRIPT} ${DASHBOARD_HEADER} luajit_exe
+        COMMENT " [Dashboard] Generating FFI bindings from hashboard_file_dialog.h"
+        WORKING_DIRECTORY ${BALLISTIC_LIBRARIES_DIRECTORY}
+        VERBATIM
+)
+
+add_custom_target(dashboard_ffi_bindings ALL DEPENDS ${GENERATED_FFI_BINDINGS})
 add_executable(${PROJECT_NAME}
         main.c
         dashboard_backend.cpp
@@ -32,9 +46,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${glfw_SOURCE_DIR}/include
 )
 
-# TODO: find_package(OpenGL) for macOS.
+add_dependencies(${PROJECT_NAME} dashboard_ffi_bindings)
 target_link_libraries(${PROJECT_NAME} PRIVATE Ballistic glfw cimgui_glfw LuaJIT)
-
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
