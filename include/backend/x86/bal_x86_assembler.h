@@ -187,6 +187,21 @@ extern "C"
                                   bal_x86_register_t   destination,
                                   bal_x86_register_t   source);
 
+    /// Emits a subtract 64-bit register from another 64-bit register.
+    ///
+    /// Assembly equivalent: `sub destination, source`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_sub_r64_r64(bal_x86_assembler_t *assembler,
+                                  bal_x86_register_t   destination,
+                                  bal_x86_register_t   source);
+
     /// Emits a bitwise AND instruction between two 64-bit registers.
     ///
     /// Assembly equivalent: `and destination, source`.

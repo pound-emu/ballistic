@@ -17,8 +17,16 @@ project(Ballistic LANGUAGES C CXX VERSION 0.4.0)
 macro(add_external_subdirectory directory)
     set(_EXTERNAL_OLD_C_FLAGS "${CMAKE_C_FLAGS}")
     set(_EXTERNAL_OLD_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    set(_EXTERNAL_OLD_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+    set(_EXTERNAL_OLD_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    set(_EXTERNAL_OLD_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+    set(_EXTERNAL_OLD_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 
     if (MSVC)
+        string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+        string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+        string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+        string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
     else ()
@@ -29,6 +37,10 @@ macro(add_external_subdirectory directory)
     add_subdirectory(${directory} ${ARGN})
     set(CMAKE_C_FLAGS "${_EXTERNAL_OLD_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${_EXTERNAL_OLD_CXX_FLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG "${_EXTERNAL_OLD_C_FLAGS_DEBUG}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${_EXTERNAL_OLD_CXX_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${_EXTERNAL_OLD_C_FLAGS_RELWITHDEBINFO}")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${_EXTERNAL_OLD_CXX_FLAGS_RELWITHDEBINFO}")
 endmacro()
 
 # -----------------------------------------------------------------------------
@@ -154,6 +166,22 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
             /Zc:preprocessor /experimental:c11atomics)
 endif ()
 
+if (MSVC)
+    target_precompile_headers(Ballistic PRIVATE
+            <windows.h>
+            <intrin.h>
+            <stdint.h>
+            <stddef.h>
+            <stdbool.h>
+            <string.h>
+            <assert.h>
+    )
+endif ()
+
+if (MSVC)
+    add_compile_options(/MP)
+endif ()
+
 
 if (BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION)
     include(CheckIPOSupported)
@@ -162,6 +190,10 @@ if (BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION)
     if (ipo_supported)
         message(STATUS "[Ballistic] Link Time Optimization is ENABLED and supported.")
         set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
+        if (MSVC)
+            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /LTCG:incremental")
+        endif ()
     else ()
         message(WARNING "[Ballistic] Link Time Optimization was requested but is NOT supported by your compiler, disabling LTO. "
                 "Reason: ${ipo_error}")

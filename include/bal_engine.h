@@ -61,9 +61,6 @@ extern "C"
         uint32_t original_variable_index;
     } bal_source_variable_t;
 
-    /// Holds the Intermediate Representation buffers, SSA state, and other
-    /// important metadata. The structure is divided into hot and cold data aligned
-    /// to 64 bytes. Both hot and cold data lives on their own cache lines.
     BAL_ALIGNED(64) typedef struct
     {
         /// The guest CPU state.

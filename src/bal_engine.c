@@ -60,8 +60,6 @@ static_assert(16 == sizeof(block_cache_entry_t), "Block cache entry size mismatc
 
 typedef struct
 {
-    // Tier 1 State
-
     bal_tier1_compiler_t    tier1_compiler;
     bal_executable_buffer_t tier1_buffer;
     void                   *ir_arena_base;

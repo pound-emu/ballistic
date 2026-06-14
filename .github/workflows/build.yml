@@ -1,88 +1,111 @@
 name: CI
-
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
-
+    branches: [ main ]
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  BUILD_DIR: ${{ github.workspace }}/build
+  BUILD_DIRECTORY: ${{ github.workspace }}/build
 
 jobs:
-  Lint:
-    name: Standards & Formatting
+  Build-Linux:
+    name: Ubuntu / ${{ matrix.type }}
     runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y clang-tidy-19 clang-format-19 cmake ninja-build libclang-19-dev pkg-config libwayland-dev libxkbcommon-dev xorg-dev
-
-      #      - name: Run Clang-Format
-      #        run: |
-      #          find src include tests tools -name "*.[ch]" \
-      #            -not -name "bal_decoder_table_gen.*" \
-      #                                                | xargs clang-format-19 --dry-run --Werror --style=file:.clang-format
-
-      - name: Generate Compilation Database
-        run: |
-          git submodule update --init --recursive                                      
-
-          ARCH_TRIPLET=$(gcc -dumpmachine)
-          cmake -S . -B ${{ env.BUILD_DIR }} -G Ninja \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DCMAKE_C_COMPILER=clang-19 \
-            -DCMAKE_PREFIX_PATH="/usr/lib/llvm-19;/usr/lib/$ARCH_TRIPLET"
-
-      - name: Generate Source Headers
-        run: cmake --build ${{ env.BUILD_DIR }} --target Ballistic --parallel $(nproc)
-
-      #- name: Run Clang-Tidy
-      #  working-directory: ${{ github.workspace }}
-      #  run: |
-      #    find src include -name "*.[ch]" -not -name "decoder_table_gen.*" | xargs clang-tidy-18 -p ${{ env.BUILD_DIR }} \
-      #      --checks='-*,clang-diagnostic-*,bugprone-*,performance-*, portability-*' \
-      #      --warnings-as-errors=*
-  Build:
-    name: ${{ matrix.os }} / ${{ matrix.type }}
-    needs: Lint
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-24.04, windows-latest, macos-14 ]
         type: [ Debug, Release ]
-        include:
-          - os: ubuntu-24.04
-            cc: clang-18
-            cxx: clang++-18
-            flags_debug: "-fsanitize=address,undefined -fno-omit-frame-pointer"
-            deps_cmd: sudo apt-get update && sudo apt-get install -y ninja-build ccache clang-18 libclang-18-dev pkg-config libwayland-dev libxkbcommon-dev xorg-dev
+    env:
+      CC: clang-18
+      CXX: clang++-18
+      CCACHE_COMPRESS: true
+      CCACHE_MAX_SIZE: 5G
+      CCACHE_SLOPPINESS: time_macros,include_file_ctime,include_file_mtime
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
 
-          - os: windows-latest
-            cc: cl.exe
-            cxx: cl.exe
-            flags_debug: ""
-            deps_cmd: choco install ccache
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get install -y --no-install-recommends libclang-18-dev ccache ninja-build libwayland-dev libxkbcommon-dev xorg-dev 
 
-          - os: macos-14
-            cc: $(brew --prefix llvm)/bin/clang
-            cxx: $(brew --prefix llvm)/bin/clang++
-            flags_debug: "-fsanitize=address,undefined"
-            deps_cmd: brew install ninja ccache llvm luajit mesa-glu
+      - name: Setup Compiler Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-clang-18-${{ matrix.type }}-ccache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-clang-18-${{ matrix.type }}-cache-
 
+      - name: Prepare ccache
+        run: |
+          mkdir -p ~/.ccache
+          ccache -z       
+          ccache -M 5G
+          ccache -s     
+
+      - name: Configure CMake
+        run: |
+          EXTRA_FLAGS=""
+                   if [ "${{ matrix.type }}" == "Debug" ]; then
+                     EXTRA_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+                  else
+                    # Strip absolute paths from LTO to avoid ccache cache misses.
+                    EXTRA_FLAGS="-ffile-prefix-map=${{ github.workspace }}=."
+                   fi
+
+                   # Use lld (bundled with clang-18) instead of mold to save setup action time.
+                   # lld is exceptionally fast and fully supports LTO for Release builds.
+                   cmake -G Ninja -B build \
+                     -DCMAKE_BUILD_TYPE=${{ matrix.type }} \
+                     -DCMAKE_C_COMPILER=${{ env.CC }} \
+                     -DCMAKE_CXX_COMPILER=${{ env.CXX }} \
+                     -DCMAKE_C_FLAGS="$EXTRA_FLAGS" \
+                     -DCMAKE_CXX_FLAGS="$EXTRA_FLAGS" \
+                     -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                     -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
+                     -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld" \
+                     -DBALLISTIC_BUILD_TESTS=ON \
+                     -DBALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION=${{ matrix.type == 'Release' && 'ON' || 'OFF' }}
+
+      - name: Build Project
+        env:
+          ASAN_OPTIONS: detect_leaks=0
+        run: |
+          ccache -z
+          cmake --build build --config ${{ matrix.type }} --target all -j$(nproc)
+          ccache -s
+
+      - name: Run Test Suite
+        working-directory: build
+        run: |
+          ctest -C ${{ matrix.type }} --output-on-failure -j${{ env.NUMBER_OF_PROCESSORS }}
+  
+
+  Build-Windows:
+    name: Windows / ${{ matrix.type }}
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        type: [ Debug, Release ]
+    env:
+      CC: cl
+      CXX: cl
+      SCCACHE_DIR: ${{ github.workspace }}\.sccache
+      SCCACHE_CACHE_SIZE: 2G
+      CMAKE_C_FLAGS: "/MP /Zf"
+      CMAKE_CXX_FLAGS: "/MP /Zf"
+      CMAKE_C_FLAGS_RELEASE: "/GL /O2"
+      CMAKE_CXX_FLAGS_RELEASE: "/GL /O2"
+      CMAKE_EXE_LINKER_FLAGS_RELEASE: "/LTCG:incremental /OPT:REF /OPT:ICF"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,103 +114,126 @@ jobs:
 
       - name: Setup Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Setup Mold
-        uses: rui314/setup-mold@v1
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          arch: x64
 
-      - name: Install System Dependencies
-        shell: bash
-        run: ${{ matrix.deps_cmd }}
+      - name: Install Dependencies
+        shell: pwsh
+        run: |
+          if (!(Test-Path "$env:USERPROFILE\.choco-cache")) {
+            New-Item -ItemType Directory -Path "$env:USERPROFILE\.choco-cache" -Force | Out-Null
+          }
+          choco install sccache -y --limit-output --cache-location="$env:USERPROFILE\.choco-cache"
+
+      - name: Setup sccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}\.sccache
+          key: ${{ runner.os }}-msvc-${{ matrix.type }}-sccache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-msvc-${{ matrix.type }}-sccache-
+
+      - name: Disable Windows Defender Scanning
+        shell: pwsh
+        run: |
+          $buildPath = "${{ github.workspace }}\build"
+          if (!(Test-Path $buildPath)) { New-Item -ItemType Directory -Path $buildPath -Force | Out-Null }
+          Add-MpPreference -ExclusionPath $buildPath -ErrorAction SilentlyContinue
+          Write-Host "✓ Build directory excluded from Windows Defender"
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          cmake -G Ninja -B build `
+            -DCMAKE_BUILD_TYPE=${{ matrix.type }} `
+            -DCMAKE_C_COMPILER=${{ env.CC }} `
+            -DCMAKE_CXX_COMPILER=${{ env.CXX }} `
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache `
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache `
+            -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld-link" `
+            -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld-link" `
+            -DBALLISTIC_BUILD_TESTS=ON `
+            -DBALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION=${{ matrix.type == 'Release' && 'ON' || 'OFF' }} `
+
+      - name: Build Project
+        shell: pwsh
+        run: |
+          sccache --zero-stats
+          cmake --build build --config ${{ matrix.type }} --target all -j${{ env.NUMBER_OF_PROCESSORS }}
+          sccache --show-stats
+
+      - name: Run Test Suite
+        working-directory: build
+        shell: pwsh
+        run: |
+          ctest -C ${{ matrix.type }} --output-on-failure -j ${{ env.NUMBER_OF_PROCESSORS }}
+
+  Build-macOS:
+    name: macOS / ${{ matrix.type }}
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        type: [ Debug, Release ]
+    env:
+      CC: clang
+      CXX: clang++
+      CCACHE_COMPRESS: true
+      CCACHE_MAX_SIZE: 5G
+      CCACHE_SLOPPINESS: time_macros,include_file_ctime,include_file_mtime,locale
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Install Dependencies
+        run: brew install ccache ninja
 
       - name: Setup Compiler Cache
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ runner.os == 'Windows' && '~/AppData/Local/ccache' || '~/.ccache' }}
-          key: ${{ runner.os }}-${{ matrix.type }}-${{ hashFiles('**/CMakeLists.txt') }}
+          path: ~/.ccache
+          key: ${{ runner.os }}-clang-${{ matrix.type }}-ccache-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.type }}-
+            ${{ runner.os }}-clang-${{ matrix.type }}-ccache-
+
+      - name: Prepare ccache
+        run: |
+          mkdir -p ~/.ccache
+          ccache -z
+          ccache -M 5G
+          ccache -s
 
       - name: Configure CMake
-        shell: bash
-        # Prevent bash from converting /Zi and /Od to file paths.
-        env:
-          MSYS_NO_PATHCONV: 1
         run: |
           EXTRA_FLAGS=""
           if [ "${{ matrix.type }}" == "Debug" ]; then
-            EXTRA_FLAGS="${{ matrix.flags_debug }}"
+            EXTRA_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -O0"
+          else
+            EXTRA_FLAGS="-ffile-prefix-map=${{ github.workspace }}=. -O3"
           fi
-          
-          SEARCH_PATH=""
-          if [ "$RUNNER_OS" == "Linux" ]; then
-             SEARCH_PATH="/usr/lib/llvm-18;/usr/lib/$(gcc -dumpmachine)"
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-             SEARCH_PATH="$(brew --prefix llvm@18);$(brew --prefix cmark)"
-          fi
-
-          export CCACHE_DIR=${{ runner.os == 'Windows' && '~/AppData/Local/ccache' || '~/.ccache' }}
-          export CCACHE_MAXSIZE=10GB
-          
-          git submodule update --init --recursive                                      
           
           cmake -G Ninja -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.type }} \
-            -DCMAKE_C_COMPILER="${{ matrix.cc }}" \
-            -DCMAKE_CXX_COMPILER="${{ matrix.cxx }}" \
+            -DCMAKE_C_COMPILER=${{ env.CC }} \
+            -DCMAKE_CXX_COMPILER=${{ env.CXX }} \
             -DCMAKE_C_FLAGS="$EXTRA_FLAGS" \
             -DCMAKE_CXX_FLAGS="$EXTRA_FLAGS" \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_PREFIX_PATH="$SEARCH_PATH" \
-            -DBALLISTIC_ENABLE_BUILD_TESTS=ON \
-            -DBALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION=${{ matrix.type == 'Release' && 'ON' || 'OFF' }}
+            -DBALLISTIC_BUILD_TESTS=ON \
 
       - name: Build Project
-        # Disable address sanatizer when building CDoc.
         env:
           ASAN_OPTIONS: detect_leaks=0
-        run: cmake --build build --config ${{ matrix.type }} --target all --parallel 4
+        run: |
+          ccache -z
+          # sysctl dynamically grabs all available M1 cores
+          cmake --build build --config ${{ matrix.type }} --target all -j$(sysctl -n hw.ncpu)
+          ccache -s
 
       - name: Run Test Suite
         working-directory: build
-        run: ctest -C ${{ matrix.type }} --output-on-failure --verbose
-
-      - name: Upload Artifacts
-        if: matrix.type == 'Release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: libballistic-${{ matrix.os }}
-          if-no-files-found: ignore
-          path: |
-            build/ballistic_cli*
-            build/decoder_cli*
-            build/coverage_cli*
-            build/test_*
-            build/libBallistic.a
-            build.Ballistic.lib
-            include/
-            src/
-            docs/
-            tools/*.py
-
-      - name: Upload Source Code
-        if: matrix.type == 'Release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: do-not-use-${{ matrix.os }}
-          if-no-files-found: ignore
-          path: |
-            CMakeLists.txt
-            include/
-            src/
-            tools/
-            !tools/dashboard/scripts/imgui
-            tests/
-            docs/*.md
-            !src/bal_decoder_table*
+        run: |
+          ctest -C ${{ matrix.type }} --output-on-failure -j$(sysctl -n hw.ncpu)

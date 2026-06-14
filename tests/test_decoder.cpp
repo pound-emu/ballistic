@@ -83,7 +83,8 @@ TEST(Arm64Decoder, HashTableIntegrity)
             {
                 const decoder_bucket_t *bucket = &g_decoder_lookup_table[hash_index];
                 hot_candidate_t         local_candidates[MAX_LOCAL_CANDIDATES];
-                size_t                  candidate_count = 0;
+                size_t                  candidate_count  = 0;
+                const uint32_t          base_instruction = hash_index << DECODER_HASH_SHIFT;
 
                 if (bucket->count != 0)
                 {
@@ -104,8 +105,14 @@ TEST(Arm64Decoder, HashTableIntegrity)
 
                     candidate_count = bucket->count;
                 }
-
-                const uint32_t base_instruction = hash_index << DECODER_HASH_SHIFT;
+                else
+                {
+                    if (bal_decode_arm64(base_instruction) != nullptr)
+                    {
+                        ++total_errors;
+                    }
+                    continue;
+                }
 
                 for (uint32_t offset = 0; offset < BLOCK_SIZE; ++offset)
                 {
