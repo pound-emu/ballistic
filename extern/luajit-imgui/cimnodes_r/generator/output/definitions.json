@@ -1,0 +1,931 @@
+{
+  "CanvasState_CanvasState": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "CanvasState_CanvasState",
+      "constructor": true,
+      "defaults": {},
+      "funcname": "CanvasState",
+      "location": "ImNodes:71",
+      "namespace": "ImNodes::CanvasState",
+      "ov_cimguiname": "CanvasState_CanvasState",
+      "signature": "()",
+      "stname": "CanvasState"
+    }
+  ],
+  "CanvasState_destroy": [
+    {
+      "args": "(CanvasState* self)",
+      "argsT": [
+        {
+          "name": "self",
+          "type": "CanvasState*"
+        }
+      ],
+      "call_args": "(self)",
+      "cimguiname": "CanvasState_destroy",
+      "defaults": {},
+      "destructor": true,
+      "location": "ImNodes:72",
+      "ov_cimguiname": "CanvasState_destroy",
+      "realdestructor": true,
+      "ret": "void",
+      "signature": "(CanvasState*)",
+      "stname": "CanvasState"
+    }
+  ],
+  "ImNodes_AutoPositionNode": [
+    {
+      "args": "(void* node_id)",
+      "argsT": [
+        {
+          "name": "node_id",
+          "type": "void*"
+        }
+      ],
+      "argsoriginal": "(void* node_id)",
+      "call_args": "(node_id)",
+      "call_args_old": "(node_id)",
+      "cimguiname": "ImNodes_AutoPositionNode",
+      "defaults": {},
+      "funcname": "AutoPositionNode",
+      "location": "ImNodes:86",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_AutoPositionNode",
+      "ret": "void",
+      "signature": "(void*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_BeginCanvas": [
+    {
+      "args": "(CanvasState* canvas)",
+      "argsT": [
+        {
+          "name": "canvas",
+          "type": "CanvasState*"
+        }
+      ],
+      "argsoriginal": "(CanvasState* canvas)",
+      "call_args": "(canvas)",
+      "call_args_old": "(canvas)",
+      "cimguiname": "ImNodes_BeginCanvas",
+      "defaults": {},
+      "funcname": "BeginCanvas",
+      "location": "ImNodes:76",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_BeginCanvas",
+      "ret": "void",
+      "signature": "(CanvasState*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_BeginInputSlot": [
+    {
+      "args": "(const char* title,int kind)",
+      "argsT": [
+        {
+          "name": "title",
+          "type": "const char*"
+        },
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(const char* title,int kind)",
+      "call_args": "(title,kind)",
+      "call_args_old": "(title,kind)",
+      "cimguiname": "ImNodes_BeginInputSlot",
+      "defaults": {},
+      "funcname": "BeginInputSlot",
+      "location": "ImNodes:107",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_BeginInputSlot",
+      "ret": "bool",
+      "signature": "(const char*,int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_BeginNode": [
+    {
+      "args": "(void* node_id,ImVec2* pos,bool* selected)",
+      "argsT": [
+        {
+          "name": "node_id",
+          "type": "void*"
+        },
+        {
+          "name": "pos",
+          "type": "ImVec2*"
+        },
+        {
+          "name": "selected",
+          "type": "bool*"
+        }
+      ],
+      "argsoriginal": "(void* node_id,ImVec2* pos,bool* selected)",
+      "call_args": "(node_id,pos,selected)",
+      "call_args_old": "(node_id,pos,selected)",
+      "cimguiname": "ImNodes_BeginNode",
+      "defaults": {},
+      "funcname": "BeginNode",
+      "location": "ImNodes:80",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_BeginNode",
+      "ret": "bool",
+      "signature": "(void*,ImVec2*,bool*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_BeginOutputSlot": [
+    {
+      "args": "(const char* title,int kind)",
+      "argsT": [
+        {
+          "name": "title",
+          "type": "const char*"
+        },
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(const char* title,int kind)",
+      "call_args": "(title,kind)",
+      "call_args_old": "(title,kind)",
+      "cimguiname": "ImNodes_BeginOutputSlot",
+      "defaults": {},
+      "funcname": "BeginOutputSlot",
+      "location": "ImNodes:109",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_BeginOutputSlot",
+      "ret": "bool",
+      "signature": "(const char*,int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_BeginSlot": [
+    {
+      "args": "(const char* title,int kind)",
+      "argsT": [
+        {
+          "name": "title",
+          "type": "const char*"
+        },
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(const char* title,int kind)",
+      "call_args": "(title,kind)",
+      "call_args_old": "(title,kind)",
+      "cimguiname": "ImNodes_BeginSlot",
+      "defaults": {},
+      "funcname": "BeginSlot",
+      "location": "ImNodes:105",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_BeginSlot",
+      "ret": "bool",
+      "signature": "(const char*,int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Connection": [
+    {
+      "args": "(void* input_node,const char* input_slot,void* output_node,const char* output_slot)",
+      "argsT": [
+        {
+          "name": "input_node",
+          "type": "void*"
+        },
+        {
+          "name": "input_slot",
+          "type": "const char*"
+        },
+        {
+          "name": "output_node",
+          "type": "void*"
+        },
+        {
+          "name": "output_slot",
+          "type": "const char*"
+        }
+      ],
+      "argsoriginal": "(void* input_node,const char* input_slot,void* output_node,const char* output_slot)",
+      "call_args": "(input_node,input_slot,output_node,output_slot)",
+      "call_args_old": "(input_node,input_slot,output_node,output_slot)",
+      "cimguiname": "ImNodes_Connection",
+      "defaults": {},
+      "funcname": "Connection",
+      "location": "ImNodes:93",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_Connection",
+      "ret": "bool",
+      "signature": "(void*,const char*,void*,const char*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_EndCanvas": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_EndCanvas",
+      "defaults": {},
+      "funcname": "EndCanvas",
+      "location": "ImNodes:78",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_EndCanvas",
+      "ret": "void",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_EndNode": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_EndNode",
+      "defaults": {},
+      "funcname": "EndNode",
+      "location": "ImNodes:82",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_EndNode",
+      "ret": "void",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_EndSlot": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_EndSlot",
+      "defaults": {},
+      "funcname": "EndSlot",
+      "location": "ImNodes:111",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_EndSlot",
+      "ret": "void",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_BeginCanvas": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_Ez_BeginCanvas",
+      "defaults": {},
+      "funcname": "BeginCanvas",
+      "location": "ImNodesEz:102",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_BeginCanvas",
+      "ret": "void",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_BeginNode": [
+    {
+      "args": "(void* node_id,const char* title,ImVec2* pos,bool* selected)",
+      "argsT": [
+        {
+          "name": "node_id",
+          "type": "void*"
+        },
+        {
+          "name": "title",
+          "type": "const char*"
+        },
+        {
+          "name": "pos",
+          "type": "ImVec2*"
+        },
+        {
+          "name": "selected",
+          "type": "bool*"
+        }
+      ],
+      "argsoriginal": "(void* node_id,const char* title,ImVec2* pos,bool* selected)",
+      "call_args": "(node_id,title,pos,selected)",
+      "call_args_old": "(node_id,title,pos,selected)",
+      "cimguiname": "ImNodes_Ez_BeginNode",
+      "defaults": {},
+      "funcname": "BeginNode",
+      "location": "ImNodesEz:106",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_BeginNode",
+      "ret": "bool",
+      "signature": "(void*,const char*,ImVec2*,bool*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_Connection": [
+    {
+      "args": "(void* input_node,const char* input_slot,void* output_node,const char* output_slot)",
+      "argsT": [
+        {
+          "name": "input_node",
+          "type": "void*"
+        },
+        {
+          "name": "input_slot",
+          "type": "const char*"
+        },
+        {
+          "name": "output_node",
+          "type": "void*"
+        },
+        {
+          "name": "output_slot",
+          "type": "const char*"
+        }
+      ],
+      "argsoriginal": "(void* input_node,const char* input_slot,void* output_node,const char* output_slot)",
+      "call_args": "(input_node,input_slot,output_node,output_slot)",
+      "call_args_old": "(input_node,input_slot,output_node,output_slot)",
+      "cimguiname": "ImNodes_Ez_Connection",
+      "defaults": {},
+      "funcname": "Connection",
+      "location": "ImNodesEz:118",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_Connection",
+      "ret": "bool",
+      "signature": "(void*,const char*,void*,const char*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_CreateContext": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_Ez_CreateContext",
+      "defaults": {},
+      "funcname": "CreateContext",
+      "location": "ImNodesEz:96",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_CreateContext",
+      "ret": "Context*",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_EndCanvas": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_Ez_EndCanvas",
+      "defaults": {},
+      "funcname": "EndCanvas",
+      "location": "ImNodesEz:103",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_EndCanvas",
+      "ret": "void",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_EndNode": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_Ez_EndNode",
+      "defaults": {},
+      "funcname": "EndNode",
+      "location": "ImNodesEz:108",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_EndNode",
+      "ret": "void",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_FreeContext": [
+    {
+      "args": "(Context* ctx)",
+      "argsT": [
+        {
+          "name": "ctx",
+          "type": "Context*"
+        }
+      ],
+      "argsoriginal": "(Context* ctx)",
+      "call_args": "(ctx)",
+      "call_args_old": "(ctx)",
+      "cimguiname": "ImNodes_Ez_FreeContext",
+      "defaults": {},
+      "funcname": "FreeContext",
+      "location": "ImNodesEz:97",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_FreeContext",
+      "ret": "void",
+      "signature": "(Context*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_GetState": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_Ez_GetState",
+      "defaults": {},
+      "funcname": "GetState",
+      "location": "ImNodesEz:100",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_GetState",
+      "ret": "CanvasState*",
+      "retref": "&",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_InputSlots": [
+    {
+      "args": "(const SlotInfo* slots,int snum)",
+      "argsT": [
+        {
+          "name": "slots",
+          "type": "const SlotInfo*"
+        },
+        {
+          "name": "snum",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(const SlotInfo* slots,int snum)",
+      "call_args": "(slots,snum)",
+      "call_args_old": "(slots,snum)",
+      "cimguiname": "ImNodes_Ez_InputSlots",
+      "defaults": {},
+      "funcname": "InputSlots",
+      "location": "ImNodesEz:112",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_InputSlots",
+      "ret": "void",
+      "signature": "(const SlotInfo*,int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_OutputSlots": [
+    {
+      "args": "(const SlotInfo* slots,int snum)",
+      "argsT": [
+        {
+          "name": "slots",
+          "type": "const SlotInfo*"
+        },
+        {
+          "name": "snum",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(const SlotInfo* slots,int snum)",
+      "call_args": "(slots,snum)",
+      "call_args_old": "(slots,snum)",
+      "cimguiname": "ImNodes_Ez_OutputSlots",
+      "defaults": {},
+      "funcname": "OutputSlots",
+      "location": "ImNodesEz:116",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_OutputSlots",
+      "ret": "void",
+      "signature": "(const SlotInfo*,int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_PopStyleColor": [
+    {
+      "args": "(int count)",
+      "argsT": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(int count)",
+      "call_args": "(count)",
+      "call_args_old": "(count)",
+      "cimguiname": "ImNodes_Ez_PopStyleColor",
+      "defaults": {},
+      "funcname": "PopStyleColor",
+      "location": "ImNodesEz:126",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_PopStyleColor",
+      "ret": "void",
+      "signature": "(int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_PopStyleVar": [
+    {
+      "args": "(int count)",
+      "argsT": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(int count=1)",
+      "call_args": "(count)",
+      "call_args_old": "(count)",
+      "cimguiname": "ImNodes_Ez_PopStyleVar",
+      "defaults": {
+        "count": "1"
+      },
+      "funcname": "PopStyleVar",
+      "location": "ImNodesEz:122",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_PopStyleVar",
+      "ret": "void",
+      "signature": "(int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_PushStyleColor": [
+    {
+      "args": "(ImNodesStyleCol idx,ImU32 col)",
+      "argsT": [
+        {
+          "name": "idx",
+          "type": "ImNodesStyleCol"
+        },
+        {
+          "name": "col",
+          "type": "ImU32"
+        }
+      ],
+      "argsoriginal": "(ImNodesStyleCol idx,ImU32 col)",
+      "call_args": "(idx,col)",
+      "call_args_old": "(idx,col)",
+      "cimguiname": "ImNodes_Ez_PushStyleColor",
+      "defaults": {},
+      "funcname": "PushStyleColor",
+      "location": "ImNodesEz:124",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_PushStyleColor_U32",
+      "ret": "void",
+      "signature": "(ImNodesStyleCol,ImU32)",
+      "stname": ""
+    },
+    {
+      "args": "(ImNodesStyleCol idx,const ImVec4_c col)",
+      "argsT": [
+        {
+          "name": "idx",
+          "type": "ImNodesStyleCol"
+        },
+        {
+          "name": "col",
+          "type": "const ImVec4"
+        }
+      ],
+      "argsoriginal": "(ImNodesStyleCol idx,const ImVec4& col)",
+      "call_args": "(idx,ConvertToCPP_ImVec4(col))",
+      "call_args_old": "(idx,col)",
+      "cimguiname": "ImNodes_Ez_PushStyleColor",
+      "defaults": {},
+      "funcname": "PushStyleColor",
+      "location": "ImNodesEz:125",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_PushStyleColor_Vec4",
+      "ret": "void",
+      "signature": "(ImNodesStyleCol,const ImVec4)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_PushStyleVar": [
+    {
+      "args": "(ImNodesStyleVar idx,float val)",
+      "argsT": [
+        {
+          "name": "idx",
+          "type": "ImNodesStyleVar"
+        },
+        {
+          "name": "val",
+          "type": "float"
+        }
+      ],
+      "argsoriginal": "(ImNodesStyleVar idx,float val)",
+      "call_args": "(idx,val)",
+      "call_args_old": "(idx,val)",
+      "cimguiname": "ImNodes_Ez_PushStyleVar",
+      "defaults": {},
+      "funcname": "PushStyleVar",
+      "location": "ImNodesEz:120",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_PushStyleVar_Float",
+      "ret": "void",
+      "signature": "(ImNodesStyleVar,float)",
+      "stname": ""
+    },
+    {
+      "args": "(ImNodesStyleVar idx,const ImVec2_c val)",
+      "argsT": [
+        {
+          "name": "idx",
+          "type": "ImNodesStyleVar"
+        },
+        {
+          "name": "val",
+          "type": "const ImVec2"
+        }
+      ],
+      "argsoriginal": "(ImNodesStyleVar idx,const ImVec2 &val)",
+      "call_args": "(idx,ConvertToCPP_ImVec2(val))",
+      "call_args_old": "(idx,val)",
+      "cimguiname": "ImNodes_Ez_PushStyleVar",
+      "defaults": {},
+      "funcname": "PushStyleVar",
+      "location": "ImNodesEz:121",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_PushStyleVar_Vec2",
+      "ret": "void",
+      "signature": "(ImNodesStyleVar,const ImVec2)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_Ez_SetContext": [
+    {
+      "args": "(Context* ctx)",
+      "argsT": [
+        {
+          "name": "ctx",
+          "type": "Context*"
+        }
+      ],
+      "argsoriginal": "(Context* ctx)",
+      "call_args": "(ctx)",
+      "call_args_old": "(ctx)",
+      "cimguiname": "ImNodes_Ez_SetContext",
+      "defaults": {},
+      "funcname": "SetContext",
+      "location": "ImNodesEz:98",
+      "namespace": "ImNodes::Ez",
+      "ov_cimguiname": "ImNodes_Ez_SetContext",
+      "ret": "void",
+      "signature": "(Context*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_GetCurrentCanvas": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_GetCurrentCanvas",
+      "defaults": {},
+      "funcname": "GetCurrentCanvas",
+      "location": "ImNodes:95",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_GetCurrentCanvas",
+      "ret": "CanvasState*",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_GetNewConnection": [
+    {
+      "args": "(void** input_node,const char** input_slot_title,void** output_node,const char** output_slot_title)",
+      "argsT": [
+        {
+          "name": "input_node",
+          "type": "void**"
+        },
+        {
+          "name": "input_slot_title",
+          "type": "const char**"
+        },
+        {
+          "name": "output_node",
+          "type": "void**"
+        },
+        {
+          "name": "output_slot_title",
+          "type": "const char**"
+        }
+      ],
+      "argsoriginal": "(void** input_node,const char** input_slot_title,void** output_node,const char** output_slot_title)",
+      "call_args": "(input_node,input_slot_title,output_node,output_slot_title)",
+      "call_args_old": "(input_node,input_slot_title,output_node,output_slot_title)",
+      "cimguiname": "ImNodes_GetNewConnection",
+      "defaults": {},
+      "funcname": "GetNewConnection",
+      "location": "ImNodes:89",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_GetNewConnection",
+      "ret": "bool",
+      "signature": "(void**,const char**,void**,const char**)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_GetPendingConnection": [
+    {
+      "args": "(void** node_id,const char** slot_title,int* slot_kind)",
+      "argsT": [
+        {
+          "name": "node_id",
+          "type": "void**"
+        },
+        {
+          "name": "slot_title",
+          "type": "const char**"
+        },
+        {
+          "name": "slot_kind",
+          "type": "int*"
+        }
+      ],
+      "argsoriginal": "(void** node_id,const char** slot_title,int* slot_kind)",
+      "call_args": "(node_id,slot_title,slot_kind)",
+      "call_args_old": "(node_id,slot_title,slot_kind)",
+      "cimguiname": "ImNodes_GetPendingConnection",
+      "defaults": {},
+      "funcname": "GetPendingConnection",
+      "location": "ImNodes:91",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_GetPendingConnection",
+      "ret": "bool",
+      "signature": "(void**,const char**,int*)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_InputSlotKind": [
+    {
+      "args": "(int kind)",
+      "argsT": [
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(int kind)",
+      "call_args": "(kind)",
+      "call_args_old": "(kind)",
+      "cimguiname": "ImNodes_InputSlotKind",
+      "defaults": {},
+      "funcname": "InputSlotKind",
+      "location": "ImNodes:97",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_InputSlotKind",
+      "ret": "int",
+      "signature": "(int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_IsConnectingCompatibleSlot": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_IsConnectingCompatibleSlot",
+      "defaults": {},
+      "funcname": "IsConnectingCompatibleSlot",
+      "location": "ImNodes:116",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_IsConnectingCompatibleSlot",
+      "ret": "bool",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_IsInputSlotKind": [
+    {
+      "args": "(int kind)",
+      "argsT": [
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(int kind)",
+      "call_args": "(kind)",
+      "call_args_old": "(kind)",
+      "cimguiname": "ImNodes_IsInputSlotKind",
+      "defaults": {},
+      "funcname": "IsInputSlotKind",
+      "location": "ImNodes:101",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_IsInputSlotKind",
+      "ret": "bool",
+      "signature": "(int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_IsNodeHovered": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_IsNodeHovered",
+      "defaults": {},
+      "funcname": "IsNodeHovered",
+      "location": "ImNodes:84",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_IsNodeHovered",
+      "ret": "bool",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_IsOutputSlotKind": [
+    {
+      "args": "(int kind)",
+      "argsT": [
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(int kind)",
+      "call_args": "(kind)",
+      "call_args_old": "(kind)",
+      "cimguiname": "ImNodes_IsOutputSlotKind",
+      "defaults": {},
+      "funcname": "IsOutputSlotKind",
+      "location": "ImNodes:103",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_IsOutputSlotKind",
+      "ret": "bool",
+      "signature": "(int)",
+      "stname": ""
+    }
+  ],
+  "ImNodes_IsSlotCurveHovered": [
+    {
+      "args": "()",
+      "argsT": [],
+      "argsoriginal": "()",
+      "call_args": "()",
+      "call_args_old": "()",
+      "cimguiname": "ImNodes_IsSlotCurveHovered",
+      "defaults": {},
+      "funcname": "IsSlotCurveHovered",
+      "location": "ImNodes:114",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_IsSlotCurveHovered",
+      "ret": "bool",
+      "signature": "()",
+      "stname": ""
+    }
+  ],
+  "ImNodes_OutputSlotKind": [
+    {
+      "args": "(int kind)",
+      "argsT": [
+        {
+          "name": "kind",
+          "type": "int"
+        }
+      ],
+      "argsoriginal": "(int kind)",
+      "call_args": "(kind)",
+      "call_args_old": "(kind)",
+      "cimguiname": "ImNodes_OutputSlotKind",
+      "defaults": {},
+      "funcname": "OutputSlotKind",
+      "location": "ImNodes:99",
+      "namespace": "ImNodes",
+      "ov_cimguiname": "ImNodes_OutputSlotKind",
+      "ret": "int",
+      "signature": "(int)",
+      "stname": ""
+    }
+  ]
+}

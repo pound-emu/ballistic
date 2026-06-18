@@ -1,0 +1,15 @@
+name: 🪟 Windows
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    name: 🪟 Windows
+    steps:
+      - uses: actions/checkout@main
+      - name: Build
+        run: |
+          cd example
+          cmake -B build -DIMPLOT3D_STRICT_WARNINGS=ON
+          cmake --build build

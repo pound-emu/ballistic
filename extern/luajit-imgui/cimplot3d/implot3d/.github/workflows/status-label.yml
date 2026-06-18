@@ -1,0 +1,170 @@
+name: 🛠️ Status Labels
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - closed
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  update-labels:
+    name: Update Status Labels
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set PR status to review
+      if: ${{ github.event.action == 'opened' || github.event.action == 'reopened' }}
+      uses: actions/github-script@v8
+      with:
+        script: |
+          console.log('PR opened event triggered');
+          const prNumber = context.payload.pull_request?.number;
+          if (!prNumber) {
+            console.log('Error: PR number is undefined');
+            return;
+          }
+          console.log(`PR Number: ${prNumber}`);
+
+          // Print current labels on the PR
+          const prLabels = context.payload.pull_request.labels || [];
+          console.log('Current PR Labels:', prLabels.map(label => label.name));
+
+          // Remove all labels starting with 'status:' from the PR, except 'status:review'
+          let alreadyInReview = false;
+          for (const label of prLabels) {
+            if (label.name === 'status:review') {
+              alreadyInReview = true;
+            } else if (label.name.startsWith('status:')) {
+              await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              name: label.name
+              });
+            }
+          }
+
+          // Add 'status:review' label to the PR if not already present
+          if (!alreadyInReview) {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: ['status:review']
+            });
+          }
+
+          // Process linked issues
+          const linkedIssues = context.payload.pull_request.body?.match(/(?:Fixes|Closes) #\d+/g) || [];
+          console.log(`Linked Issues: ${linkedIssues}`);
+          const labelsToTransfer = new Set();
+          for (const issueRef of linkedIssues) {
+            const issueNumber = parseInt(issueRef.split('#')[1]);
+            console.log(`Processing linked issue: ${issueNumber}`);
+
+            // Get current labels on the linked issue
+            const { data: issueLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber
+            });
+            console.log(`Current Labels on Issue #${issueNumber}:`, issueLabels.map(label => label.name));
+
+            // Check if 'status:review' is already present and collect labels to transfer
+            let issueAlreadyInReview = false;
+            for (const label of issueLabels) {
+              if (label.name.startsWith('prio:') || label.name.startsWith('type:')) {
+                labelsToTransfer.add(label.name);
+              }
+              if (label.name === 'status:review') {
+                issueAlreadyInReview = true;
+              } else if (label.name.startsWith('status:')) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: label.name
+                });
+              }
+            }
+
+            // Add 'status:review' label to the linked issue if not already present
+            if (!issueAlreadyInReview) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['status:review']
+              });
+              console.log(`Added status:review label to issue: ${issueNumber}`);
+            } else {
+              console.log(`status:review label already present on issue: ${issueNumber}`);
+            }
+          }
+
+          // Add the collected labels to the PR
+          if (labelsToTransfer.size > 0) {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: Array.from(labelsToTransfer)
+            });
+            console.log('Transferred labels to PR:', Array.from(labelsToTransfer));
+          }
+
+    - name: Set PR and linked issues to done
+      if: ${{ github.event.action == 'closed' && github.event.pull_request.merged == true }}
+      uses: actions/github-script@v8
+      with:
+        script: |
+          console.log('PR closed and merged event triggered');
+          const prNumber = context.payload.pull_request?.number;
+          if (!prNumber) {
+            console.log('Error: PR number is undefined');
+            return;
+          }
+          console.log(`PR Number: ${prNumber}`);
+          await github.rest.issues.removeLabel({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            name: 'status:review'
+          }).catch(() => console.log('status:review label not found on PR'));
+          await github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            labels: ['status:done']
+          });
+          console.log('Added status:done label to PR');
+
+          const linkedIssues = context.payload.pull_request.body?.match(/(?:Fixes|Closes|Implements|Resolves) #\d+/g) || [];
+          console.log(`Linked Issues: ${linkedIssues}`);
+          for (const issueRef of linkedIssues) {
+            const issueNumber = parseInt(issueRef.split('#')[1]);
+            console.log(`Processing linked issue: ${issueNumber}`);
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              name: 'status:review'
+            }).catch(() => console.log('status:review label not found on issue'));
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['status:done']
+            });
+            console.log(`Added status:done label to issue: ${issueNumber}`);
+          }
+

@@ -16,6 +16,16 @@ extern "C"
     struct bal_allocator_state_s;
     typedef struct bal_allocator_state_s *bal_allocator_handle_t;
 
+    /// Represents an executable memory buffer for W^X operations.
+    typedef struct
+    {
+        /// Pointer used for writing machine code.
+        void *rw_pointer;
+
+        /// Pointer used for executing machine code.
+        void *rx_pointer;
+    } bal_executable_buffer_t;
+
     /// A function signature for allocating aligned memory.
     ///
     /// Implementations must allocate a block of memory of at least `size` bytes
@@ -38,6 +48,35 @@ extern "C"
     typedef void (*bal_free_function_t)(bal_allocator_handle_t allocator,
                                         void                  *pointer,
                                         size_t                 size);
+
+    /// A function signature for allocating executable memory supporting W^X.
+    ///
+    /// Implementations must allocate a block of memory of at least `size` bytes, aligned to
+    /// `alignment`. The memory must be configured to allow writing initially.
+    ///
+    /// # Returns
+    ///
+    /// [`bal_executable_buffer_t`] containing the mapped pointers. If the allocation
+    /// fails, both `rw_pointer` and `rx_pointer` must be set to `NULL`.
+    typedef bal_executable_buffer_t (*bal_allocate_executable_function_t)(
+        bal_allocator_handle_t allocator, size_t alignment, size_t size);
+
+    ///  Converts the memory buffer to Read/Write (RW).
+    typedef void (*bal_protect_rw_function_t)(bal_allocator_handle_t  allocator,
+                                              bal_executable_buffer_t buffer,
+                                              size_t                  size);
+
+    /// Converts the memory buffer to Read/Execute (RX).
+    typedef void (*bal_protect_rx_function_t)(bal_allocator_handle_t  allocator,
+                                              bal_executable_buffer_t buffer,
+                                              size_t                  size);
+
+    /// A function signature for freeing executable memory.
+    ///
+    /// Implementations must deallocate the memory in `buffer`.
+    typedef void (*bal_free_executable_function_t)(bal_allocator_handle_t  allocator,
+                                                   bal_executable_buffer_t buffer,
+                                                   size_t                  size);
 
     /// Translates a Guest Virtual Address (GVA) to a Host Virtual Address (HVA).
     ///
@@ -66,7 +105,7 @@ extern "C"
     {
         /// An opaque pointer defining the state or tracking information for the
         /// heap.
-        bal_allocator_handle_t handle;
+        bal_allocator_handle_t context;
 
         /// The callback invoked to allocate aligned memory.
         ///
@@ -79,6 +118,17 @@ extern "C"
         /// The callback to release memory.
         bal_free_function_t free;
 
+        /// Callback to allocate W^X executable memory.
+        bal_allocate_executable_function_t allocate_executable;
+
+        /// Callback to free W^X executable memory.
+        bal_free_executable_function_t free_executable;
+
+        /// Converts W^X memory to Read/Write.
+        bal_protect_rw_function_t protect_rw;
+
+        /// Converts W^X memory to Read/Execute.
+        bal_protect_rx_function_t protect_rx;
     } bal_allocator_t;
 
     /// Defines the interface for translating guest addresses to host memory.

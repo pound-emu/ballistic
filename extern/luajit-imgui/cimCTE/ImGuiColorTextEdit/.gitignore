@@ -1,0 +1,19 @@
+# Compiled Object files
+*.o
+*.obj
+*.a
+*.lib
+*.exe
+*.out
+*.app
+
+# MacOS files
+.DS_Store
+
+# Editor files
+/.vscode
+*.bak
+Save/*
+
+# Build files
+/build

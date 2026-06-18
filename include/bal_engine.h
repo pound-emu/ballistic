@@ -1,11 +1,14 @@
 #ifndef BALLISTIC_ENGINE_H
 #define BALLISTIC_ENGINE_H
 
+#include "backend/bal_cpu.h"
 #include "bal_attributes.h"
 #include "bal_errors.h"
 #include "bal_logging.h"
 #include "bal_memory.h"
 #include "bal_types.h"
+#include <assert.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -58,105 +61,60 @@ extern "C"
         uint32_t original_variable_index;
     } bal_source_variable_t;
 
-    /// Holds the Intermediate Representation buffers, SSA state, and other
-    /// important metadata. The structure is divided into hot and cold data aligned
-    /// to 64 bytes. Both hot and cold data lives on their own cache lines.
-    typedef struct
+    BAL_ALIGNED(64) typedef struct
     {
-        /* Hot Data */
+        /// The guest CPU state.
+        bal_cpu_t *cpu;
 
-        /// Map of ARM registers to their current SSA definitions.
-        bal_source_variable_t *source_variables;
+        /// The allocator used for all internal engine memory.
+        const bal_allocator_t *allocator;
 
-        /// The linear buffer of generated IR instructions for the current
-        /// compilation unit.
-        bal_instruction_t *instructions;
+        /// The memory interface for all guest-to-host address translation.
+        const bal_memory_interface_t *memory_interface;
 
-        /// Metadata tracking the bit-width (32 or 64 bit) for each variable.
-        bal_bit_width_t *ssa_bit_widths;
-
-        /// Linear buffer of constants generated in the current compilation unit.
-        bal_constant_t *constants;
-
-        /// The size of the `source_variables` array.
-        size_t source_variables_size;
-
-        /// The size of the `instructions` array.
-        size_t instructions_size;
-
-        /// The size of the `constants` array.
-        size_t constants_size;
-
-        /// The current number of instructions emitted.
-        ///
-        /// This tracks the current position in `instructions` and `ssa_bit_widths`
-        /// arrays.
-        bal_instruction_count_t instruction_count;
-
-        /// The number of constants emitted.
-        ///
-        /// This tracks the current position in the `constants` array.
-        bal_constant_count_t constant_count;
-
-        /// The current error state of the Engine.
-        ///
-        /// If an operation fails, this field is set to a specific error code.
-        /// See [`bal_opcode_t`]. Once set to an error state, subsequent operation
-        /// on this engine will silently fail until [`bal_engine_reset`] is called.
-        bal_error_t status;
-
-        /* Cold Data */
-
-        /// The base pointer returned during the underlying heap allocation. This
-        /// is required to correctly free the engine's internal arrays.
-        void *arena_base;
-
-        /// The total size of the allocated arena.
-        size_t arena_size;
+        /// Opaque pointer to the internal engine's state.
+        void *engine_state;
 
         /// Handles logging for this engine.
         bal_logger_t logger;
 
+        /// The current error state of the engine.
+        ///
+        /// If an operation fails, this field is set to a specific error code.
+        /// See [`bal_error_t`]. Once set to an error state, subsequent operation
+        /// on this engine will silently fail until [`bal_engine_reset`] is called.
+        bal_error_t status;
+
+        /// Execution flags (e.g., `BAL_ENGINE_FLAG_RUNNING`).
+        uint32_t flags;
     } bal_engine_t;
+
+    static_assert(sizeof(bal_engine_t) <= 64, "Engine must fit in a L1 Cache line");
 
     /// Initializes a Ballistic engine.
     ///
-    /// Populates `engine` with `logger` and empty buffers allocated with `allocator`. This is
-    /// a high-cost memory operation that reserves a lot of memory and should
-    /// be called sparingly.
-    ///
-    /// Returns [`BAL_SUCCESS`] if the engine iz ready for use.
-    ///
     /// # Errors
     ///
-    /// Returns [`BAL_ERROR_INVALID_ARGUMENT`] if the pointers are `NULL`.
-    ///
-    /// Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot fulfill the
-    /// request.
-    BAL_COLD bal_error_t bal_engine_init(const bal_allocator_t *allocator,
-                                         bal_engine_t          *engine,
-                                         bal_logger_t           logger);
+    /// * Returns [`BAL_SUCCESS`] if the engine is ready for use.
+    /// * Returns [`BAL_ERROR_INVALID_ARGUMENT`] if the pointers are `NULL`.
+    /// * Returns [`BAL_ERROR_ALLOCATION_FAILED`] if the allocator cannot allocate a memory buffer.
+    BAL_COLD bal_error_t bal_engine_init(bal_engine_t                 *engine,
+                                         bal_cpu_t                    *cpu,
+                                         const bal_allocator_t        *allocator,
+                                         const bal_memory_interface_t *memory_interface,
+                                         bal_logger_t                  logger);
 
-    /// Translates machine code starting at `guest_address_start` into the engine's
-    /// internal IR. `interface` provides memory access handling (like instruction
-    /// fetching).
-    ///
-    /// Returns [`BAL_SUCCESS`] on success.
-    ///
-    /// # Safety
-    ///
-    /// `guest_address_start` must be non-NULL.
+    /// The sole entry point for executing guest code.
     ///
     /// # Errors
     ///
-    /// Returns [`BAL_ERROR_INVALID_ARGUMENT`] if functino arguments are invalid or
-    /// or `engine->status != BAL_SUCCESS`.
+    /// Returns [`BAL_ERROR_ENGINE_ALREADY_RUNNING`] if the thread is still running.
+    BAL_HOT bal_error_t bal_engine_run_thread(bal_engine_t *engine);
+
+    /// Stops the engine execution asynchronously.
     ///
-    /// Returns [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if the array `engine->constants` overflows.
-    BAL_HOT bal_error_t bal_engine_translate(bal_engine_t *BAL_RESTRICT                 engine,
-                                             const bal_memory_interface_t *BAL_RESTRICT interface,
-                                             bal_guest_address_t *guest_address_start,
-                                             size_t               max_instructions);
+    /// This function is thread-safe and can be called from any thread.
+    BAL_HOT void bal_engine_stop_thread(bal_engine_t *engine);
 
     /// Resets `engine` for the next compilation unit. This is a low-cost memory
     /// operation designed to be called between translation units.
@@ -168,13 +126,38 @@ extern "C"
     /// Returns [`BAL_ERROR_INVALID_ARGUMENT`] if `engine` is `NULl`.
     BAL_HOT bal_error_t bal_engine_reset(bal_engine_t *engine);
 
+    /// Checks if the engine is currently executing guest code.
+    ///
+    /// This function is thread-safe and can be called from any thread.
+    BAL_HOT bool bal_engine_is_running(bal_engine_t *engine);
+
+    /// Requests the engine to clear its compiled code cache and JIT buffers.
+    ///
+    /// This function is completely lock-free and thread-safe.
+    BAL_HOT void bal_engine_clear_cache(bal_engine_t *engine);
+
     /// Frees all `engine` heap-allocated resources using `allocator`.
     ///
     /// # Warning
     ///
     /// This function does not free the [`bal_engine_t`] struct itself, as the
     /// caller may have allocated it on the stack.
-    BAL_COLD void bal_engine_destroy(const bal_allocator_t *allocator, bal_engine_t *engine);
+    // BAL_COLD void bal_engine_destroy(const bal_allocator_t *allocator, bal_engine_t *engine);
+
+    /// Returns the IR instructions array.
+    ///
+    /// # Safety
+    ///
+    /// Returns `NULl` if `engine` or `engine->arena_base` is `NULL`.
+    // const bal_instruction_t *bal_engine_get_ir_instructions(const bal_engine_t *engine);
+
+    /// Returns the constant generated from the IR layer at `index`.
+    ///
+    /// # Safety
+    ///
+    /// Returns `NULL` if `engine` or `engine->arena_base` is `NULL`.
+    // const bal_constant_t *bal_engine_get_constant(const bal_engine_t *engine, bal_constant_t
+    // index);
 
 #ifdef __cplusplus
 }

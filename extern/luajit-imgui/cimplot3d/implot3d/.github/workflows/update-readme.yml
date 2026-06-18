@@ -1,0 +1,52 @@
+name: 📋 Update README
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, edited, reopened, closed, labeled, unlabeled, assigned, unassigned, pinned, unpinned]
+  issue_comment:
+    types: [created]
+  push:
+
+jobs:
+  generate-svgs:
+    name: Generate SVGs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install -r .github/scripts/readme_svgs/requirements.txt
+
+      - name: Run script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/scripts/readme_svgs/gen_status_cards.py
+          python .github/scripts/readme_svgs/gen_issue_cards.py
+
+      - name: Save generated SVGs temporarily
+        run: |
+          mkdir -p "$RUNNER_TEMP/tmp_svgs"
+          cp *.svg "$RUNNER_TEMP/tmp_svgs/"
+
+      - name: Create orphan branch and commit SVGs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan generated-svgs
+          git reset --hard
+          git clean -fdx
+          cp "$RUNNER_TEMP/tmp_svgs/"*.svg ./
+          git add *.svg
+          git commit -m "chore: auto-update README SVGs"
+
+      - name: Push orphan branch
+        run: git push --force origin generated-svgs

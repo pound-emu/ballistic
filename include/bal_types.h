@@ -55,6 +55,14 @@ extern "C"
         OPCODE_ARG_EXTENSION,
         OPCODE_VOID,
         OPCODE_NOP,
+        OPCODE_GET_FLAG_N,
+        OPCODE_GET_FLAG_Z,
+        OPCODE_GET_FLAG_C,
+        OPCODE_GET_FLAG_V,
+        OPCODE_SET_FLAG_N,
+        OPCODE_SET_FLAG_Z,
+        OPCODE_SET_FLAG_C,
+        OPCODE_SET_FLAG_V,
         OPCODE_ENUM_END = 0x7FF
     } bal_opcode_t;
 

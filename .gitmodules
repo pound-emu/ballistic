@@ -1,0 +1,6 @@
+[submodule "extern/glfw"]
+	path = extern/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "extern/LuaJIT-ImGui"]
+    path = extern/LuaJIT-ImGui
+    url = https://github.com/sonoro1234/LuaJIT-ImGui.git

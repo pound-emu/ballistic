@@ -82,6 +82,16 @@ extern "C"
 
 #endif
 
+#if BAL_PLATFORM_WINDOWS
+
+#define BAL_EXPORT __declspec(dllexport)
+
+#else
+
+#define BAL_EXPORT __attribute__((visibility("default")))
+
+#endif // BAL_EXPORT
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

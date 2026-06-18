@@ -1,0 +1,16 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+PointerAlignment: Left
+AlwaysBreakTemplateDeclarations: No
+AllowShortCaseLabelsOnASingleLine: true
+ColumnLimit: 150
+IndentWidth: 4
+IndentCaseLabels: true
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: '^"glad\/glad\.h"$'
+    Priority: 1
+  - Regex: '.*'
+    Priority: 2
+...

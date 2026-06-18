@@ -19,6 +19,7 @@ extern "C"
     {
         uint16_t index;
         uint8_t  count;
+        uint8_t  pad;
     } decoder_bucket_t;
 
     extern const bal_decoder_instruction_metadata_t

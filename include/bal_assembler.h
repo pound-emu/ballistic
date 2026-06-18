@@ -35,6 +35,14 @@ extern "C"
 
     /// This struct manages a linear buffer of 32-bit integers where ARM64 machine code is written.
     /// It tracks the current write position and handles boundary checking.
+    ///
+    /// # Ownership
+    ///
+    /// The struct does not own the memory backing the `buffer` pointer. The caller retains full
+    /// ownership and is responsible for:
+    ///
+    /// 1. Ensuring the memory pointed to by `buffer` outlives the `bal_assembler_t` instance.
+    /// 2. Freeing the underlying memory allocation when the JIT buffer is no longer needed.
     typedef struct
     {
         /// A pointer to the start of the code buffer.
@@ -54,6 +62,9 @@ extern "C"
         /// Once this is set to anything other than [`BAL_SUCCESS`], all subsequent emit calls will
         /// be ignored until the assembler is reset.
         bal_error_t status;
+
+        /// Integrity check.
+        uint32_t magic;
     } bal_assembler_t;
 
     /// Initializes the assembler with a specific memory buffer and the size of the buffer in
@@ -62,12 +73,21 @@ extern "C"
     /// # Returns
     ///
     /// * [`BAL_SUCCESS`] on success.
-    /// * [`BAL_ERROR_INVALID_ARGUMENT`] if `assembler` or `buffer` is NULL.
+    /// * [`BAL_ERROR_INVALID_ARGUMENT`] if `assembler` or `buffer` is NULL, or if `size` is `0`.
     /// * [`BAL_ERROR_MEMORY_ALIGNMENT`] if `buffer` is not 4-byte aligned.
+    /// * [`BAL_ERROR_CAPACITY_TOO_BIG`] if `size` is large enough to cause a `size_t` integer
+    ///   overflow.
     bal_error_t bal_assembler_init(bal_assembler_t *assembler,
                                    void            *buffer,
                                    size_t           size,
                                    bal_logger_t     logger);
+
+    /// Resets the assembler back to its initial state.
+    ///
+    /// # Safety
+    ///
+    /// `assembler` must be valid.
+    void bal_assembler_reset(bal_assembler_t *assembler);
 
     /// Emit a `ADD` (Immediate) instruction.
     ///
@@ -92,6 +112,57 @@ extern "C"
                                 uint8_t              rn,
                                 uint16_t             imm12,
                                 uint8_t              shift);
+
+    /// Emits a `ADD` (Shifted Register) instruction.
+    ///
+    /// Adds a register value `rn` and a shifted register `rm`, and writes the result to `rd`.
+    ///
+    /// # Safety
+    ///
+    /// * `rd`, `rn`, `rm` must be valid registers (0-31).
+    /// * `shift` must be between 0 and 63.
+    /// * `shift_type` must be 0 (LSL), 1 (LSR), or 2 (ASR).
+    /// * Function does not emit instructions if `assembler->status` != [`BAL_SUCCESS`].
+    void bal_emit_add_shifted_register(bal_assembler_t     *assembler,
+                                       bal_register_index_t rd,
+                                       bal_register_index_t rn,
+                                       bal_register_index_t rm,
+                                       uint8_t              shift,
+                                       uint8_t              shift_type);
+
+    /// Emits a `B` (Branch) instruction.
+    ///
+    /// Branches unconditionally to a PC-relative offset.
+    ///
+    /// # Safety
+    ///
+    /// * `offset` will be truncated if it exceeds 26 bits.
+    /// *  Does not emit if `assembler->status` != [`BAL_SUCCESS`]
+    ///
+    /// # Errors
+    ///
+    /// Modifies `assembler->status` to the following if an error occurs:
+    ///
+    /// * [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity`.
+    /// * [`BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
+    void bal_emit_b(bal_assembler_t *assembler, int32_t offset);
+
+    /// Emits a `BR` (Branch Register) instruction.
+    ///
+    /// Branches unconditionally to an address in a register.
+    ///
+    /// # Safety
+    ///
+    /// * `rn` must be between 0-31 inclusive.
+    /// * Does not emit if `assembler->status` != [`BAL_SUCCESS`]
+    ///
+    /// # Errors
+    ///
+    /// Modifies `assembler->status` to the following if an error occurs:
+    ///
+    /// * [`BAL_ERROR_INSTRUCTION_OVERFLOW`] if `assembler->offset >= assembler->capacity.
+    /// * [`BAL_ERROR_INVALID_ARGUMENT`] if function arguments are invalid.
+    void bal_emit_br(bal_assembler_t *assembler, bal_register_index_t rn);
 
     /// Emit a `SUB` (Immediate) instruction.
     ///

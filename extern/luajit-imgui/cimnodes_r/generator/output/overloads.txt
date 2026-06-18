@@ -1,0 +1,8 @@
+----------------overloadings---------------------------
+ImNodes_Ez_PushStyleColor	2
+1	void	ImNodes_Ez_PushStyleColor_U32 (ImNodesStyleCol,ImU32)
+2	void	ImNodes_Ez_PushStyleColor_Vec4 (ImNodesStyleCol,const ImVec4)
+ImNodes_Ez_PushStyleVar	2
+1	void	ImNodes_Ez_PushStyleVar_Float (ImNodesStyleVar,float)
+2	void	ImNodes_Ez_PushStyleVar_Vec2 (ImNodesStyleVar,const ImVec2)
+4 overloaded

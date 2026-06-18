@@ -1,6 +1,7 @@
 # Compiler Aliasing Fear
 
-Pointer aliasing forces compilers to avoid optimizing code as best as they should. We use local variables to fix this problem.
+Pointer aliasing forces compilers to avoid optimizing code as best as they should. We use local variables to fix this
+problem.
 
 For all examples shown below, assume `context` is a pointer to a heap allocated
 struct.
@@ -88,7 +89,6 @@ for (int i = 0; i < 100; i++) {
 `struct->array[i]` forces the CPU to calculate `Base + Offset + (i * 4)` every
 time. `*cursor++` is just `Pointer + 4`.
 
-
 ```c
 // SLOW
 //
@@ -109,3 +109,23 @@ for (int i = 0; i < 100; ++i) {
 Access these values directly, like `context->max_buffer_size` or
 `context->exception_level`. If we never write to it, the compiler knows it
 will not change. It will load once and get cached automatically.
+
+## Rule 4: Cache Line Straddling For Arrays
+
+If a struct is going to be stored in a massive array, its total `sizeof()` MUST divide evenly into 64.
+
+Valid sizes are 4, 8, 16, 32, or 64 bytes.
+
+## Rule 5: 64-Byte Alignment Rule For Singletons
+
+Only use `POUND_ALIGNED(64)` for standalone, long-loved structs that are accessed frequently, such as Thread Contexts or
+Global State.
+
+## Rule 6: Largest Struct Attribute First
+
+Always order struct members from largest to smallest: `uint64_t` -> `uint32_t` -> `uint16_t` -> `uint8_t`.
+
+## Rule 7: Explicit Padding
+
+Never let the compiler pad for you. If your struct needs padding to meet Rule 4 or Rule 6, you must declare it
+explicitly. Furthermore, every struct in an array MUST have a `static_assert` verifying its exact size.

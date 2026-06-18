@@ -72,6 +72,8 @@ extern "C"
 
         /// Descriptors for up to 4 operands.
         bal_decoder_operand_t operands[BAL_OPERANDS_SIZE];
+
+        uint16_t pad;
     } bal_decoder_instruction_metadata_t;
 
     static_assert(32 == sizeof(bal_decoder_instruction_metadata_t),

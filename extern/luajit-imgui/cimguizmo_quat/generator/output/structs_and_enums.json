@@ -1,0 +1,277 @@
+{
+  "enums": {
+    "solidSides": [
+      {
+        "calc_value": 0,
+        "name": "backSide",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "frontSide",
+        "value": "1"
+      }
+    ],
+    "unnamed1": [
+      {
+        "calc_value": 1,
+        "name": "mode3Axes",
+        "value": "0x0001"
+      },
+      {
+        "calc_value": 2,
+        "name": "modeDirection",
+        "value": "0x0002"
+      },
+      {
+        "calc_value": 4,
+        "name": "modeDirPlane",
+        "value": "0x0004"
+      },
+      {
+        "calc_value": 8,
+        "name": "modeDual",
+        "value": "0x0008"
+      },
+      {
+        "calc_value": 16,
+        "name": "modePanDolly",
+        "value": "0x0010"
+      },
+      {
+        "calc_value": 255,
+        "name": "modeMask",
+        "value": "0x00ff"
+      },
+      {
+        "calc_value": 256,
+        "name": "cubeAtOrigin",
+        "value": "0x0100"
+      },
+      {
+        "calc_value": 512,
+        "name": "sphereAtOrigin",
+        "value": "0x0200"
+      },
+      {
+        "calc_value": 1024,
+        "name": "noSolidAtOrigin",
+        "value": "0x0400"
+      },
+      {
+        "calc_value": 2048,
+        "name": "modeFullAxes",
+        "value": "0x0800"
+      },
+      {
+        "calc_value": 65280,
+        "name": "axesModeMask",
+        "value": "0xff00"
+      }
+    ],
+    "unnamed2": [
+      {
+        "calc_value": 0,
+        "name": "sphereTess16",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "sphereTess8",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "sphereTess4",
+        "value": "2"
+      },
+      {
+        "calc_value": 3,
+        "name": "sphereTess2",
+        "value": "3"
+      }
+    ],
+    "unnamed3": [
+      {
+        "calc_value": 0,
+        "name": "CONE_SURF",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "CONE_CAP",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "CYL_SURF",
+        "value": "2"
+      },
+      {
+        "calc_value": 3,
+        "name": "CYL_CAP",
+        "value": "3"
+      }
+    ],
+    "unnamed4": [
+      {
+        "calc_value": 0,
+        "name": "axisIsX",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "axisIsY",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "axisIsZ",
+        "value": "2"
+      }
+    ]
+  },
+  "enumtypes": [],
+  "locations": {
+    "imguiGizmo": "imGuIZMOquat:81",
+    "solidSides": "imGuIZMOquat:112",
+    "unnamed1": "imGuIZMOquat:91",
+    "unnamed2": "imGuIZMOquat:106",
+    "unnamed3": "imGuIZMOquat:107",
+    "unnamed4": "imGuIZMOquat:110"
+  },
+  "nonPOD": {
+    "ImBitArray": "inherited",
+    "ImColor": "inherited",
+    "ImDrawCmd": "inherited",
+    "ImDrawData": "inherited",
+    "ImDrawDataBuilder": "inherited",
+    "ImDrawList": "inherited",
+    "ImDrawListSharedData": "inherited",
+    "ImDrawListSplitter": "inherited",
+    "ImFont": "inherited",
+    "ImFontAtlas": "inherited",
+    "ImFontAtlasBuilder": "inherited",
+    "ImFontAtlasRect": "inherited",
+    "ImFontBaked": "inherited",
+    "ImFontConfig": "inherited",
+    "ImFontGlyph": "inherited",
+    "ImFontGlyphRangesBuilder": "inherited",
+    "ImFontLoader": "inherited",
+    "ImGuiBoxSelectState": "inherited",
+    "ImGuiComboPreviewData": "inherited",
+    "ImGuiContext": "inherited",
+    "ImGuiContextHook": "inherited",
+    "ImGuiDebugAllocInfo": "inherited",
+    "ImGuiDebugItemPathQuery": "inherited",
+    "ImGuiDockContext": "inherited",
+    "ImGuiDockNode": "inherited",
+    "ImGuiErrorRecoveryState": "inherited",
+    "ImGuiIDStackTool": "inherited",
+    "ImGuiIO": "inherited",
+    "ImGuiInputEvent": "inherited",
+    "ImGuiInputTextCallbackData": "inherited",
+    "ImGuiInputTextDeactivatedState": "inherited",
+    "ImGuiInputTextState": "inherited",
+    "ImGuiKeyOwnerData": "inherited",
+    "ImGuiKeyRoutingData": "inherited",
+    "ImGuiKeyRoutingTable": "inherited",
+    "ImGuiLastItemData": "inherited",
+    "ImGuiListClipper": "inherited",
+    "ImGuiListClipperData": "inherited",
+    "ImGuiMenuColumns": "inherited",
+    "ImGuiMultiSelectState": "inherited",
+    "ImGuiMultiSelectTempData": "inherited",
+    "ImGuiNavItemData": "inherited",
+    "ImGuiNextItemData": "inherited",
+    "ImGuiNextWindowData": "inherited",
+    "ImGuiOldColumnData": "inherited",
+    "ImGuiOldColumns": "inherited",
+    "ImGuiOnceUponAFrame": "inherited",
+    "ImGuiPayload": "inherited",
+    "ImGuiPlatformIO": "inherited",
+    "ImGuiPlatformImeData": "inherited",
+    "ImGuiPlatformMonitor": "inherited",
+    "ImGuiPopupData": "inherited",
+    "ImGuiPtrOrIndex": "inherited",
+    "ImGuiSelectionBasicStorage": "inherited",
+    "ImGuiSelectionExternalStorage": "inherited",
+    "ImGuiSettingsHandler": "inherited",
+    "ImGuiStackLevelInfo": "inherited",
+    "ImGuiStoragePair": "inherited",
+    "ImGuiStyle": "inherited",
+    "ImGuiStyleMod": "inherited",
+    "ImGuiTabBar": "inherited",
+    "ImGuiTabItem": "inherited",
+    "ImGuiTable": "inherited",
+    "ImGuiTableColumn": "inherited",
+    "ImGuiTableColumnSettings": "inherited",
+    "ImGuiTableColumnSortSpecs": "inherited",
+    "ImGuiTableInstanceData": "inherited",
+    "ImGuiTableSettings": "inherited",
+    "ImGuiTableSortSpecs": "inherited",
+    "ImGuiTableTempData": "inherited",
+    "ImGuiTextBuffer": "inherited",
+    "ImGuiTextFilter": "inherited",
+    "ImGuiTextRange": "inherited",
+    "ImGuiTypingSelectState": "inherited",
+    "ImGuiViewport": "inherited",
+    "ImGuiViewportP": "inherited",
+    "ImGuiWindow": "inherited",
+    "ImGuiWindowClass": "inherited",
+    "ImGuiWindowSettings": "inherited",
+    "ImPool": "inherited",
+    "ImRect": "inherited",
+    "ImSpan": "inherited",
+    "ImSpanAllocator": "inherited",
+    "ImStableVector": "inherited",
+    "ImTextureData": "inherited",
+    "ImTextureRef": "inherited",
+    "ImVec1": "inherited",
+    "ImVec2": "inherited",
+    "ImVec2i": "inherited",
+    "ImVec2ih": "inherited",
+    "ImVec4": "inherited",
+    "ImVector": "inherited"
+  },
+  "nonPOD_used": {
+    "ImVec4": "inherited"
+  },
+  "opaque_structs": [],
+  "structs": {
+    "imguiGizmo": [
+      {
+        "name": "qtV",
+        "type": "quat"
+      },
+      {
+        "name": "qtV2",
+        "type": "quat"
+      },
+      {
+        "name": "posPanDolly",
+        "type": "vec3"
+      },
+      {
+        "name": "buttonPanDolly",
+        "type": "vgButtons"
+      },
+      {
+        "name": "axesVecModifier",
+        "type": "vec3"
+      },
+      {
+        "name": "drawMode",
+        "type": "int"
+      },
+      {
+        "name": "axesOriginType",
+        "type": "int"
+      },
+      {
+        "name": "showFullAxes",
+        "type": "bool"
+      }
+    ]
+  }
+}

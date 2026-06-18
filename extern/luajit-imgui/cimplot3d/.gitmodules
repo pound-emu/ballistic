@@ -1,0 +1,4 @@
+[submodule "implot3d"]
+	path = implot3d
+	url = https://github.com/brenocq/implot3d
+	branch = dev

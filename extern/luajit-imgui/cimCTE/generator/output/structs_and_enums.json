@@ -1,0 +1,342 @@
+{
+  "enums": {
+    "Color": [
+      {
+        "calc_value": 0,
+        "name": "text",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "keyword",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "declaration",
+        "value": "2"
+      },
+      {
+        "calc_value": 3,
+        "name": "number",
+        "value": "3"
+      },
+      {
+        "calc_value": 4,
+        "name": "string",
+        "value": "4"
+      },
+      {
+        "calc_value": 5,
+        "name": "punctuation",
+        "value": "5"
+      },
+      {
+        "calc_value": 6,
+        "name": "preprocessor",
+        "value": "6"
+      },
+      {
+        "calc_value": 7,
+        "name": "identifier",
+        "value": "7"
+      },
+      {
+        "calc_value": 8,
+        "name": "knownIdentifier",
+        "value": "8"
+      },
+      {
+        "calc_value": 9,
+        "name": "comment",
+        "value": "9"
+      },
+      {
+        "calc_value": 10,
+        "name": "background",
+        "value": "10"
+      },
+      {
+        "calc_value": 11,
+        "name": "cursor",
+        "value": "11"
+      },
+      {
+        "calc_value": 12,
+        "name": "selection",
+        "value": "12"
+      },
+      {
+        "calc_value": 13,
+        "name": "whitespace",
+        "value": "13"
+      },
+      {
+        "calc_value": 14,
+        "name": "matchingBracketBackground",
+        "value": "14"
+      },
+      {
+        "calc_value": 15,
+        "name": "matchingBracketActive",
+        "value": "15"
+      },
+      {
+        "calc_value": 16,
+        "name": "matchingBracketLevel1",
+        "value": "16"
+      },
+      {
+        "calc_value": 17,
+        "name": "matchingBracketLevel2",
+        "value": "17"
+      },
+      {
+        "calc_value": 18,
+        "name": "matchingBracketLevel3",
+        "value": "18"
+      },
+      {
+        "calc_value": 19,
+        "name": "matchingBracketError",
+        "value": "19"
+      },
+      {
+        "calc_value": 20,
+        "name": "lineNumber",
+        "value": "20"
+      },
+      {
+        "calc_value": 21,
+        "name": "currentLineNumber",
+        "value": "21"
+      },
+      {
+        "calc_value": 22,
+        "name": "count",
+        "value": "22"
+      }
+    ],
+    "Scroll": [
+      {
+        "calc_value": 0,
+        "name": "alignTop",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "alignMiddle",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "alignBottom",
+        "value": "2"
+      }
+    ]
+  },
+  "enumtypes": {
+    "Color": "char"
+  },
+  "locations": {
+    "AutoCompleteConfig": "TextEditor:525",
+    "AutoCompleteState": "TextEditor:490",
+    "Change": "TextEditor:246",
+    "CodePoint": "TextEditor:628",
+    "Color": "TextEditor:327",
+    "CursorPosition": "TextEditor:152",
+    "CursorSelection": "TextEditor:159",
+    "Decorator": "TextEditor:282",
+    "Glyph": "TextEditor:367",
+    "Iterator": "TextEditor:381",
+    "Language": "TextEditor:411",
+    "Palette": "TextEditor:353",
+    "Scroll": "TextEditor:176",
+    "TextDiff": "TextDiff:22",
+    "TextEditor": "TextEditor:34",
+    "Trie": "TextEditor:578"
+  },
+  "nonPOD": {
+    "CursorPosition": true,
+    "CursorSelection": true,
+    "Glyph": true,
+    "ImBitArray": "inherited",
+    "ImColor": "inherited",
+    "ImDrawCmd": "inherited",
+    "ImDrawData": "inherited",
+    "ImDrawDataBuilder": "inherited",
+    "ImDrawList": "inherited",
+    "ImDrawListSharedData": "inherited",
+    "ImDrawListSplitter": "inherited",
+    "ImFont": "inherited",
+    "ImFontAtlas": "inherited",
+    "ImFontAtlasBuilder": "inherited",
+    "ImFontAtlasRect": "inherited",
+    "ImFontBaked": "inherited",
+    "ImFontConfig": "inherited",
+    "ImFontGlyph": "inherited",
+    "ImFontGlyphRangesBuilder": "inherited",
+    "ImFontLoader": "inherited",
+    "ImGuiBoxSelectState": "inherited",
+    "ImGuiComboPreviewData": "inherited",
+    "ImGuiContext": "inherited",
+    "ImGuiContextHook": "inherited",
+    "ImGuiDebugAllocInfo": "inherited",
+    "ImGuiDebugItemPathQuery": "inherited",
+    "ImGuiDockContext": "inherited",
+    "ImGuiDockNode": "inherited",
+    "ImGuiErrorRecoveryState": "inherited",
+    "ImGuiIDStackTool": "inherited",
+    "ImGuiIO": "inherited",
+    "ImGuiInputEvent": "inherited",
+    "ImGuiInputTextCallbackData": "inherited",
+    "ImGuiInputTextDeactivatedState": "inherited",
+    "ImGuiInputTextState": "inherited",
+    "ImGuiKeyOwnerData": "inherited",
+    "ImGuiKeyRoutingData": "inherited",
+    "ImGuiKeyRoutingTable": "inherited",
+    "ImGuiLastItemData": "inherited",
+    "ImGuiListClipper": "inherited",
+    "ImGuiListClipperData": "inherited",
+    "ImGuiMenuColumns": "inherited",
+    "ImGuiMultiSelectState": "inherited",
+    "ImGuiMultiSelectTempData": "inherited",
+    "ImGuiNavItemData": "inherited",
+    "ImGuiNextItemData": "inherited",
+    "ImGuiNextWindowData": "inherited",
+    "ImGuiOldColumnData": "inherited",
+    "ImGuiOldColumns": "inherited",
+    "ImGuiOnceUponAFrame": "inherited",
+    "ImGuiPayload": "inherited",
+    "ImGuiPlatformIO": "inherited",
+    "ImGuiPlatformImeData": "inherited",
+    "ImGuiPlatformMonitor": "inherited",
+    "ImGuiPopupData": "inherited",
+    "ImGuiPtrOrIndex": "inherited",
+    "ImGuiSelectionBasicStorage": "inherited",
+    "ImGuiSelectionExternalStorage": "inherited",
+    "ImGuiSettingsHandler": "inherited",
+    "ImGuiStackLevelInfo": "inherited",
+    "ImGuiStoragePair": "inherited",
+    "ImGuiStyle": "inherited",
+    "ImGuiStyleMod": "inherited",
+    "ImGuiTabBar": "inherited",
+    "ImGuiTabItem": "inherited",
+    "ImGuiTable": "inherited",
+    "ImGuiTableColumn": "inherited",
+    "ImGuiTableColumnSettings": "inherited",
+    "ImGuiTableColumnSortSpecs": "inherited",
+    "ImGuiTableInstanceData": "inherited",
+    "ImGuiTableSettings": "inherited",
+    "ImGuiTableSortSpecs": "inherited",
+    "ImGuiTableTempData": "inherited",
+    "ImGuiTextBuffer": "inherited",
+    "ImGuiTextFilter": "inherited",
+    "ImGuiTextRange": "inherited",
+    "ImGuiTypingSelectState": "inherited",
+    "ImGuiViewport": "inherited",
+    "ImGuiViewportP": "inherited",
+    "ImGuiWindow": "inherited",
+    "ImGuiWindowClass": "inherited",
+    "ImGuiWindowSettings": "inherited",
+    "ImPool": "inherited",
+    "ImRect": "inherited",
+    "ImSpan": "inherited",
+    "ImSpanAllocator": "inherited",
+    "ImStableVector": "inherited",
+    "ImTextureData": "inherited",
+    "ImTextureRef": "inherited",
+    "ImVec1": "inherited",
+    "ImVec2": "inherited",
+    "ImVec2i": "inherited",
+    "ImVec2ih": "inherited",
+    "ImVec4": "inherited",
+    "ImVector": "inherited",
+    "Iterator": true,
+    "TextDiff": true,
+    "TextEditor": true,
+    "Trie": true
+  },
+  "nonPOD_used": {
+    "CursorPosition": true,
+    "CursorSelection": true,
+    "ImVec2": "inherited"
+  },
+  "opaque_structs": {
+    "AutoCompleteConfig": "TextEditor::AutoCompleteConfig",
+    "AutoCompleteState": "TextEditor::AutoCompleteState",
+    "Change": "TextEditor::Change",
+    "Iterator": "TextEditor::Iterator",
+    "Language": "TextEditor::Language",
+    "Palette": "TextEditor::Palette"
+  },
+  "structs": {
+    "AutoCompleteConfig": [],
+    "AutoCompleteState": [],
+    "Change": [],
+    "CodePoint": [],
+    "CursorPosition": [
+      {
+        "name": "line",
+        "type": "int"
+      },
+      {
+        "name": "column",
+        "type": "int"
+      }
+    ],
+    "CursorSelection": [
+      {
+        "name": "start",
+        "type": "CursorPosition"
+      },
+      {
+        "name": "end",
+        "type": "CursorPosition"
+      }
+    ],
+    "Decorator": [
+      {
+        "name": "line",
+        "type": "int"
+      },
+      {
+        "name": "width",
+        "type": "float"
+      },
+      {
+        "name": "height",
+        "type": "float"
+      },
+      {
+        "name": "glyphSize",
+        "type": "ImVec2"
+      },
+      {
+        "name": "userData",
+        "type": "void*"
+      }
+    ],
+    "Glyph": [
+      {
+        "name": "codepoint",
+        "type": "ImWchar"
+      },
+      {
+        "name": "color",
+        "type": "Color"
+      }
+    ],
+    "Iterator": [],
+    "Language": [],
+    "Palette": [],
+    "TextDiff": [
+      {
+        "name": "_TextEditor",
+        "type": "TextEditor"
+      }
+    ],
+    "TextEditor": [],
+    "Trie": []
+  }
+}

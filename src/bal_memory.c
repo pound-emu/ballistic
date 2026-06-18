@@ -4,8 +4,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void                  *default_allocate(bal_allocator_handle_t, size_t, size_t);
-static void                   default_free(bal_allocator_handle_t, void *, size_t);
+static void                   *default_allocate(bal_allocator_handle_t, size_t, size_t);
+static void                    default_free(bal_allocator_handle_t, void *, size_t);
+static bal_executable_buffer_t default_allocate_executable(bal_allocator_handle_t handle,
+                                                           size_t                 alignment,
+                                                           size_t                 size);
+static void                    default_free_executable(bal_allocator_handle_t  handle,
+                                                       bal_executable_buffer_t buffer,
+                                                       size_t                  size);
+static void                    default_protect_rw(bal_allocator_handle_t  handle,
+                                                  bal_executable_buffer_t buffer,
+                                                  size_t                  size);
+static void                    default_protect_rx(bal_allocator_handle_t  handle,
+                                                  bal_executable_buffer_t buffer,
+                                                  size_t                  size);
+
 BAL_HOT static const uint8_t *bal_flat_translation_interface_translate(void *,
                                                                        bal_guest_address_t,
                                                                        size_t *);
@@ -23,9 +36,13 @@ static_assert(0 == sizeof(flat_translation_interface_t) % 16, "Struct must be al
 void
 bal_allocator_default_init(bal_allocator_t *out_allocator)
 {
-    out_allocator->handle   = NULL;
-    out_allocator->allocate = default_allocate;
-    out_allocator->free     = default_free;
+    out_allocator->context             = NULL;
+    out_allocator->allocate            = default_allocate;
+    out_allocator->free                = default_free;
+    out_allocator->allocate_executable = default_allocate_executable;
+    out_allocator->protect_rw          = default_protect_rw;
+    out_allocator->protect_rx          = default_protect_rx;
+    out_allocator->free_executable     = default_free_executable;
 }
 
 BAL_COLD bal_error_t
@@ -63,7 +80,7 @@ bal_flat_translation_interface_init(bal_allocator_t *BAL_RESTRICT        allocat
 
     const size_t                  memory_alignment_bytes = 16U;
     flat_translation_interface_t *flat_interface         = allocator->allocate(
-        allocator->handle, memory_alignment_bytes, sizeof(flat_translation_interface_t));
+        allocator->context, memory_alignment_bytes, sizeof(flat_translation_interface_t));
 
     if (NULL == flat_interface)
     {
@@ -99,12 +116,14 @@ bal_flat_translation_interface_destroy(bal_allocator_t        *allocator,
         return BAL_SUCCESS;
     }
 
-    allocator->free(allocator->handle, interface->context, sizeof(flat_translation_interface_t));
+    allocator->free(allocator->context, interface->context, sizeof(flat_translation_interface_t));
     *interface = (bal_memory_interface_t) {};
     return BAL_SUCCESS;
 }
 
 #if BAL_PLATFORM_POSIX
+
+#include <sys/mman.h>
 
 static void *
 default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
@@ -134,11 +153,179 @@ default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
     free(pointer);
 }
 
+#if BAL_PLATFORM_APPLE
+
+#include <libkern/OSCacheControl.h>
+#include <pthread.h>
+
+static bal_executable_buffer_t
+default_allocate_executable(bal_allocator_handle_t handle, size_t alignment, size_t size)
+{
+    (void)handle;
+    (void)alignment;
+
+    if (0 == size)
+    {
+        return (bal_executable_buffer_t) { NULL, NULL };
+    }
+
+    void *memory = mmap(NULL,
+                        size,
+                        PROT_READ | PROT_WRITE | PROT_EXEC,
+                        MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT,
+                        -1,
+                        0);
+
+    if (memory == MAP_FAILED)
+    {
+        return (bal_executable_buffer_t) { NULL, NULL };
+    }
+
+    return (bal_executable_buffer_t) { memory, memory };
+}
+
+static void
+default_free_executable(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+
+    if (NULL == buffer.rw_pointer)
+    {
+        return;
+    }
+
+    munmap(buffer.rw_pointer, size);
+}
+
+static void
+default_protect_rw(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+    (void)buffer;
+    (void)size;
+    pthread_jit_write_protect_np(0);
+    return;
+}
+
+static void
+default_protect_rx(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+
+    if (BAL_UNLIKELY(NULL == buffer.rx_pointer))
+    {
+        return;
+    }
+
+    pthread_jit_write_protect_np(1);
+    sys_icache_invalidate(buffer.rx_pointer, size);
+}
+
+#endif /* BAL_PLATFORM_APPLE */
+
+#if BAL_PLATFORM_LINUX
+#define __USE_POSIX199309
+#include <fcntl.h>
+#include <limits.h>
+#include <unistd.h>
+
+bal_executable_buffer_t
+default_allocate_executable(bal_allocator_handle_t handle, size_t alignment, size_t size)
+{
+    (void)handle;
+    (void)alignment;
+
+    if (0 == size)
+    {
+        return (bal_executable_buffer_t) { NULL, NULL };
+    }
+
+    const bal_executable_buffer_t invalid_buffer = { NULL, NULL };
+    int fd = shm_open("/ballistic_jit_compiler_shm", O_RDWR | O_CREAT | O_EXCL, 0600);
+
+    if (-1 == fd)
+    {
+        return invalid_buffer;
+    }
+
+    shm_unlink("/ballistic_jit_compiler_shm");
+
+    if (size > LONG_MAX)
+    {
+        return invalid_buffer;
+    }
+
+    if (ftruncate(fd, (off_t)size) != 0)
+    {
+        close(fd);
+        return invalid_buffer;
+    }
+
+    void *rw_ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    void *rx_ptr = mmap(NULL, size, PROT_READ | PROT_EXEC, MAP_SHARED, fd, 0);
+
+    if (MAP_FAILED == rw_ptr)
+    {
+        munmap(rw_ptr, size);
+        return invalid_buffer;
+    }
+
+    if (MAP_FAILED == rx_ptr)
+    {
+        munmap(rw_ptr, size);
+        return invalid_buffer;
+    }
+
+    return (bal_executable_buffer_t) { rw_ptr, rx_ptr };
+}
+
+void
+default_free_executable(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+
+    if (buffer.rx_pointer != NULL)
+    {
+        munmap(buffer.rx_pointer, size);
+    }
+    if (buffer.rw_pointer != NULL)
+    {
+        munmap(buffer.rw_pointer, size);
+    }
+}
+
+void
+default_protect_rw(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    // Dual mapping means rw_pointer is always writable.
+    //
+    (void)handle;
+    (void)buffer;
+    (void)size;
+}
+
+void
+default_protect_rx(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+
+    if (BAL_UNLIKELY(NULL == buffer.rx_pointer) || BAL_UNLIKELY(NULL == buffer.rw_pointer))
+    {
+        return;
+    }
+
+    // Flush the icache so the CPU fetches the new physical memory bytes
+    __builtin___clear_cache(buffer.rw_pointer, buffer.rw_pointer + size);
+}
+
+#endif /* BAL_PLATFORM_LINUX */
+
 #endif /* BAL_PLATFORM_POSIX */
 
 #if BAL_PLATFORM_WINDOWS
 
 #include <malloc.h>
+#include <windows.h>
 
 static void *
 default_allocate(bal_allocator_handle_t handle, size_t alignment, size_t size)
@@ -160,6 +347,80 @@ default_free(bal_allocator_handle_t handle, void *pointer, size_t size)
     (void)handle;
     (void)size;
     _aligned_free(pointer);
+}
+
+bal_executable_buffer_t
+default_allocate_executable(bal_allocator_handle_t handle, size_t alignment, size_t size)
+{
+    (void)handle;
+    (void)alignment;
+
+    bal_executable_buffer_t invalid_buffer = { NULL, NULL };
+
+    if (0 == size)
+    {
+        return invalid_buffer;
+    }
+
+    HANDLE mapping = CreateFileMapping(
+        INVALID_HANDLE_VALUE, NULL, PAGE_EXECUTE_READWRITE, 0, (DWORD)size, NULL);
+
+    if (!mapping)
+    {
+        return invalid_buffer;
+    }
+
+    void *rw_ptr = MapViewOfFile(mapping, FILE_MAP_WRITE, 0, 0, size);
+    void *rx_ptr = MapViewOfFile(mapping, FILE_MAP_READ | FILE_MAP_EXECUTE, 0, 0, size);
+    CloseHandle(mapping);
+
+    if (NULL == rw_ptr)
+    {
+        UnmapViewOfFile(rw_ptr);
+        return invalid_buffer;
+    }
+
+    if (NULL == rx_ptr)
+    {
+        UnmapViewOfFile(rx_ptr);
+        return invalid_buffer;
+    }
+
+    return (bal_executable_buffer_t) { rw_ptr, rx_ptr };
+}
+
+void
+default_protect_rw(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    // Dual mapping means rw_pointer is always writable.
+    //
+    (void)handle;
+    (void)buffer;
+    (void)size;
+}
+
+void
+default_protect_rx(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+    FlushInstructionCache(GetCurrentProcess(), buffer.rx_pointer, size);
+}
+
+void
+default_free_executable(bal_allocator_handle_t handle, bal_executable_buffer_t buffer, size_t size)
+{
+    (void)handle;
+    (void)size;
+
+    if (buffer.rx_pointer != NULL)
+    {
+        UnmapViewOfFile(buffer.rx_pointer);
+    }
+
+    if (buffer.rw_pointer != NULL)
+    {
+        UnmapViewOfFile(buffer.rw_pointer);
+    }
 }
 
 #endif /* BAL_PLATFORM_WINDOWS */

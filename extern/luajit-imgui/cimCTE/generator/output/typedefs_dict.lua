@@ -1,0 +1,10 @@
+local t = {
+    CodePoint = "struct CodePoint",
+    CursorPosition = "struct CursorPosition",
+    CursorSelection = "struct CursorSelection",
+    Decorator = "struct Decorator",
+    Glyph = "struct Glyph",
+    TextDiff = "struct TextDiff",
+    TextEditor = "struct TextEditor",
+    Trie = "struct Trie" }
+return t

@@ -29,7 +29,7 @@ test_teardown(test_context_t *context)
 {
     bal_flat_translation_interface_destroy(&context->allocator, &context->interface);
     context->allocator.free(
-        context->allocator.handle, context->code_buffer, TEST_BUFFER_SIZE_BYTES);
+        context->allocator.context, context->code_buffer, TEST_BUFFER_SIZE_BYTES);
 }
 
 // -----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ TEST(MemoryDefaultAllocate, InvalidSizeReturnsNullptr)
     constexpr size_t size             = 0;
     constexpr size_t memory_alignment = 8;
     context.code_buffer               = static_cast<uint32_t *>(
-        context.allocator.allocate(context.allocator.handle, memory_alignment, size));
+        context.allocator.allocate(context.allocator.context, memory_alignment, size));
 
     ASSERT_EQ(context.code_buffer, nullptr);
 
@@ -58,7 +58,7 @@ TEST(MemoryFlatTranslation, InitSuccess)
     test_setup(&context);
     constexpr size_t memory_alignment = 16U;
     context.code_buffer               = static_cast<uint32_t *>(context.allocator.allocate(
-        context.allocator.handle, memory_alignment, TEST_BUFFER_SIZE_BYTES));
+        context.allocator.context, memory_alignment, TEST_BUFFER_SIZE_BYTES));
 
     ASSERT_NE(context.code_buffer, nullptr);
 
@@ -80,7 +80,7 @@ TEST(MemoryFlatTranslation, InitInvalidArgumentsReturnsError)
     constexpr size_t       valid_memory_alignment  = 16;
     constexpr uint32_t     valid_buffer_size_bytes = TEST_BUFFER_SIZE_BYTES;
     auto                  *valid_code_buffer   = static_cast<uint32_t *>(context.allocator.allocate(
-        context.allocator.handle, valid_memory_alignment, valid_buffer_size_bytes));
+        context.allocator.context, valid_memory_alignment, valid_buffer_size_bytes));
     uint32_t              *invalid_code_buffer = nullptr;
 
     bal_logger_t logger = {};
@@ -117,7 +117,7 @@ TEST(MemoryFlatTranslation, InitInvalidArgumentsReturnsError)
     ASSERT_EQ(error, BAL_ERROR_INVALID_ARGUMENT);
 
     invalid_code_buffer = static_cast<uint32_t *>(context.allocator.allocate(
-        context.allocator.handle, valid_memory_alignment, valid_buffer_size_bytes));
+        context.allocator.context, valid_memory_alignment, valid_buffer_size_bytes));
 
     ASSERT_NE(invalid_code_buffer, nullptr);
 
@@ -129,8 +129,8 @@ TEST(MemoryFlatTranslation, InitInvalidArgumentsReturnsError)
 
     ASSERT_EQ(error, BAL_ERROR_MEMORY_ALIGNMENT);
 
-    context.allocator.free(context.allocator.handle, invalid_code_buffer, valid_buffer_size_bytes);
-    context.allocator.free(context.allocator.handle, valid_code_buffer, valid_buffer_size_bytes);
+    context.allocator.free(context.allocator.context, invalid_code_buffer, valid_buffer_size_bytes);
+    context.allocator.free(context.allocator.context, valid_code_buffer, valid_buffer_size_bytes);
     test_teardown(&context);
 }
 
@@ -143,7 +143,7 @@ TEST(MemoryFlatTranslation, InitFailedInterfaceAllocationReturnsError)
 
     constexpr size_t memory_alignment = 16;
     context.code_buffer               = static_cast<uint32_t *>(context.allocator.allocate(
-        context.allocator.handle, memory_alignment, TEST_BUFFER_SIZE_BYTES));
+        context.allocator.context, memory_alignment, TEST_BUFFER_SIZE_BYTES));
     context.allocator.allocate        = empty_allocate;
     const bal_error_t error           = bal_flat_translation_interface_init(
         &context.allocator, &context.interface, context.code_buffer, memory_alignment, logger);
@@ -178,7 +178,7 @@ TEST(MemoryFlatTranslation, TranslateInvalidArgumentsReturnsError)
     test_setup(&context);
     constexpr size_t memory_alignment = 16;
     context.code_buffer               = static_cast<uint32_t *>(
-        context.allocator.allocate(context.allocator.handle, memory_alignment, TEST_BUFFER_SIZE));
+        context.allocator.allocate(context.allocator.context, memory_alignment, TEST_BUFFER_SIZE));
     bal_flat_translation_interface_init(&context.allocator,
                                         &context.interface,
                                         context.code_buffer,
@@ -210,7 +210,7 @@ TEST(MemoryFlatTranslation, TranslateReturnsValidPointerWithinBounds)
     constexpr size_t memory_alignment = 16U;
     test_setup(&context);
     context.code_buffer = static_cast<uint32_t *>(
-        context.allocator.allocate(context.allocator.handle, memory_alignment, TEST_BUFFER_SIZE));
+        context.allocator.allocate(context.allocator.context, memory_alignment, TEST_BUFFER_SIZE));
     bal_flat_translation_interface_init(&context.allocator,
                                         &context.interface,
                                         context.code_buffer,
@@ -236,7 +236,7 @@ TEST(MemoryFlatTranslation, OutOfBoundsReturnsNull)
     test_setup(&context);
     constexpr size_t memory_alignment = 16U;
     context.code_buffer               = static_cast<uint32_t *>(
-        context.allocator.allocate(context.allocator.handle, memory_alignment, TEST_BUFFER_SIZE));
+        context.allocator.allocate(context.allocator.context, memory_alignment, TEST_BUFFER_SIZE));
     bal_flat_translation_interface_init(&context.allocator,
                                         &context.interface,
                                         context.code_buffer,
@@ -263,7 +263,7 @@ TEST(MemoryFlatTranslation, UnalignedGuestAddressReturnsCorrectOffset)
     test_setup(&context);
     constexpr size_t memory_alignment = 16U;
     context.code_buffer               = static_cast<uint32_t *>(
-        context.allocator.allocate(context.allocator.handle, memory_alignment, TEST_BUFFER_SIZE));
+        context.allocator.allocate(context.allocator.context, memory_alignment, TEST_BUFFER_SIZE));
     bal_flat_translation_interface_init(&context.allocator,
                                         &context.interface,
                                         context.code_buffer,

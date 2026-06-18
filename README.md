@@ -8,11 +8,29 @@
 
 This is a rewrite of the dynarmic recompiler, with the goal of fixing its many flaws.
 
-# Immediate Goals
+# Version 1.0 Goals
 
-- [X] Support `MOVZ`, `MOVK`, `MOVN` instructions.
-- [ ] Support `ADD` instructions.
-- [ ] Implement backend.
+- [X] Create Tier 1 backend compiler.
+- [ ] Create Tier 2 backend compiler.
+- [ ] Support `MOVZ`, `MOVK`, `MOVN` instructions on both compilers.
+- [ ] Add more peephole optimizations.
+- [ ] Have 100% branch coverage.
+- [X] Have a config to change Ballistic behavior at runtime.
+- [ ] Support Block linking.
+- [X] Map ARM flags to x86 flags.
+- [ ] Support 128-bit types and x86 SSE/AVX instructions.
+- [ ] Add exception handling and recover guest CPU state.
+- [ ] Add register spilling.
+- [ ] Add Software Page Tables for MMIO and expose the page table memory layout.
+- [ ] Handle Guest W^X and Guest RO/RW.
+- [ ] Support Guest Write permissions and MMIO write traps for `bal_translate_write_function_t`.
+- [ ] Allow the Guest to inform the memory subsystem that a Guest page has changed state.
+- [ ] Invalidate JIT caches when Guest memory is modified using `bal_invalidate_git_cache_function_t`.
+- [ ] Rewrite `tools/cdoc.c`
+- [ ] Rewrite all Python scripts in Lua.
+- [ ] Add code examples on how to use a header file like in `bal_x86_sliding_window.h`.
+- [ ] Reorganize all functions in alphabetical order in `.c` and `.h` files.
+- [ ] Add benchmarks measuring compilation speed compared to other JIT compilers.
 
 # Building Ballistic
 
@@ -28,13 +46,13 @@ brew install cmake python3 llvm
 
 ```bash
 sudo apt update
-sudo apt install build-essential cmake python3 libclang-dev llvm-dev
+sudo apt install build-essential cmake python3
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install cmake python3 gcc-c++ clang-devel llvm-devel
+sudo dnf install cmake python3 gcc-c++
 ```
 
 ## Configure CMake
@@ -45,25 +63,13 @@ cd build
 cmake ..
 ```
 
-### macOS (If LLVM is not found)
-
-```bash
-cmake -DCMAKE_PREFIX_PATH=$(brew --prefix llvm) ..
-```
-
 ## Build Binaries
 
 ```bash
 cmake --build .
 ```
 
-The following executables will be created in the `build/` directory:
-
-* `libBallistic.a` (Static Library)
-* `ballistic_cli` (Used for Ballistic development)
-* `decoder_cli` (Instruction decoding tool)
-* `cdoc` (Documentation generator)
-* `test_*` (Test suite, run with `ctest`)
+The compiled executables will be created in the `build/bin` and `build/lib` directories.
 
 See [tools/](tools/) for more information on these executables.
 

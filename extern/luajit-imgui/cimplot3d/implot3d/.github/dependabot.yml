@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "quarterly"
+    target-branch: "main"
+    labels:
+      - "type:chore"
+      - "prio:low"
+      - "status:review"
+    assignees:
+      - "brenocq"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

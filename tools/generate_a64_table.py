@@ -12,9 +12,7 @@ Generated ARM decoder table source file -> ../src/decoder_table_gen.c
 
 import argparse
 import glob
-import io
 import os
-import re
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -581,6 +579,7 @@ if __name__ == "__main__":
         f.write("typedef struct {\n")
         f.write(f"   uint16_t index;\n")
         f.write("    uint8_t  count;\n")
+        f.write("    uint8_t  pad;\n")
         f.write(f"}} {DECODER_HASH_TABLE_BUCKET_STRUCT_NAME};\n\n")
         f.write(
             f"extern const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}];\n"
@@ -648,6 +647,7 @@ if __name__ == "__main__":
         f.write(f"/* Generated {len(all_instructions)} instructions */\n")
         f.write(f'#include "{decoder_generated_header_name}"\n\n')
         f.write(f'#include "bal_types.h"\n\n')
+        f.write("#define PADDING 0x1234\n")
 
         f.write(
             f"const {DECODER_METADATA_STRUCT_NAME} {DECODER_ARM64_INSTRUCTIONS_ARRAY_NAME}[{DECODER_ARM64_INSTRUCTIONS_SIZE_NAME}] = {{\n"
@@ -665,7 +665,7 @@ if __name__ == "__main__":
                     operands_str += "{ BAL_OPERAND_TYPE_NONE, 0, 0 },\n"
 
             f.write(
-                f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X}, {ir_opcode},\n{{ {operands_str} }}  }},\n'
+                f'    {{ "{inst.mnemonic}", 0x{inst.mask:08X}, 0x{inst.value:08X}, {ir_opcode},\n{{ {operands_str} }},\nPADDING  }},\n'
             )
 
         f.write("};")

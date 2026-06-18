@@ -1,11 +1,14 @@
 #include "bal_engine.h"
+#include "backend/x86/bal_x86_tier1_compiler.h"
 #include "bal_decoder.h"
+#include "bal_engine_flags.h"
 #include "bal_logging.h"
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 
-#define MAX_INSTRUCTIONS 65536
+#define MAX_INSTRUCTIONS 65535
 
 // Not sure what exact value to put here.
 //
@@ -18,6 +21,64 @@
 #define BAL_ALIGN_UP(x, memory_alignment) \
     (((x) + ((memory_alignment) - 1)) & ~((memory_alignment) - 1))
 
+#define SOURCE_VARIABLES_SIZE_BYTES MAX_GUEST_REGISTERS * sizeof(bal_source_variable_t)
+#define SSA_BIT_WIDTHS_SIZE_BYTES   MAX_INSTRUCTIONS * sizeof(bal_bit_width_t)
+#define INSTRUCTIONS_SIZE_BYTES     MAX_INSTRUCTIONS * sizeof(bal_instruction_t)
+#define CONSTANTS_SIZE_BYTES        MAX_INSTRUCTIONS * sizeof(bal_instruction_t)
+#define MEMORY_ALIGNMENT            64U
+
+#define OFFSET_INSTRUCTIONS BAL_ALIGN_UP(SOURCE_VARIABLES_SIZE_BYTES, MEMORY_ALIGNMENT)
+#define OFFSET_SSA_BIT_WIDTHS \
+    BAL_ALIGN_UP((OFFSET_INSTRUCTIONS + INSTRUCTIONS_SIZE_BYTES), MEMORY_ALIGNMENT)
+#define OFFSET_CONSTANTS \
+    BAL_ALIGN_UP((OFFSET_SSA_BIT_WIDTHS + SSA_BIT_WIDTHS_SIZE_BYTES), MEMORY_ALIGNMENT)
+#define ARENA_SIZE_BYTES BAL_ALIGN_UP((OFFSET_CONSTANTS + CONSTANTS_SIZE_BYTES), MEMORY_ALIGNMENT)
+
+#define TIER1_BUFFER_SIZE_BYTES (1024 * 1024 * 16) // 16 MiB
+
+#define BLOCK_CACHE_SIZE 65536
+#define BLOCK_CACHE_MASK (BLOCK_CACHE_SIZE - 1)]
+
+/// Restrict block lookups to 4 entries. Since each `block_cache_entry_t` is 16 bytes, 4 entries
+/// fit exactly inside an L1 cache line.
+#define BLOCK_CACHE_PROBE_LIMIT 4
+
+// So here's the logic behind what should happen if there's a hash collision between two blocks at
+// block_cache[index].
+//
+// 1. If Block A and Block B collide, Block A takes the primary slot at block_cache[index].
+// 2. Block B is allowed to sit anywhere between block_cache[index...BLOCK_CACHE_PROBE_LIMIT].
+//
+// This is the logic behind block_cache_lookup() and block_cache_insert() implementations.
+typedef struct
+{
+    bal_guest_address_t guest_address;
+    void               *host_code;
+} block_cache_entry_t;
+
+static_assert(16 == sizeof(block_cache_entry_t), "Block cache entry size mismatch");
+
+typedef struct
+{
+    bal_tier1_compiler_t    tier1_compiler;
+    bal_executable_buffer_t tier1_buffer;
+    void                   *ir_arena_base;
+    size_t                  tier1_buffer_size;
+    bal_instruction_count_t instruction_count;
+    bal_constant_count_t    constant_count;
+    char                    pad0[28];
+
+    BAL_ALIGNED(64) struct
+    {
+        atomic_bool is_executing;
+        atomic_bool stop_requested;
+        atomic_bool clear_cache_requested;
+        char        pad1[61];
+    } thread_state;
+
+    BAL_ALIGNED(64) block_cache_entry_t block_cache[BLOCK_CACHE_SIZE];
+} internal_engine_state_t;
+
 typedef struct
 {
     bal_instruction_t      *ir_instruction_cursor;
@@ -29,101 +90,501 @@ typedef struct
     bal_instruction_count_t instruction_count;
     bal_error_t             status;
     bal_logger_t           *logger;
-} bal_translation_context_t;
+} bal_tier2_translation_context_t;
 
-static uint32_t extract_operand_value(uint32_t, const bal_decoder_operand_t *);
-static uint32_t intern_constant(bal_translation_context_t *, bal_constant_t);
-static void     translate_const(bal_translation_context_t *,
-                                const bal_decoder_instruction_metadata_t *,
-                                const uint32_t *);
-static void     translate_sub(bal_translation_context_t *,
-                              const bal_decoder_instruction_metadata_t *,
-                              const uint32_t *);
-static void     translate_return(bal_translation_context_t *, const uint32_t *);
+static_assert(sizeof(bal_tier2_translation_context_t) <= 64, "Context must fit in  1 cache line");
+
+static void *block_cache_lookup(const internal_engine_state_t *engine_state,
+                                const bal_guest_address_t      pc);
+static void  block_cache_insert(internal_engine_state_t  *engine_state,
+                                const bal_guest_address_t pc,
+                                void                     *host_code);
+
+// static uint32_t extract_operand_value(uint32_t, const bal_decoder_operand_t *);
+// static uint32_t intern_constant(bal_translation_context_t *, bal_constant_t);
+// static void     translate_const(bal_translation_context_t *,
+// const bal_decoder_instruction_metadata_t *,
+// const uint32_t *);
+// static void     translate_sub(bal_translation_context_t *,
+// const bal_decoder_instruction_metadata_t *,
+// const uint32_t *);
+// static void     translate_return(bal_translation_context_t *, const uint32_t *);
 
 BAL_COLD bal_error_t
-bal_engine_init(const bal_allocator_t *allocator, bal_engine_t *engine, bal_logger_t logger)
+bal_engine_init(bal_engine_t *BAL_RESTRICT                 engine,
+                bal_cpu_t *BAL_RESTRICT                    cpu,
+                const bal_allocator_t *BAL_RESTRICT        allocator,
+                const bal_memory_interface_t *BAL_RESTRICT memory_interface,
+                const bal_logger_t                         logger)
 {
-    if (NULL == allocator || NULL == engine)
+    // Check every pointer that will be used in the Engine.
+    // This is tedious, but I currently don't give a fuck. Telling the user exactly what's
+    // wrong is way better than seeing a random segfault in your terminal then going on Github
+    // asking me why Ballistic is crashing on your system.
+
+    if (BAL_UNLIKELY(NULL == engine))
     {
         return BAL_ERROR_INVALID_ARGUMENT;
     }
 
-    const size_t source_variables_size = MAX_GUEST_REGISTERS * sizeof(bal_source_variable_t);
-    const size_t ssa_bit_widths_size   = MAX_INSTRUCTIONS * sizeof(bal_bit_width_t);
-    const size_t instructions_size     = MAX_INSTRUCTIONS * sizeof(bal_instruction_t);
-    const size_t constants_size        = MAX_INSTRUCTIONS * sizeof(bal_instruction_t);
-
-    // Calculate amount of memory needed for all arrays in engine.
-    //
-    const size_t memory_alignment    = 64U;
-    const size_t offset_instructions = BAL_ALIGN_UP(source_variables_size, memory_alignment);
-
-    const size_t offset_ssa_bit_widths
-        = BAL_ALIGN_UP((offset_instructions + instructions_size), memory_alignment);
-
-    const size_t offset_constants
-        = BAL_ALIGN_UP((offset_ssa_bit_widths + ssa_bit_widths_size), memory_alignment);
-
-    const size_t total_size_with_padding
-        = BAL_ALIGN_UP((offset_constants + constants_size), memory_alignment);
-
-    uint8_t *data
-        = allocator->allocate(allocator->handle, memory_alignment, total_size_with_padding);
-
-    BAL_LOG_DEBUG(&logger, "Calculating arena layout (Alignment: %zu bytes):", memory_alignment);
-    BAL_LOG_DEBUG(
-        &logger, "  [0x%08zx] source_variables (%zu bytes)", (size_t)0, source_variables_size);
-    BAL_LOG_DEBUG(&logger,
-                  "  [0x%08zx] instructions     (%zu bytes)",
-                  offset_instructions,
-                  instructions_size);
-    BAL_LOG_DEBUG(&logger,
-                  "  [0x%08zx] ssa_bit_widths   (%zu bytes)",
-                  offset_ssa_bit_widths,
-                  ssa_bit_widths_size);
-    BAL_LOG_DEBUG(
-        &logger, "  [0x%08zx] constants        (%zu bytes)", offset_constants, constants_size);
-
-    if (NULL == data)
+    if (BAL_UNLIKELY(NULL == cpu))
     {
-        BAL_LOG_ERROR(&logger, "Allocation of %zu bytes failed.", total_size_with_padding);
+        BAL_LOG_ERROR(&logger, "Aborting function: CPU is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->allocate))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Allocate() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->free))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Free() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->allocate_executable))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Allocate_Executable() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->protect_rw))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Protect_RW() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->protect_rx))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Protect_RX() is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == allocator->free_executable))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Allocator->Free_Executable function is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == memory_interface))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Memory_Interface is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == memory_interface->context))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Memory_Interface->Context is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    if (BAL_UNLIKELY(NULL == memory_interface->translate))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Memory_Interface->Translate function is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return engine->status;
+    }
+
+    internal_engine_state_t *BAL_RESTRICT internal_engine_state = allocator->allocate(
+        allocator->context, MEMORY_ALIGNMENT, sizeof(internal_engine_state_t));
+
+    if (BAL_UNLIKELY(NULL == internal_engine_state))
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to allocate Internal Engine State");
         engine->status = BAL_ERROR_ALLOCATION_FAILED;
         return engine->status;
     }
 
-    engine->source_variables      = (bal_source_variable_t *)data;
-    engine->instructions          = (bal_instruction_t *)(data + offset_instructions);
-    engine->constants             = (bal_constant_t *)(data + offset_constants);
-    engine->ssa_bit_widths        = data + offset_ssa_bit_widths;
-    engine->source_variables_size = source_variables_size / sizeof(bal_source_variable_t);
-    engine->instructions_size     = instructions_size / sizeof(bal_instruction_t);
-    engine->constants_size        = constants_size / sizeof(bal_constant_t);
-    engine->constant_count        = 0;
-    engine->instruction_count     = 0;
-    engine->status                = BAL_SUCCESS;
-    engine->arena_base            = (void *)data;
-    engine->arena_size            = total_size_with_padding;
-    engine->logger                = logger;
+    (void)memset(internal_engine_state, 0, sizeof(internal_engine_state_t));
+
+    internal_engine_state->ir_arena_base
+        = allocator->allocate(allocator->context, MEMORY_ALIGNMENT, ARENA_SIZE_BYTES);
+
+    if (BAL_UNLIKELY(NULL == internal_engine_state->ir_arena_base))
+    {
+        allocator->free(allocator->context, internal_engine_state, sizeof(internal_engine_state_t));
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to allocate Internal IR Arena");
+        engine->status = BAL_ERROR_ALLOCATION_FAILED;
+    }
+
+    (void)memset(
+        internal_engine_state->ir_arena_base, POISON_UNINITIALIZED_MEMORY, ARENA_SIZE_BYTES);
+    internal_engine_state->instruction_count = 0;
+    internal_engine_state->constant_count    = 0;
+    internal_engine_state->tier1_buffer_size = TIER1_BUFFER_SIZE_BYTES;
+    internal_engine_state->tier1_buffer      = allocator->allocate_executable(
+        allocator->context, 4096, internal_engine_state->tier1_buffer_size);
+
+    if (NULL == internal_engine_state->tier1_buffer.rw_pointer)
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to allocate Internal Tier 1 Buffer");
+        engine->status = BAL_ERROR_ALLOCATION_FAILED;
+        return engine->status;
+    }
+
+    const bal_error_t status = bal_tier1_compiler_init(&internal_engine_state->tier1_compiler,
+                                                       internal_engine_state->tier1_buffer,
+                                                       internal_engine_state->tier1_buffer_size,
+                                                       logger);
+
+    if (status != BAL_SUCCESS)
+    {
+        BAL_LOG_ERROR(&logger, "Aborting function: Failed to initialize Tier1 Compiler");
+        allocator->free(allocator->context,
+                        &internal_engine_state->tier1_buffer,
+                        sizeof(internal_engine_state_t));
+        allocator->free(allocator->context,
+                        internal_engine_state->ir_arena_base,
+                        sizeof(internal_engine_state_t));
+        allocator->free(allocator->context, internal_engine_state, sizeof(internal_engine_state_t));
+        engine->status = status;
+        return engine->status;
+    }
+
+    atomic_init(&internal_engine_state->thread_state.is_executing, false);
+    atomic_init(&internal_engine_state->thread_state.stop_requested, false);
+    atomic_init(&internal_engine_state->thread_state.clear_cache_requested, false);
+
+    BAL_LOG_DEBUG(&logger, "Calculating arena layout (Alignment: %zu bytes):", MEMORY_ALIGNMENT);
+    BAL_LOG_DEBUG(&logger,
+                  "  [0x%08zx] source_variables (%zu bytes)",
+                  (size_t)0,
+                  SOURCE_VARIABLES_SIZE_BYTES);
+    BAL_LOG_DEBUG(&logger,
+                  "  [0x%08zx] instructions     (%zu bytes)",
+                  OFFSET_INSTRUCTIONS,
+                  INSTRUCTIONS_SIZE_BYTES);
+    BAL_LOG_DEBUG(&logger,
+                  "  [0x%08zx] ssa_bit_widths   (%zu bytes)",
+                  OFFSET_SSA_BIT_WIDTHS,
+                  SSA_BIT_WIDTHS_SIZE_BYTES);
+    BAL_LOG_DEBUG(&logger,
+                  "  [0x%08zx] constants        (%zu bytes)",
+                  OFFSET_CONSTANTS,
+                  CONSTANTS_SIZE_BYTES);
 
     BAL_LOG_INFO(&logger,
                  "Initialized engine successfully. Arena: %p (%zu KB)",
-                 engine->arena_base,
-                 total_size_with_padding / 1024);
-
-    (void)memset(engine->source_variables, POISON_UNINITIALIZED_MEMORY, source_variables_size);
-    (void)memset(engine->instructions, POISON_UNINITIALIZED_MEMORY, instructions_size);
-    (void)memset(engine->ssa_bit_widths, POISON_UNINITIALIZED_MEMORY, ssa_bit_widths_size);
-    (void)memset(engine->constants, POISON_UNINITIALIZED_MEMORY, constants_size);
-
+                 internal_engine_state->ir_arena_base,
+                 ARENA_SIZE_BYTES / 1024);
+    engine->cpu              = cpu;
+    engine->allocator        = allocator;
+    engine->memory_interface = memory_interface;
+    engine->engine_state     = internal_engine_state;
+    engine->logger           = logger;
+    engine->status           = BAL_SUCCESS;
+    engine->flags            = 0;
     return engine->status;
 }
 
 bal_error_t
-bal_engine_translate(bal_engine_t *BAL_RESTRICT                 engine,
-                     const bal_memory_interface_t *BAL_RESTRICT interface,
-                     bal_guest_address_t                       *guest_address_start,
-                     const size_t                               max_instructions)
+bal_engine_run_thread(bal_engine_t *engine)
+{
+    internal_engine_state_t *internal_engine_state = engine->engine_state;
+    bool                     expected              = false;
+    if (!atomic_compare_exchange_strong_explicit(&internal_engine_state->thread_state.is_executing,
+                                                 &expected,
+                                                 false,
+                                                 memory_order_acq_rel,
+                                                 memory_order_acquire))
+    {
+        BAL_LOG_ERROR(&engine->logger, "Aborting function: Engine is already running");
+        return BAL_ERROR_ENGINE_ALREADY_RUNNING;
+    }
+
+    engine->flags |= BAL_ENGINE_FLAG_RUNNING;
+
+    while (true)
+    {
+        if (BAL_UNLIKELY(atomic_load_explicit(&internal_engine_state->thread_state.stop_requested,
+                                              memory_order_acquire)))
+        {
+            BAL_LOG_INFO(&engine->logger, "Engine stop requested. Exiting execution loop.");
+            break;
+        }
+
+        if (BAL_UNLIKELY(atomic_load_explicit(
+                &internal_engine_state->thread_state.clear_cache_requested, memory_order_acquire)))
+        {
+            BAL_LOG_INFO(&engine->logger,
+                         "Clear cache requested. Resetting JIT layout and block cache.");
+            bal_tier1_compiler_reset(&internal_engine_state->tier1_compiler);
+            (void)memset(
+                internal_engine_state->block_cache, 0, sizeof(internal_engine_state->block_cache));
+            atomic_store_explicit(&internal_engine_state->thread_state.clear_cache_requested,
+                                  false,
+                                  memory_order_release);
+        }
+
+        if (engine->flags & BAL_ENGINE_FLAG_INTERRUPT_PENDING)
+        {
+            BAL_LOG_INFO(&engine->logger, "Interrupt pending, yielding to host.");
+            engine->flags &= ~BAL_ENGINE_FLAG_INTERRUPT_PENDING;
+            break;
+        }
+
+        // TODO: Implement Block linking
+        bal_guest_address_t pc = engine->cpu->pc;
+
+        void *BAL_RESTRICT entry_point = NULL;
+
+        if (BAL_LIKELY(!(engine->flags & BAL_ENGINE_FLAG_DISABLE_BLOCK_CACHE)))
+        {
+            entry_point = block_cache_lookup(internal_engine_state, pc);
+        }
+
+        if (NULL == entry_point)
+        {
+            if (engine->flags & BAL_ENGINE_FLAG_LOG_BLOCKS)
+            {
+                BAL_LOG_INFO(
+                    &engine->logger, "Fetching block at PC 0x%016llX", (unsigned long long)pc);
+            }
+
+            engine->allocator->protect_rw(engine->allocator->context,
+                                          internal_engine_state->tier1_buffer,
+                                          internal_engine_state->tier1_buffer_size);
+            size_t max_instructions = MAX_INSTRUCTIONS;
+
+            if (engine->flags & BAL_ENGINE_FLAG_SINGLE_STEP)
+            {
+                max_instructions = 1;
+            }
+
+            entry_point = bal_tier1_compiler_translate(&internal_engine_state->tier1_compiler,
+                                                       engine->memory_interface,
+                                                       pc,
+                                                       max_instructions,
+                                                       engine->flags);
+
+            if (BAL_UNLIKELY(NULL == entry_point))
+            {
+                if (internal_engine_state->tier1_compiler.assembler.status
+                    == BAL_ERROR_INSTRUCTION_OVERFLOW)
+                {
+                    BAL_LOG_INFO(&engine->logger,
+                                 "Tier 1 executable buffer full. Resetting JIT layout cache");
+                    bal_tier1_compiler_reset(&internal_engine_state->tier1_compiler);
+
+                    // TODO: When the block cache is implemented, it must be cleared here.
+                    entry_point
+                        = bal_tier1_compiler_translate(&internal_engine_state->tier1_compiler,
+                                                       engine->memory_interface,
+                                                       pc,
+                                                       max_instructions,
+                                                       engine->flags);
+                }
+
+                if (BAL_UNLIKELY(NULL == entry_point))
+                {
+                    BAL_LOG_ERROR(&engine->logger,
+                                  "Aborting function: Failed to compile block at PC 0x%0llx",
+                                  // WARNING: C standard guarantees unsigned long long is at least
+                                  // 64 bits wide.
+                                  (unsigned long long)pc);
+                }
+            }
+
+            if (BAL_UNLIKELY(NULL == entry_point))
+            {
+                BAL_LOG_ERROR(&engine->logger,
+                              "Aborting function: Failed to compile block at PC 0x%0llX",
+                              (unsigned long long)pc);
+                engine->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+                break;
+            }
+        }
+
+        engine->allocator->protect_rx(engine->allocator->context,
+                                      internal_engine_state->tier1_buffer,
+                                      internal_engine_state->tier1_buffer_size);
+
+        if (BAL_LIKELY(!(engine->flags & BAL_ENGINE_FLAG_DISABLE_BLOCK_CACHE)))
+        {
+            block_cache_insert(internal_engine_state, pc, entry_point);
+        }
+
+        const bal_jit_block_t compiled_block = entry_point;
+
+        if (engine->flags & BAL_ENGINE_FLAG_LOG_BLOCKS)
+        {
+            BAL_LOG_INFO(&engine->logger, "Executing JIT Block at %p", entry_point);
+        }
+
+        compiled_block(engine->cpu);
+
+        if (engine->flags & BAL_ENGINE_FLAG_SINGLE_STEP)
+        {
+            break;
+        }
+    }
+
+    engine->flags &= ~BAL_ENGINE_FLAG_RUNNING;
+    atomic_store_explicit(
+        &internal_engine_state->thread_state.is_executing, false, memory_order_release);
+    return engine->status;
+}
+
+void
+bal_engine_stop_thread(bal_engine_t *BAL_RESTRICT engine)
+{
+    if (BAL_UNLIKELY(NULL == engine))
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(NULL == engine->engine_state))
+    {
+        BAL_LOG_ERROR(&engine->logger, "Aborting function: engine state is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return;
+    }
+
+    internal_engine_state_t *BAL_RESTRICT engine_state = engine->engine_state;
+    atomic_store_explicit(&engine_state->thread_state.stop_requested, true, memory_order_release);
+}
+
+bal_error_t
+bal_engine_reset(bal_engine_t *BAL_RESTRICT engine)
+{
+    if (BAL_UNLIKELY(NULL == engine))
+    {
+        return BAL_ERROR_INVALID_ARGUMENT;
+    }
+
+    engine->status                                     = BAL_SUCCESS;
+    internal_engine_state_t *BAL_RESTRICT engine_state = engine->engine_state;
+    (void)memset(&engine_state->tier1_buffer, 0, engine_state->tier1_buffer_size);
+    bal_tier1_compiler_reset(&engine_state->tier1_compiler);
+    return engine->status;
+}
+
+bool
+bal_engine_is_running(bal_engine_t *engine)
+{
+    if (BAL_UNLIKELY(NULL == engine))
+    {
+        return false;
+    }
+
+    if (BAL_UNLIKELY(NULL == engine->engine_state))
+    {
+        BAL_LOG_ERROR(&engine->logger, "Aborting function: engine state is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return false;
+    }
+
+    internal_engine_state_t *BAL_RESTRICT engine_state = engine->engine_state;
+    return atomic_load_explicit(&engine_state->thread_state.is_executing, memory_order_acquire);
+}
+
+void
+bal_engine_clear_cache(bal_engine_t *engine)
+{
+    if (BAL_UNLIKELY(NULL == engine))
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(NULL == engine->engine_state))
+    {
+        BAL_LOG_ERROR(&engine->logger, "Aborting function: engine state is NULL");
+        engine->status = BAL_ERROR_INVALID_ARGUMENT;
+        return;
+    }
+
+    internal_engine_state_t *BAL_RESTRICT engine_state = engine->engine_state;
+    atomic_store_explicit(
+        &engine_state->thread_state.clear_cache_requested, true, memory_order_release);
+}
+
+BAL_HOT void *
+block_cache_lookup(const internal_engine_state_t *BAL_RESTRICT engine_state,
+                   const bal_guest_address_t                   pc)
+{
+    // Lowest 2 bytes in an ARM64 PC is always 0 so shift them out.
+    uint32_t                                index  = (uint32_t)(pc >> 2) & BLOCK_CACHE_SIZE;
+    const block_cache_entry_t *BAL_RESTRICT cursor = &engine_state->block_cache[index];
+
+    for (uint32_t i = 0; i < BLOCK_CACHE_PROBE_LIMIT; ++i)
+    {
+        if (cursor->guest_address == pc && cursor->host_code != NULL)
+        {
+            return cursor->host_code;
+        }
+
+        ++cursor;
+        ++index;
+
+        if (BAL_UNLIKELY(index >= BLOCK_CACHE_SIZE))
+        {
+            cursor = &engine_state->block_cache[0];
+            index  = 0;
+        }
+    }
+
+    return NULL;
+}
+
+BAL_HOT void
+block_cache_insert(internal_engine_state_t *BAL_RESTRICT engine_state,
+                   const bal_guest_address_t             pc,
+                   void *BAL_RESTRICT                    host_code)
+{
+    // Lowest 2 bytes in an ARM64 PC is always 0 so shift them out.
+    uint32_t                          index  = (uint32_t)(pc >> 2) & BLOCK_CACHE_SIZE;
+    block_cache_entry_t *BAL_RESTRICT cursor = &engine_state->block_cache[index];
+
+    for (uint32_t i = 0; i < BLOCK_CACHE_PROBE_LIMIT; ++i)
+    {
+        if (cursor->guest_address == pc || NULL == cursor->host_code)
+        {
+            cursor->guest_address = pc;
+            cursor->host_code     = host_code;
+            return;
+        }
+
+        ++cursor;
+        ++index;
+
+        if (BAL_UNLIKELY(index >= BLOCK_CACHE_SIZE))
+        {
+            cursor = &engine_state->block_cache[0];
+            index  = 0;
+        }
+    }
+
+    // Evict the first probed entry if full.
+    index                                          = (uint32_t)(pc >> 2) & BLOCK_CACHE_SIZE;
+    engine_state->block_cache[index].guest_address = pc;
+    engine_state->block_cache[index].host_code     = host_code;
+}
+
+#if 0
+bal_error_t
+bal_engine_translate_tier2(bal_engine_t *BAL_RESTRICT                 engine,
+                           const bal_memory_interface_t *BAL_RESTRICT interface,
+                           bal_guest_address_t                       *guest_address_start,
+                           const size_t                               max_instructions)
 {
     if (BAL_UNLIKELY(NULL == engine))
     {
@@ -164,15 +625,15 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT                 engine,
                  max_instructions_size_bytes);
 
     bal_translation_context_t context
-        = { .ir_instruction_cursor = engine->instructions + engine->instruction_count,
-            .bit_width_cursor      = engine->ssa_bit_widths + engine->instruction_count,
-            .source_variables      = engine->source_variables,
-            .constants             = engine->constants,
-            .constants_size        = engine->constants_size,
-            .constant_count        = engine->constant_count,
-            .instruction_count     = engine->instruction_count,
-            .status                = engine->status,
-            .logger                = &engine->logger };
+        = { .ir_instruction_cursor
+            = (bal_instruction_t *)((uint8_t *)engine->arena_base + OFFSET_INSTRUCTIONS),
+            .bit_width_cursor = (uint8_t *)engine->arena_base + OFFSET_SSA_BIT_WIDTHS,
+            .source_variables = (bal_source_variable_t *)engine->arena_base,
+            .constants      = (bal_constant_t *)((uint8_t *)engine->arena_base + OFFSET_CONSTANTS),
+            .constant_count = engine->constant_count,
+            .instruction_count = engine->instruction_count,
+            .status            = engine->status,
+            .logger            = &engine->logger };
 
     bool     is_block_terminated                         = false;
     uint32_t arm_instruction_operands[BAL_OPERANDS_SIZE] = { 0 };
@@ -313,35 +774,50 @@ bal_engine_translate(bal_engine_t *BAL_RESTRICT                 engine,
     return engine->status;
 }
 
-bal_error_t
-bal_engine_reset(bal_engine_t *engine)
-{
-    if (BAL_UNLIKELY(NULL == engine))
-    {
-        return BAL_ERROR_INVALID_ARGUMENT;
-    }
 
-    engine->instruction_count = 0;
-    engine->status            = BAL_SUCCESS;
-
-    (void)memset(
-        engine->source_variables, POISON_UNINITIALIZED_MEMORY, engine->source_variables_size);
-
-    (void)memset(engine->constants, POISON_UNINITIALIZED_MEMORY, engine->constants_size);
-
-    return engine->status;
-}
 
 void
 bal_engine_destroy(const bal_allocator_t *allocator, bal_engine_t *engine)
 {
     // No argument error handling. Segfault if user passes NULL.
 
-    allocator->free(allocator->handle, engine->arena_base, engine->arena_size);
-    engine->arena_base       = NULL;
-    engine->source_variables = NULL;
-    engine->instructions     = NULL;
-    engine->ssa_bit_widths   = NULL;
+    allocator->free(allocator->context, engine->arena_base, ARENA_SIZE_BYTES);
+    engine->arena_base = NULL;
+}
+const bal_instruction_t *
+bal_engine_get_ir_instructions(const bal_engine_t *engine)
+{
+    if (BAL_UNLIKELY(NULL == engine))
+    {
+        return NULL;
+    }
+
+    if (BAL_UNLIKELY(NULL == engine->arena_base))
+    {
+        BAL_LOG_ERROR(&engine->logger, "Memory Arena is NULL, aborting function");
+        return NULL;
+    }
+
+    const bal_instruction_t *ir_instructions = engine->arena_base + OFFSET_INSTRUCTIONS;
+    return ir_instructions;
+}
+const bal_constant_t *
+bal_engine_get_constant(const bal_engine_t *engine, const bal_constant_t index)
+{
+    if (BAL_UNLIKELY(NULL == engine))
+    {
+        return NULL;
+    }
+
+    if (BAL_UNLIKELY(NULL == engine->arena_base))
+    {
+        BAL_LOG_ERROR(&engine->logger, "Engine memory arena is NULL, aborting function call");
+        return NULL;
+    }
+
+    const bal_constant_t *constants = engine->arena_base + OFFSET_CONSTANTS;
+    const bal_constant_t *constant  = &constants[index];
+    return constant;
 }
 
 BAL_HOT static uint32_t
@@ -380,7 +856,7 @@ intern_constant(bal_translation_context_t *BAL_RESTRICT context, const bal_const
 
     const uint32_t index = context->constant_count;
 
-    if (BAL_UNLIKELY(index >= context->constants_size))
+    if (BAL_UNLIKELY(index >= MAX_INSTRUCTIONS))
     {
         BAL_LOG_ERROR(context->logger,
                       "Constant Pool Overflow at index %u (Max %u)",
@@ -640,6 +1116,7 @@ translate_sub(bal_translation_context_t                *context,
     *context->ir_instruction_cursor = (bal_instruction_t)OPCODE_SUB << BAL_OPCODE_SHIFT_POSITION
                                       | rn_ssa_index << BAL_SOURCE1_SHIFT_POSITION
                                       | value_const_index << BAL_SOURCE2_SHIFT_POSITION;
+
     *context->bit_width_cursor = bit_width;
 
     BAL_LOG_DEBUG(context->logger,
@@ -654,3 +1131,4 @@ translate_sub(bal_translation_context_t                *context,
 
     context->instruction_count++;
 }
+#endif

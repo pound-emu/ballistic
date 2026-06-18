@@ -1,0 +1,345 @@
+{
+  "enums": {
+    "ImNodesStyleCol": [
+      {
+        "calc_value": 0,
+        "name": "ImNodesStyleCol_GridLines",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "ImNodesStyleCol_NodeBodyBg",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "ImNodesStyleCol_NodeBodyBgHovered",
+        "value": "2"
+      },
+      {
+        "calc_value": 3,
+        "name": "ImNodesStyleCol_NodeBodyBgActive",
+        "value": "3"
+      },
+      {
+        "calc_value": 4,
+        "name": "ImNodesStyleCol_NodeBorder",
+        "value": "4"
+      },
+      {
+        "calc_value": 5,
+        "name": "ImNodesStyleCol_Connection",
+        "value": "5"
+      },
+      {
+        "calc_value": 6,
+        "name": "ImNodesStyleCol_ConnectionActive",
+        "value": "6"
+      },
+      {
+        "calc_value": 7,
+        "name": "ImNodesStyleCol_SelectBg",
+        "value": "7"
+      },
+      {
+        "calc_value": 8,
+        "name": "ImNodesStyleCol_SelectBorder",
+        "value": "8"
+      },
+      {
+        "calc_value": 9,
+        "name": "ImNodesStyleCol_NodeTitleBarBg",
+        "value": "9"
+      },
+      {
+        "calc_value": 10,
+        "name": "ImNodesStyleCol_NodeTitleBarBgHovered",
+        "value": "10"
+      },
+      {
+        "calc_value": 11,
+        "name": "ImNodesStyleCol_NodeTitleBarBgActive",
+        "value": "11"
+      },
+      {
+        "calc_value": 12,
+        "name": "ImNodesStyleCol_COUNT",
+        "value": "12"
+      }
+    ],
+    "ImNodesStyleVar": [
+      {
+        "calc_value": 0,
+        "name": "ImNodesStyleVar_GridSpacing_r",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "ImNodesStyleVar_CurveThickness",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "ImNodesStyleVar_CurveStrength",
+        "value": "2"
+      },
+      {
+        "calc_value": 3,
+        "name": "ImNodesStyleVar_SlotRadius",
+        "value": "3"
+      },
+      {
+        "calc_value": 4,
+        "name": "ImNodesStyleVar_NodeRounding",
+        "value": "4"
+      },
+      {
+        "calc_value": 5,
+        "name": "ImNodesStyleVar_NodeSpacing",
+        "value": "5"
+      },
+      {
+        "calc_value": 6,
+        "name": "ImNodesStyleVar_ItemSpacing",
+        "value": "6"
+      },
+      {
+        "calc_value": 7,
+        "name": "ImNodesStyleVar_COUNT_r",
+        "value": "7"
+      }
+    ],
+    "StyleColor": [
+      {
+        "calc_value": 0,
+        "name": "ColCanvasLines",
+        "value": "0"
+      },
+      {
+        "calc_value": 1,
+        "name": "ColNodeBg",
+        "value": "1"
+      },
+      {
+        "calc_value": 2,
+        "name": "ColNodeActiveBg",
+        "value": "2"
+      },
+      {
+        "calc_value": 3,
+        "name": "ColNodeBorder",
+        "value": "3"
+      },
+      {
+        "calc_value": 4,
+        "name": "ColConnection",
+        "value": "4"
+      },
+      {
+        "calc_value": 5,
+        "name": "ColConnectionActive",
+        "value": "5"
+      },
+      {
+        "calc_value": 6,
+        "name": "ColSelectBg",
+        "value": "6"
+      },
+      {
+        "calc_value": 7,
+        "name": "ColSelectBorder",
+        "value": "7"
+      },
+      {
+        "calc_value": 8,
+        "name": "ColMax",
+        "value": "8"
+      }
+    ]
+  },
+  "enumtypes": [],
+  "locations": {
+    "CanvasState": "ImNodes:46",
+    "CanvasStyle": "ImNodes:55",
+    "ImNodesStyleCol": "ImNodesEz:44",
+    "ImNodesStyleVar": "ImNodesEz:32",
+    "SlotInfo": "ImNodesEz:69",
+    "StyleColor": "ImNodes:31",
+    "StyleVars": "ImNodesEz:78"
+  },
+  "nonPOD": {
+    "CanvasState": true,
+    "ImBitArray": "inherited",
+    "ImColor": "inherited",
+    "ImDrawCmd": "inherited",
+    "ImDrawData": "inherited",
+    "ImDrawDataBuilder": "inherited",
+    "ImDrawList": "inherited",
+    "ImDrawListSharedData": "inherited",
+    "ImDrawListSplitter": "inherited",
+    "ImFont": "inherited",
+    "ImFontAtlas": "inherited",
+    "ImFontAtlasBuilder": "inherited",
+    "ImFontAtlasRect": "inherited",
+    "ImFontBaked": "inherited",
+    "ImFontConfig": "inherited",
+    "ImFontGlyph": "inherited",
+    "ImFontGlyphRangesBuilder": "inherited",
+    "ImFontLoader": "inherited",
+    "ImGuiBoxSelectState": "inherited",
+    "ImGuiComboPreviewData": "inherited",
+    "ImGuiContext": "inherited",
+    "ImGuiContextHook": "inherited",
+    "ImGuiDebugAllocInfo": "inherited",
+    "ImGuiDebugItemPathQuery": "inherited",
+    "ImGuiDockContext": "inherited",
+    "ImGuiDockNode": "inherited",
+    "ImGuiErrorRecoveryState": "inherited",
+    "ImGuiIDStackTool": "inherited",
+    "ImGuiIO": "inherited",
+    "ImGuiInputEvent": "inherited",
+    "ImGuiInputTextCallbackData": "inherited",
+    "ImGuiInputTextDeactivatedState": "inherited",
+    "ImGuiInputTextState": "inherited",
+    "ImGuiKeyOwnerData": "inherited",
+    "ImGuiKeyRoutingData": "inherited",
+    "ImGuiKeyRoutingTable": "inherited",
+    "ImGuiLastItemData": "inherited",
+    "ImGuiListClipper": "inherited",
+    "ImGuiListClipperData": "inherited",
+    "ImGuiMenuColumns": "inherited",
+    "ImGuiMultiSelectState": "inherited",
+    "ImGuiMultiSelectTempData": "inherited",
+    "ImGuiNavItemData": "inherited",
+    "ImGuiNextItemData": "inherited",
+    "ImGuiNextWindowData": "inherited",
+    "ImGuiOldColumnData": "inherited",
+    "ImGuiOldColumns": "inherited",
+    "ImGuiOnceUponAFrame": "inherited",
+    "ImGuiPayload": "inherited",
+    "ImGuiPlatformIO": "inherited",
+    "ImGuiPlatformImeData": "inherited",
+    "ImGuiPlatformMonitor": "inherited",
+    "ImGuiPopupData": "inherited",
+    "ImGuiPtrOrIndex": "inherited",
+    "ImGuiSelectionBasicStorage": "inherited",
+    "ImGuiSelectionExternalStorage": "inherited",
+    "ImGuiSettingsHandler": "inherited",
+    "ImGuiStackLevelInfo": "inherited",
+    "ImGuiStoragePair": "inherited",
+    "ImGuiStyle": "inherited",
+    "ImGuiStyleMod": "inherited",
+    "ImGuiTabBar": "inherited",
+    "ImGuiTabItem": "inherited",
+    "ImGuiTable": "inherited",
+    "ImGuiTableColumn": "inherited",
+    "ImGuiTableColumnSettings": "inherited",
+    "ImGuiTableColumnSortSpecs": "inherited",
+    "ImGuiTableInstanceData": "inherited",
+    "ImGuiTableSettings": "inherited",
+    "ImGuiTableSortSpecs": "inherited",
+    "ImGuiTableTempData": "inherited",
+    "ImGuiTextBuffer": "inherited",
+    "ImGuiTextFilter": "inherited",
+    "ImGuiTextRange": "inherited",
+    "ImGuiTypingSelectState": "inherited",
+    "ImGuiViewport": "inherited",
+    "ImGuiViewportP": "inherited",
+    "ImGuiWindow": "inherited",
+    "ImGuiWindowClass": "inherited",
+    "ImGuiWindowSettings": "inherited",
+    "ImPool": "inherited",
+    "ImRect": "inherited",
+    "ImSpan": "inherited",
+    "ImSpanAllocator": "inherited",
+    "ImStableVector": "inherited",
+    "ImTextureData": "inherited",
+    "ImTextureRef": "inherited",
+    "ImVec1": "inherited",
+    "ImVec2": "inherited",
+    "ImVec2i": "inherited",
+    "ImVec2ih": "inherited",
+    "ImVec4": "inherited",
+    "ImVector": "inherited"
+  },
+  "nonPOD_used": {
+    "ImVec2": "inherited",
+    "ImVec4": "inherited"
+  },
+  "opaque_structs": [],
+  "structs": {
+    "CanvasState": [
+      {
+        "name": "Zoom",
+        "type": "float"
+      },
+      {
+        "name": "Offset",
+        "type": "ImVec2"
+      },
+      {
+        "name": "Colors[ColMax]",
+        "size": 8,
+        "type": "ImColor"
+      },
+      {
+        "name": "Style",
+        "type": "CanvasStyle"
+      },
+      {
+        "name": "_Impl",
+        "type": "_CanvasStateImpl*"
+      }
+    ],
+    "CanvasStyle": [
+      {
+        "name": "CurveThickness",
+        "type": "float"
+      },
+      {
+        "name": "ConnectionIndent",
+        "type": "float"
+      },
+      {
+        "name": "GridSpacing",
+        "type": "float"
+      },
+      {
+        "name": "CurveStrength",
+        "type": "float"
+      },
+      {
+        "name": "NodeRounding",
+        "type": "float"
+      },
+      {
+        "name": "NodeSpacing",
+        "type": "ImVec2"
+      }
+    ],
+    "SlotInfo": [
+      {
+        "name": "title",
+        "type": "const char*"
+      },
+      {
+        "name": "kind",
+        "type": "int"
+      }
+    ],
+    "StyleVars": [
+      {
+        "name": "SlotRadius",
+        "type": "float"
+      },
+      {
+        "name": "ItemSpacing",
+        "type": "ImVec2"
+      },
+      {
+        "name": "Colors",
+        "type": "struct { ImVec4 NodeBodyBg; ImVec4 NodeBodyBgHovered; ImVec4 NodeBodyBgActive; ImVec4 NodeBorder; ImVec4 NodeTitleBarBg; ImVec4 NodeTitleBarBgHovered; ImVec4 NodeTitleBarBgActive; }"
+      }
+    ]
+  }
+}

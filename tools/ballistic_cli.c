@@ -82,11 +82,12 @@ main(int argc, char *argv[])
 
         while (guest_address_cursor < entry_point + bytes_read)
         {
-            error = bal_engine_translate(&engine, &interface, &guest_address_cursor, BUFFER_SIZE);
+            error = bal_engine_translate_tier2(
+                &engine, &interface, &guest_address_cursor, BUFFER_SIZE);
 
             if (error != BAL_SUCCESS)
             {
-                (void)fprintf(stderr, "bal_engine_translate() failed.\n");
+                (void)fprintf(stderr, "bal_engine_translate_tier2() failed.\n");
                 return EXIT_FAILURE;
             }
 
