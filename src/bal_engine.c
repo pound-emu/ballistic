@@ -487,20 +487,27 @@ bal_engine_clear_cache(bal_engine_t *engine)
 }
 
 BAL_HOT void *
-block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache, const bal_guest_address_t pc)
+block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache,
+                   const bal_guest_address_t             pc)
 {
     const uint32_t                          set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
     const block_cache_entry_t *BAL_RESTRICT ways      = cache[set_index].ways;
 
     for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
-        if (ways[i].guest_address == pc && ways[i].host_code != NULL)
+        bal_guest_address_t entry_pc = ways[i].guest_address;
+        if (0 == i)
         {
-            return ways[i].host_code;
+            entry_pc &= ~3ULL;
+        }
+
+        if ((entry_pc == pc) && (NULL != ways[i].host_code))
+        {
+            return (ways[i].host_code);
         }
     }
 
-    return NULL;
+    return (NULL);
 }
 
 BAL_HOT void
@@ -508,30 +515,40 @@ block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
                    const bal_guest_address_t       pc,
                    void *BAL_RESTRICT              host_code)
 {
-    const uint32_t                    set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
-    block_cache_entry_t *BAL_RESTRICT ways      = cache[set_index].ways;
+    const uint32_t                          set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
+    block_cache_entry_t *BAL_RESTRICT       ways      = cache[set_index].ways;
+
+    const uint32_t fifo_counter = (uint32_t)(ways[0].guest_address & 3ULL);
 
     for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
-        if (ways[i].guest_address == pc)
+        bal_guest_address_t entry_pc = ways[i].guest_address;
+        if (0 == i)
+        {
+            entry_pc &= ~3ULL;
+        }
+
+        if ((entry_pc == pc) && (NULL != ways[i].host_code))
         {
             ways[i].host_code = host_code;
             return;
         }
     }
 
-    for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
-    {
-        if (NULL == ways[i].host_code)
-        {
-            ways[i].guest_address = pc;
-            ways[i].host_code     = host_code;
-            return;
-        }
-    }
+    const uint32_t evict_way = fifo_counter;
+    const uint32_t next_fifo = (fifo_counter + 1u) & (BLOCK_CACHE_WAYS - 1u);
 
-    // All 4 ways are full. Use the lower bits of the PC as a cheap starting index.
-    const uint32_t evict_way      = (pc >> 4) & (BLOCK_CACHE_WAYS - 1);
-    ways[evict_way].guest_address = pc;
-    ways[evict_way].host_code     = host_code;
+    if (0 == evict_way)
+    {
+        ways[0].guest_address = (pc & ~3ULL) | (bal_guest_address_t)next_fifo;
+        ways[0].host_code     = host_code;
+    }
+    else
+    {
+        ways[evict_way].guest_address = pc;
+        ways[evict_way].host_code     = host_code;
+
+        ways[0].guest_address = (ways[0].guest_address & ~3ULL) |
+                                (bal_guest_address_t)next_fifo;
+    }
 }
