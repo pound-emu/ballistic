@@ -57,11 +57,11 @@ using std::memory_order_seq_cst;
     (((x) + ((memory_alignment) - 1)) & ~((memory_alignment) - 1))
 
 #define MEMORY_ALIGNMENT        64U
-#define TIER1_BUFFER_SIZE_BYTES (102U * 1024U * 16U) // 16 MiB
+#define TIER1_BUFFER_SIZE_BYTES (1024 * 1024 * 16) // 16 MiB
 
-#define BLOCK_CACHE_SETS 128U // 8 KB total footprint.
-#define BLOCK_CACHE_WAYS 4U
-#define BLOCK_CACHE_MASK (BLOCK_CACHE_SETS - 1U)
+#define BLOCK_CACHE_SETS 4096 // 256 KB total footprint.
+#define BLOCK_CACHE_WAYS 4
+#define BLOCK_CACHE_MASK (BLOCK_CACHE_SETS - 1)
 
 /// Represents a single entry (way) in the block cache.
 typedef struct
@@ -487,27 +487,20 @@ bal_engine_clear_cache(bal_engine_t *engine)
 }
 
 BAL_HOT void *
-block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache,
-                   const bal_guest_address_t             pc)
+block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache, const bal_guest_address_t pc)
 {
     const uint32_t                          set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
     const block_cache_entry_t *BAL_RESTRICT ways      = cache[set_index].ways;
 
     for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
-        bal_guest_address_t entry_pc = ways[i].guest_address;
-        if (0 == i)
+        if (ways[i].guest_address == pc && ways[i].host_code != NULL)
         {
-            entry_pc &= ~3ULL;
-        }
-
-        if ((entry_pc == pc) && (NULL != ways[i].host_code))
-        {
-            return (ways[i].host_code);
+            return ways[i].host_code;
         }
     }
 
-    return (NULL);
+    return NULL;
 }
 
 BAL_HOT void
@@ -515,40 +508,30 @@ block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
                    const bal_guest_address_t       pc,
                    void *BAL_RESTRICT              host_code)
 {
-    const uint32_t                          set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
-    block_cache_entry_t *BAL_RESTRICT       ways      = cache[set_index].ways;
-
-    const uint32_t fifo_counter = (uint32_t)(ways[0].guest_address & 3ULL);
+    const uint32_t                    set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
+    block_cache_entry_t *BAL_RESTRICT ways      = cache[set_index].ways;
 
     for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
-        bal_guest_address_t entry_pc = ways[i].guest_address;
-        if (0 == i)
-        {
-            entry_pc &= ~3ULL;
-        }
-
-        if ((entry_pc == pc) && (NULL != ways[i].host_code))
+        if (ways[i].guest_address == pc)
         {
             ways[i].host_code = host_code;
             return;
         }
     }
 
-    const uint32_t evict_way = fifo_counter;
-    const uint32_t next_fifo = (fifo_counter + 1u) & (BLOCK_CACHE_WAYS - 1u);
-
-    if (0 == evict_way)
+    for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
-        ways[0].guest_address = (pc & ~3ULL) | (bal_guest_address_t)next_fifo;
-        ways[0].host_code     = host_code;
+        if (NULL == ways[i].host_code)
+        {
+            ways[i].guest_address = pc;
+            ways[i].host_code     = host_code;
+            return;
+        }
     }
-    else
-    {
-        ways[evict_way].guest_address = pc;
-        ways[evict_way].host_code     = host_code;
 
-        ways[0].guest_address = (ways[0].guest_address & ~3ULL) |
-                                (bal_guest_address_t)next_fifo;
-    }
+    // All 4 ways are full. Use the lower bits of the PC as a cheap starting index.
+    const uint32_t evict_way      = (pc >> 4) & (BLOCK_CACHE_WAYS - 1);
+    ways[evict_way].guest_address = pc;
+    ways[evict_way].host_code     = host_code;
 }
