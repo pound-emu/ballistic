@@ -57,11 +57,11 @@ using std::memory_order_seq_cst;
     (((x) + ((memory_alignment) - 1)) & ~((memory_alignment) - 1))
 
 #define MEMORY_ALIGNMENT        64U
-#define TIER1_BUFFER_SIZE_BYTES (1024 * 1024 * 16) // 16 MiB
+#define TIER1_BUFFER_SIZE_BYTES (102U * 1024U * 16U) // 16 MiB
 
-#define BLOCK_CACHE_SETS 4096 // 256 KB total footprint.
-#define BLOCK_CACHE_WAYS 4
-#define BLOCK_CACHE_MASK (BLOCK_CACHE_SETS - 1)
+#define BLOCK_CACHE_SETS 128U // 8 KB total footprint.
+#define BLOCK_CACHE_WAYS 4U
+#define BLOCK_CACHE_MASK (BLOCK_CACHE_SETS - 1U)
 
 /// Represents a single entry (way) in the block cache.
 typedef struct
