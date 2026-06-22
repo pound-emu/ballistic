@@ -487,11 +487,10 @@ bal_engine_clear_cache(bal_engine_t *engine)
 }
 
 BAL_HOT static void *
-block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache,
-                   const bal_guest_address_t             pc)
+block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache, const bal_guest_address_t pc)
 {
-    const uint32_t set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
-    const block_cache_entry_t *BAL_RESTRICT ways = cache[set_index].ways;
+    const uint32_t                          set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
+    const block_cache_entry_t *BAL_RESTRICT ways      = cache[set_index].ways;
 
     for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
@@ -515,11 +514,10 @@ block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
                    const bal_guest_address_t       pc,
                    void *BAL_RESTRICT              host_code)
 {
-    const uint32_t set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
-    block_cache_entry_t *BAL_RESTRICT ways = cache[set_index].ways;
+    const uint32_t                    set_index = (uint32_t)(pc >> 2) & BLOCK_CACHE_MASK;
+    block_cache_entry_t *BAL_RESTRICT ways      = cache[set_index].ways;
 
-    const uint32_t fifo_counter =
-        (uint32_t)(ways[0].guest_address & 3ULL);
+    const uint32_t fifo_counter = (uint32_t)(ways[0].guest_address & 3ULL);
 
     for (uint32_t i = 0; i < BLOCK_CACHE_WAYS; ++i)
     {
@@ -537,22 +535,18 @@ block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
     }
 
     const uint32_t evict_way = fifo_counter;
-    const uint32_t next_fifo =
-        (fifo_counter + 1) & (BLOCK_CACHE_WAYS - 1);
+    const uint32_t next_fifo = (fifo_counter + 1) & (BLOCK_CACHE_WAYS - 1);
 
     if (0 == evict_way)
     {
-        ways[0].guest_address =
-            (pc & ~3ULL) | (bal_guest_address_t)next_fifo;
-        ways[0].host_code = host_code;
+        ways[0].guest_address = (pc & ~3ULL) | (bal_guest_address_t)next_fifo;
+        ways[0].host_code     = host_code;
     }
     else
     {
         ways[evict_way].guest_address = pc;
-        ways[evict_way].host_code = host_code;
+        ways[evict_way].host_code     = host_code;
 
-        ways[0].guest_address =
-            (ways[0].guest_address & ~3ULL) |
-            (bal_guest_address_t)next_fifo;
+        ways[0].guest_address = (ways[0].guest_address & ~3ULL) | (bal_guest_address_t)next_fifo;
     }
 }
