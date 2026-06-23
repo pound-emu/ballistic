@@ -5,20 +5,83 @@ on:
   pull_request:
     branches: [ main ]
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: false
 
 env:
   BUILD_DIRECTORY: ${{ github.workspace }}/build
 
 jobs:
+  get-commits:
+    name: Get Commits to Build
+    runs-on: ubuntu-latest
+    outputs:
+      commits: ${{ steps.get-commits.outputs.commits }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get Commits
+        id: get-commits
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+            
+            # Handle new branches or force push.
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              COMMITS=$(git rev-list --reverse "$AFTER")
+            elif git merge-base --is-ancestor "$BEFORE" "$AFTER" 2>/dev/null; then
+              COMMITS=$(git rev-list --reverse "$BEFORE".."$AFTER")
+            else
+              COMMITS="$AFTER"
+            fi
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+            # Get all commits introduced in the PR
+            COMMITS=$(git rev-list --reverse "$BASE".."$HEAD")
+          else
+            COMMITS="${{ github.sha }}"
+          fi
+          
+          # Create JSON array with commit info (SHA and message)
+          JSON_COMMITS="["
+          FIRST=true
+          for COMMIT in $COMMITS; do
+            MESSAGE=$(git log -1 --pretty=format:"%s" "$COMMIT")
+            MESSAGE=$(echo "$MESSAGE" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr '\n' ' ')
+            
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              JSON_COMMITS="$JSON_COMMITS,"
+            fi
+            JSON_COMMITS="$JSON_COMMITS{\"sha\":\"$COMMIT\",\"message\":\"$MESSAGE\"}"
+          done
+          JSON_COMMITS="$JSON_COMMITS]"
+          
+          # Fallback if the list is somehow empty
+          if [ "$JSON_COMMITS" = "[]" ]; then
+            FALLBACK_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+            MESSAGE=$(git log -1 --pretty=format:"%s" "$FALLBACK_SHA")
+            MESSAGE=$(echo "$MESSAGE" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr '\n' ' ')
+            JSON_COMMITS="[{\"sha\":\"$FALLBACK_SHA\",\"message\":\"$MESSAGE\"}]"
+          fi
+          
+          echo "commits=$JSON_COMMITS" >> $GITHUB_OUTPUT
+
   Build-Linux:
-    name: Ubuntu / ${{ matrix.type }}
+    needs: get-commits
+    name: Ubuntu / ${{ matrix.type }} / ${{ matrix.commit.message }}
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         type: [ Debug, Release ]
+        commit: ${{ fromJson(needs.get-commits.outputs.commits) }}
     env:
       CC: clang-18
       CXX: clang++-18
@@ -28,6 +91,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ matrix.commit.sha }}
           submodules: recursive
           fetch-depth: 1
 
@@ -91,12 +155,14 @@ jobs:
   
 
   Build-Windows:
-    name: Windows / ${{ matrix.type }}
+    needs: get-commits
+    name: Windows / ${{ matrix.type }} / ${{ matrix.commit.message }}
     runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
         type: [ Debug, Release ]
+        commit: ${{ fromJson(needs.get-commits.outputs.commits) }}
     env:
       CC: cl
       CXX: cl
@@ -110,6 +176,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ matrix.commit.sha }}
           submodules: recursive
           fetch-depth: 1
 
