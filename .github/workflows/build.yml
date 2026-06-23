@@ -42,7 +42,7 @@ jobs:
           path: ~/.ccache
           key: ${{ runner.os }}-clang-18-${{ matrix.type }}-ccache-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-clang-18-${{ matrix.type }}-cache-
+            ${{ runner.os }}-clang-18-${{ matrix.type }}-ccache-
 
       - name: Prepare ccache
         run: |
