@@ -328,3 +328,17 @@ TEST_F(JitDebug, InitOOM_Failure)
     EXPECT_EQ(context.entries, nullptr);
     EXPECT_EQ(context.metadata_arena, nullptr);
 }
+
+TEST_F(JitDebug, CorruptedCPUContext_Failure)
+{
+    bal_jit_debug_init(&allocator, &context, logger);
+    const auto dummy_buffer = reinterpret_cast<void *>(0x3000);
+    bal_jit_debug_register_signal_handler(&context, dummy_buffer, 4096);
+
+    const uint64_t bad_rbp   = 0xDEADBEEF;
+    const uint64_t fault_rip = (uint64_t)dummy_buffer + 10;
+
+    EXPECT_FALSE(handle_jit_fault(fault_rip, bad_rbp));
+    bal_jit_debug_unregister_signal_handler(&context);
+    bal_jit_debug_destroy(&allocator, &context);
+}
