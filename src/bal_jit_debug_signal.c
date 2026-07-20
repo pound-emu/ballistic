@@ -26,44 +26,110 @@
 
 #endif // BAL_PLATFORM_POSIX
 
-static bool
-extract_fault_context(void *os_context, uint64_t *out_rip, uint64_t *out_rbp)
-{
-#if BAL_PLATFORM_LINUX
-    const ucontext_t *BAL_RESTRICT uc = (ucontext_t *)os_context;
+#ifndef BALLISTIC_BUILD_TESTS
 
-    if (NULL == uc)
-    {
-        return false;
-    }
+static bool handle_jit_fault(uint64_t rip, uint64_t rbp);
 
-    *out_rip = (uint64_t)uc->uc_mcontext.__gregs[16];
-    *out_rbp = (uint64_t)uc->uc_mcontext.__gregs[10];
+#endif // BALLISTIC_BUILD_TESTS
 
-    return true;
+#if BAL_PLATFORM_WINDOWS
 
-#elif BAL_PLATFORM_WINDOWS
-
-    EXCEPTION_POINTERS *BAL_RESTRICT ep = (EXCEPTION_POINTERS *)os_context;
-
-    if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION
-        || ep->ExceptionRecord->ExceptionCode == EXCEPTION_ILLEGAL_INSTRUCTION)
-    {
-        *out_rip = (uint64_t)ep->ContextRecord->Rip;
-        *out_rbp = (uint64_t)ep->ContextRecord->Rbp;
-        return true;
-    }
-
-    return false;
+static LONG WINAPI segv_handler(EXCEPTION_POINTERS *info);
 
 #else
 
-    (void)os_context;
-    (void)out_rip;
-    (void)out_rbp;
-    return false;
+static void segv_handler(int sig, siginfo_t *info, void *ucontext);
+
+#endif // BAL_PLATFORM_WINDOWS
+
+static bool extract_fault_context(void *os_context, uint64_t *out_rip, uint64_t *out_rbp);
+
+bal_error_t
+bal_jit_debug_register_signal_handler(bal_jit_debug_context_t *BAL_RESTRICT context,
+                                      void *BAL_RESTRICT                    jit_buffer_start,
+                                      const size_t                          jit_buffer_size)
+{
+    const bal_error_t invalid_argument = BAL_ERROR_INVALID_ARGUMENT;
+
+    if (NULL == context)
+    {
+        return invalid_argument;
+    }
+
+    if (NULL == jit_buffer_start)
+    {
+        BAL_LOG_ERROR(&context->logger, "Aborting function: jit_buffer_start is NULL.");
+        return invalid_argument;
+    }
+
+    if (0 == jit_buffer_size)
+    {
+        BAL_LOG_ERROR(&context->logger, "Aborting function: jit_buffer_size == 0.");
+        return invalid_argument;
+    }
+
+    context->jit_buffer_start = jit_buffer_start;
+    context->jit_buffer_end   = (void *)((uintptr_t)jit_buffer_start + jit_buffer_size);
+
+#if BAL_PLATFORM_LINUX
+
+    struct sigaction sa;
+    sa.sa_sigaction = segv_handler;
+    sa.sa_flags     = SA_SIGINFO;
+    sigemptyset(&sa.sa_mask);
+
+    if (sigaction(SIGSEGV, &sa, NULL) != 0)
+    {
+        BAL_LOG_ERROR(&context->logger,
+                      "Aborting function: failed to register SIGSEGV signal handler");
+        return BAL_ERROR_ALLOCATION_FAILED;
+    }
+
+    if (sigaction(SIGILL, &sa, NULL) != 0)
+    {
+        BAL_LOG_ERROR(&context->logger,
+                      "Aborting function: failed to register SIGKILL signal handler");
+        return BAL_ERROR_ALLOCATION_FAILED;
+    }
+
+#elif BAL_PLATFORM_WINDOWS
+
+    if (NULL == AddVectoredExceptionHandler(1, segv_handler))
+    {
+        BAL_LOG_ERROR(&context->logger, "Aborting function: AddVectoredExceptionHandler() failed.");
+        return BAL_ERROR_ALLOCATION_FAILED;
+    }
+
+#else
+
+#error "Ballistic does not support SIGSEGV handling for this platform"
+
+#endif
+
+    return BAL_SUCCESS;
+}
+
+void
+bal_jit_debug_unregister_signal_handler(bal_jit_debug_context_t *BAL_RESTRICT context)
+{
+    if (NULL == context)
+    {
+        return;
+    }
+
+#if BAL_PLATFORM_LINUX
+
+    struct sigaction sa = { 0 };
+    sa.sa_handler       = SIG_DFL;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGSEGV, &sa, NULL);
+    sigaction(SIGILL, &sa, NULL);
 
 #endif // BAL_PLATFORM_LINUX
+
+    context->jit_buffer_start = NULL;
+    context->jit_buffer_end   = NULL;
 }
 
 bool
@@ -149,10 +215,50 @@ handle_jit_fault(const uint64_t rip, const uint64_t rbp)
     return false;
 }
 
+static bool
+extract_fault_context(void *os_context, uint64_t *out_rip, uint64_t *out_rbp)
+{
+#if BAL_PLATFORM_LINUX
+    const ucontext_t *BAL_RESTRICT uc = (ucontext_t *)os_context;
+
+    if (NULL == uc)
+    {
+        return false;
+    }
+
+    *out_rip = (uint64_t)uc->uc_mcontext.__gregs[16];
+    *out_rbp = (uint64_t)uc->uc_mcontext.__gregs[10];
+
+    return true;
+
+#elif BAL_PLATFORM_WINDOWS
+
+    EXCEPTION_POINTERS *BAL_RESTRICT ep = (EXCEPTION_POINTERS *)os_context;
+
+    if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION
+        || ep->ExceptionRecord->ExceptionCode == EXCEPTION_ILLEGAL_INSTRUCTION)
+    {
+        *out_rip = (uint64_t)ep->ContextRecord->Rip;
+        *out_rbp = (uint64_t)ep->ContextRecord->Rbp;
+        return true;
+    }
+
+    return false;
+
+#else
+
+    (void)os_context;
+    (void)out_rip;
+    (void)out_rbp;
+    return false;
+
+#endif // BAL_PLATFORM_LINUX
+}
+
 #if BAL_PLATFORM_LINUX
 
 static void
-bal_jit_segv_handler(const int sig, siginfo_t *info, void *ucontext)
+segv_handler(const int sig, siginfo_t *info, void *ucontext)
 {
     (void)sig;
     (void)info;
@@ -179,7 +285,7 @@ bal_jit_segv_handler(const int sig, siginfo_t *info, void *ucontext)
 #elif BAL_PLATFORM_WINDOWS
 
 static LONG WINAPI
-bal_jit_segv_handler(EXCEPTION_POINTERS *info)
+segv_handler(EXCEPTION_POINTERS *info)
 {
 
     uint64_t rip = 0;
@@ -201,93 +307,5 @@ bal_jit_segv_handler(EXCEPTION_POINTERS *info)
 #error "Ballistic does not support SIGSEGV handling for this platform"
 
 #endif // BAL_PLATFORM_LINUX
-
-bal_error_t
-bal_jit_debug_register_signal_handler(bal_jit_debug_context_t *BAL_RESTRICT context,
-                                      void *BAL_RESTRICT                    jit_buffer_start,
-                                      const size_t                          jit_buffer_size)
-{
-    const bal_error_t invalid_argument = BAL_ERROR_INVALID_ARGUMENT;
-
-    if (NULL == context)
-    {
-        return invalid_argument;
-    }
-
-    if (NULL == jit_buffer_start)
-    {
-        BAL_LOG_ERROR(&context->logger, "Aborting function: jit_buffer_start is NULL.");
-        return invalid_argument;
-    }
-
-    if (0 == jit_buffer_size)
-    {
-        BAL_LOG_ERROR(&context->logger, "Aborting function: jit_buffer_size == 0.");
-        return invalid_argument;
-    }
-
-    context->jit_buffer_start = jit_buffer_start;
-    context->jit_buffer_end   = (void *)((uintptr_t)jit_buffer_start + jit_buffer_size);
-
-#if BAL_PLATFORM_LINUX
-
-    struct sigaction sa;
-    sa.sa_sigaction = bal_jit_segv_handler;
-    sa.sa_flags     = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
-
-    if (sigaction(SIGSEGV, &sa, NULL) != 0)
-    {
-        BAL_LOG_ERROR(&context->logger,
-                      "Aborting function: failed to register SIGSEGV signal handler");
-        return BAL_ERROR_ALLOCATION_FAILED;
-    }
-
-    if (sigaction(SIGILL, &sa, NULL) != 0)
-    {
-        BAL_LOG_ERROR(&context->logger,
-                      "Aborting function: failed to register SIGKILL signal handler");
-        return BAL_ERROR_ALLOCATION_FAILED;
-    }
-
-#elif BAL_PLATFORM_WINDOWS
-
-    if (NULL == AddVectoredExceptionHandler(1, bal_jit_segv_handler))
-    {
-        BAL_LOG_ERROR(&context->logger, "Aborting function: AddVectoredExceptionHandler() failed.");
-        return BAL_ERROR_ALLOCATION_FAILED;
-    }
-
-#else
-
-#error "Ballistic does not support SIGSEGV handling for this platform"
-
-#endif
-
-    return BAL_SUCCESS;
-}
-
-void
-bal_jit_debug_unregister_signal_handler(bal_jit_debug_context_t *BAL_RESTRICT context)
-{
-    if (NULL == context)
-    {
-        return;
-    }
-
-#if BAL_PLATFORM_LINUX
-
-    struct sigaction sa = { 0 };
-    sa.sa_handler       = SIG_DFL;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGILL, &sa, NULL);
-
-#endif // BAL_PLATFORM_LINUX
-
-    context->jit_buffer_start = NULL;
-    context->jit_buffer_end   = NULL;
-}
 
 /*** end of file ***/
