@@ -270,3 +270,26 @@ TEST_F(JitDebug, InstructionCountMax_Failure)
     EXPECT_EQ(context.entry_count, 0);
     bal_jit_debug_destroy(&allocator, &context);
 }
+
+TEST_F(JitDebug, JitBufferRIPBoundaries_Success)
+{
+    uint8_t           dummy_buffer[100];
+    const bal_error_t error  = bal_jit_debug_init(&allocator, &context, logger);
+    context.jit_buffer_start = dummy_buffer;
+    context.jit_buffer_end   = dummy_buffer + 100;
+    ASSERT_EQ(error, BAL_SUCCESS);
+
+    const auto rip_start = (uint64_t)dummy_buffer;
+    bal_cpu_t  cpu       = {};
+    cpu.debug_context    = &context;
+    const auto rbp       = (uint64_t)&cpu;
+    EXPECT_DEATH(handle_jit_fault(rip_start, rbp), "JIT CRASH in UNKNOWN block");
+
+    const auto rip_end = (uint64_t)context.jit_buffer_end;
+    EXPECT_FALSE(handle_jit_fault(rip_end, rbp));
+
+    const uint64_t rip_end_minus_1 = (uint64_t)context.jit_buffer_end - 1;
+    EXPECT_DEATH(handle_jit_fault(rip_end_minus_1, rbp), "JIT CRASH in UNKNOWN block");
+
+    bal_jit_debug_destroy(&allocator, &context);
+}
