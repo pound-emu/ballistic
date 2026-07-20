@@ -242,3 +242,31 @@ TEST_F(JitDebug, ArenaCapacityOverflowWithLoop_Failure)
     EXPECT_EQ(context.entry_count, 8192);
     bal_jit_debug_destroy(&allocator, &context);
 }
+
+TEST_F(JitDebug, InstructionCountMin_Success)
+{
+    uint8_t                         dummy_block[64];
+    const bal_jit_instruction_map_t mapping = { 0, 0 };
+    bal_error_t                     error   = bal_jit_debug_init(&allocator, &context, logger);
+    ASSERT_EQ(error, BAL_SUCCESS);
+
+    error
+        = bal_jit_debug_add_block(&context, dummy_block, sizeof(dummy_block), 0x1000, &mapping, 1);
+    EXPECT_EQ(error, BAL_SUCCESS);
+    EXPECT_EQ(context.entry_count, 1);
+    bal_jit_debug_destroy(&allocator, &context);
+}
+
+TEST_F(JitDebug, InstructionCountMax_Failure)
+{
+    uint8_t                         dummy_block[64];
+    const bal_jit_instruction_map_t mapping = { 0, 0 };
+    bal_error_t                     error   = bal_jit_debug_init(&allocator, &context, logger);
+    ASSERT_EQ(error, BAL_SUCCESS);
+
+    error = bal_jit_debug_add_block(
+        &context, dummy_block, sizeof(dummy_block), 0x1000, &mapping, UINT32_MAX);
+    EXPECT_EQ(error, BAL_ERROR_BUFFER_OVERFLOW);
+    EXPECT_EQ(context.entry_count, 0);
+    bal_jit_debug_destroy(&allocator, &context);
+}
