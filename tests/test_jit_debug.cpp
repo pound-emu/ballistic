@@ -293,3 +293,27 @@ TEST_F(JitDebug, JitBufferRIPBoundaries_Success)
 
     bal_jit_debug_destroy(&allocator, &context);
 }
+
+TEST_F(JitDebug, NullPointer_Failure)
+{
+    EXPECT_EQ(bal_jit_debug_init(nullptr, &context, logger), BAL_ERROR_INVALID_ARGUMENT);
+    EXPECT_EQ(bal_jit_debug_init(&allocator, nullptr, logger), BAL_ERROR_INVALID_ARGUMENT);
+    ASSERT_EQ(bal_jit_debug_init(&allocator, &context, logger), BAL_SUCCESS);
+
+    const bal_jit_instruction_map_t map      = { 0, 0 };
+    const auto                      dummy_rx = reinterpret_cast<void *>(0x1000);
+
+    EXPECT_EQ(bal_jit_debug_add_block(nullptr, dummy_rx, 64, 0x2000, &map, 1),
+              BAL_ERROR_INVALID_ARGUMENT);
+    EXPECT_EQ(bal_jit_debug_add_block(&context, nullptr, 64, 0x2000, &map, 1),
+              BAL_ERROR_INVALID_ARGUMENT);
+    EXPECT_EQ(bal_jit_debug_add_block(&context, dummy_rx, 64, 0x2000, nullptr, 1),
+              BAL_ERROR_INVALID_ARGUMENT);
+    EXPECT_EQ(bal_jit_debug_register_signal_handler(nullptr, dummy_rx, 4096),
+              BAL_ERROR_INVALID_ARGUMENT);
+    EXPECT_EQ(bal_jit_debug_register_signal_handler(&context, nullptr, 4096),
+              BAL_ERROR_INVALID_ARGUMENT);
+    bal_jit_debug_destroy(nullptr, &context);
+    bal_jit_debug_destroy(&allocator, nullptr);
+    bal_jit_debug_destroy(&allocator, &context);
+}
