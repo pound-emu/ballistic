@@ -13,6 +13,8 @@ bal_error_to_string(const bal_error_t error)
             return "failed to allocate memory";
         case BAL_ERROR_STRUCT_CORRUPTED:
             return "struct integrity check failed";
+        case BAL_ERROR_BUFFER_OVERFLOW:
+            return "buffer overflow";
 
         // --- Memory & Translation ---
         case BAL_ERROR_MEMORY_ALIGNMENT:

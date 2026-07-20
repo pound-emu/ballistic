@@ -21,6 +21,7 @@ extern "C"
         BAL_ERROR_INVALID_ARGUMENT  = -1,
         BAL_ERROR_ALLOCATION_FAILED = -2,
         BAL_ERROR_STRUCT_CORRUPTED  = -3,
+        BAL_ERROR_BUFFER_OVERFLOW   = -4,
 
         // Memory and Translation Errors
 
