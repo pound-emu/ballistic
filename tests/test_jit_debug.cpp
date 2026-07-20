@@ -317,3 +317,14 @@ TEST_F(JitDebug, NullPointer_Failure)
     bal_jit_debug_destroy(&allocator, nullptr);
     bal_jit_debug_destroy(&allocator, &context);
 }
+
+TEST_F(JitDebug, InitOOM_Failure)
+{
+    bal_allocator_t oom_allocator = allocator;
+    oom_allocator.allocate
+        = [](bal_allocator_handle_t, size_t, size_t) -> void * { return nullptr; };
+
+    EXPECT_EQ(bal_jit_debug_init(&oom_allocator, &context, logger), BAL_ERROR_ALLOCATION_FAILED);
+    EXPECT_EQ(context.entries, nullptr);
+    EXPECT_EQ(context.metadata_arena, nullptr);
+}
