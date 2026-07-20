@@ -217,7 +217,7 @@ TEST_F(JitDebug, ArenaCapacityOverflow_Failure)
     error = bal_jit_debug_add_block(
         &context, dummy_block, sizeof(dummy_block), 0x1000, mappings.data(), instruction_count);
 
-    EXPECT_EQ(error, BAL_ERROR_CAPACITY_TOO_BIG);
+    EXPECT_EQ(error, BAL_ERROR_BUFFER_OVERFLOW);
     EXPECT_EQ(context.arena_offset, old_offset);
     bal_jit_debug_destroy(&allocator, &context);
 }
@@ -238,7 +238,7 @@ TEST_F(JitDebug, ArenaCapacityOverflowWithLoop_Failure)
     error = bal_jit_debug_add_block(
         &context, dummy_block, sizeof(dummy_block), 0x1000 + 8192 * 4, &mapping, 1);
 
-    EXPECT_EQ(error, BAL_ERROR_CAPACITY_TOO_BIG);
+    EXPECT_EQ(error, BAL_ERROR_BUFFER_OVERFLOW);
     EXPECT_EQ(context.entry_count, 8192);
     bal_jit_debug_destroy(&allocator, &context);
 }

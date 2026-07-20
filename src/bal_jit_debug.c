@@ -139,8 +139,8 @@ bal_jit_debug_add_block(bal_jit_debug_context_t *BAL_RESTRICT         context,
     {
         BAL_LOG_WARN(&context->logger,
                      "Aborting function: JIT debug entries full, block tracking skipped.");
-        context->status = BAL_ERROR_CAPACITY_TOO_BIG;
-        return BAL_ERROR_CAPACITY_TOO_BIG;
+        context->status = BAL_ERROR_BUFFER_OVERFLOW;
+        return BAL_ERROR_BUFFER_OVERFLOW;
     }
 
     BAL_CHECK_MAGIC(context,
@@ -156,8 +156,8 @@ bal_jit_debug_add_block(bal_jit_debug_context_t *BAL_RESTRICT         context,
     {
         BAL_LOG_WARN(&context->logger,
                      "Aborting function: JIT debug arena full, block tracking skipped.");
-        context->status = BAL_ERROR_CAPACITY_TOO_BIG;
-        return BAL_ERROR_CAPACITY_TOO_BIG;
+        context->status = BAL_ERROR_BUFFER_OVERFLOW;
+        return BAL_ERROR_BUFFER_OVERFLOW;
     }
 
     uint8_t *arena_cursor = context->metadata_arena + context->arena_offset;
