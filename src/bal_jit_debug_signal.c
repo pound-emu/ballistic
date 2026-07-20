@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if BAL_PLATFORM_LINUX
+#if BAL_PLATFORM_POSIX
 
 #define __USE_POSIX199309
 #define __USE_POSIX
@@ -135,6 +135,12 @@ bal_jit_debug_unregister_signal_handler(bal_jit_debug_context_t *BAL_RESTRICT co
 bool
 handle_jit_fault(const uint64_t rip, const uint64_t rbp)
 {
+    /// bal_cpu_t is 64-byte aligned, so RBP must be aswell.
+    if ((rbp & 63) != 0)
+    {
+        return false;
+    }
+
     const bal_cpu_t *BAL_RESTRICT cpu = (bal_cpu_t *)rbp;
 
     if (NULL == cpu || NULL == cpu->debug_context)
