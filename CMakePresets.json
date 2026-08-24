@@ -61,6 +61,48 @@
       }
     },
     {
+      "name": "debug-macOS",
+      "displayName": "Debug macOS",
+      "inherits": "base",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_C_FLAGS": "",
+        "CMAKE_CXX_FLAGS": "",
+        "BALLISTIC_BUILD_DASHBOARD": "ON",
+        "BALLISTIC_BUILD_TESTS": "ON",
+        "BALLISTIC_COMPILER_FLAGS": "-Wall -Wextra -Werror -Wconversion -Wsign-conversion -Wshadow -Wstrict-prototypes -fstack-protector-strong -Wpadded -Wvla -fstrict-aliasing -fno-omit-frame-pointer -ftrivial-auto-var-init=zero -gsplit-dwarf -g",
+        "BALLISTIC_LINKER_FLAGS": "",
+        "BALLISTIC_SANITIZERS": "-fsanitize=address,undefined",
+        "BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION": "OFF"
+      }
+    },
+    {
+      "name": "release-macOS",
+      "displayName": "Release macOS",
+      "inherits": "base",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_C_FLAGS": "-ffile-prefix-map=${sourceDir}=. -O3",
+        "CMAKE_CXX_FLAGS": "-ffile-prefix-map=${sourceDir}=. -O3",
+        "BALLISTIC_BUILD_DASHBOARD": "OFF",
+        "BALLISTIC_BUILD_TESTS": "OFF",
+        "BALLISTIC_COMPILER_FLAGS": "-fstrict-aliasing -fno-omit-frame-pointer -ffunction-sections -fdata-sections -flto=full",
+        "BALLISTIC_LINKER_FLAGS": "-Wl,--gc-sections",
+        "BALLISTIC_SANITIZERS": "",
+        "BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION": "ON"
+      }
+    },
+    {
       "name": "debug-windows",
       "displayName": "Debug Windows",
       "inherits": "base",
@@ -133,6 +175,14 @@
     {
       "name": "release-windows",
       "configurePreset": "release-windows"
+    },
+    {
+      "name": "debug-macOS",
+      "configurePreset": "debug-macOS"
+    },
+    {
+      "name": "release-macOS",
+      "configurePreset": "release-macOS"
     }
   ],
   "testPresets": [
@@ -151,6 +201,18 @@
     {
       "name": "debug-windows",
       "configurePreset": "debug-windows",
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "verbose"
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "jobs": 0
+      }
+    },
+    {
+      "name": "debug-macOS",
+      "configurePreset": "debug-macOS",
       "output": {
         "outputOnFailure": true,
         "verbosity": "verbose"
