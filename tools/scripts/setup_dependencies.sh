@@ -9,7 +9,7 @@ case "$PACKAGE_MANAGER" in
         sudo apt-get install -y --no-install-recommends libclang-18-dev ccache ninja-build libwayland-dev libxkbcommon-dev xorg-dev mold
         ;;
     brew)
-        brew install ccache ninja mold
+        brew install ccache ninja
         ;;
     *)
         echo "Unsupported package manager: $PACKAGE_MANAGER" >&2
