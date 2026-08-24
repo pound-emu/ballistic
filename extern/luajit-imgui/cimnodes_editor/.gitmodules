@@ -1,4 +1,0 @@
-[submodule "imgui-node-editor"]
-	path = imgui-node-editor
-	url = https://github.com/sonoro1234/imgui-node-editor
-	branch = ImVec2operator

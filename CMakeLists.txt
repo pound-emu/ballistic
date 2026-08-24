@@ -229,25 +229,6 @@ add_sanitizers(${DECODER_CLI_NAME})
 #    endif ()
 #endif ()
 
-if (NOT BALLISTIC_BUILD_DASHBOARD)
-    message(STATUS "[Ballistic] GUI Dashboard is DISABLED.")
-else ()
-    message(STATUS "[Ballistic] Setting up environment for GUI Dashboard...")
-    message(STATUS "[Ballistic] Configuring GLFW...")
-    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-    add_external_subdirectory(extern/glfw)
-
-    message(STATUS "[Ballistic] Configuring C Bindings for ImGui...")
-    set(IMPL_SDL OFF CACHE BOOL "" FORCE)
-    set(IMPL_SDL3 OFF CACHE BOOL "" FORCE)
-    add_external_subdirectory(extern/luajit-imgui)
-
-    message(STATUS "[Ballistic] Configuring GUI Dashboard...")
-    add_external_subdirectory(tools/dashboard)
-endif ()
-
 # -----------------------------------------------------------------------------
 # Compile Tests
 # -----------------------------------------------------------------------------

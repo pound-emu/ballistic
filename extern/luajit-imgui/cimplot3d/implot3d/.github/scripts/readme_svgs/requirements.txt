@@ -1,2 +1,0 @@
-requests==2.33.0
-pillow==12.1.1

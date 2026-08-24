@@ -1,3 +1,0 @@
-[submodule "libs/imgui"]
-	path = libs/imgui
-	url = ../imgui
