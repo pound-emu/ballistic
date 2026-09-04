@@ -125,4 +125,41 @@ bal_fuzzer_state_capture_bal_cpu(bal_fuzzer_cpu_snapshot_t *snapshot, const bal_
     snapshot->instruction_count = cpu->instruction_count;
 }
 
+void
+bal_fuzzer_state_capture_unicorn_cpu(bal_fuzzer_cpu_snapshot_t *snapshot, uc_engine *cpu)
+{
+    (void)memset(snapshot, 0, sizeof(*snapshot));
+    int register_ids[32] = {};
+
+    for (uint32_t arm_register = 0U; arm_register < 29U; ++arm_register)
+    {
+        register_ids[arm_register] = UC_ARM64_REG_X0 + (int)arm_register;
+    }
+
+    // Unicorn's ARM register enum is NOT contiguous for X0-X31. Why???
+    register_ids[29] = UC_ARM64_REG_X29;
+    register_ids[30] = UC_ARM64_REG_X30;
+    register_ids[31] = UC_ARM64_REG_XZR;
+
+    uint64_t *BAL_RESTRICT register_cursor     = snapshot->x;
+    void                  *register_values[32] = {};
+
+    for (uint32_t arm_register = 0U; arm_register < 32U; ++arm_register)
+    {
+        register_values[arm_register] = register_cursor + arm_register;
+    }
+
+    (void)uc_reg_read_batch(cpu, register_ids, register_values, 32U);
+    uint64_t pc = 0U;
+    (void)uc_reg_read(cpu, UC_ARM64_REG_PC, &pc);
+    snapshot->pc = pc;
+
+    uint32_t nzcv = 0U;
+    (void)uc_reg_read(cpu, UC_ARM64_REG_NZCV, &nzcv);
+    snapshot->flag_n = (uint8_t)((nzcv >> 31U) & 1U);
+    snapshot->flag_z = (uint8_t)((nzcv >> 30U) & 1U);
+    snapshot->flag_c = (uint8_t)((nzcv >> 29U) & 1U);
+    snapshot->flag_v = (uint8_t)((nzcv >> 28U) & 1U);
+}
+
 /*** end of file ***/
