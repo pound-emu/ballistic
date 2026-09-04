@@ -1,8 +1,8 @@
 #include "bal_fuzzer_ipc.h"
 #include "bal_fuzzer_state.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int
 main(const int argc, const char **argv)
@@ -15,17 +15,22 @@ main(const int argc, const char **argv)
 
     bal_logger_init_default();
 
-    // The test is hardcoded for now:
-    //
-    // MOVZ X1, #5  => 0xD28000A1
-    // ADD  X0, X1, #37 => 0x91009420
-    bal_fuzzer_input_t input = {};
-    input.message_id         = 1U;
-    input.instruction_count  = 2U;
-
-    input.instructions[0]  = 0xD28000A1U;
-    input.instructions[1]  = 0x91009420U;
-    input.initial_state.pc = 0U;
+    bal_fuzzer_input_t input       = {};
+    input.message_id               = 1U;
+    const uint32_t instructions[9] = {
+        0xD2800C81U, // MOVZ X1, #100
+        0xD2801902U, // MOVZ X2, #200
+        0x8B020023U, // ADD  X3, X1, X2
+        0xD2800644U, // MOVZ X4, #50
+        0xCB040065U, // SUB  X5, X3, X4
+        0xD2801FE6U, // MOVZ X6, #0xFF
+        0x8A0600A7U, // AND  X7, X5, X6
+        0x910014E0U, // ADD  X0, X7, #5
+        0xF103FC1FU, // CMP  X0, #255
+    };
+    (void)memcpy(input.instructions, instructions, sizeof(instructions));
+    input.instruction_count = 9U;
+    input.initial_state.pc  = 0U;
 
     BAL_LOG_INFO(&bal_thread_logger, "Running Test...");
     const char *BAL_RESTRICT   ballistic_worker_path = argv[1];
