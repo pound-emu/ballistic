@@ -843,8 +843,8 @@ translate_add_sub_reg(bal_tier1_compiler_t *BAL_RESTRICT                     com
     const bal_decoder_operand_t *BAL_RESTRICT operand_cursor = metadata->operands;
     const uint8_t  rd           = (uint8_t)extract_operand_value(instruction, &operand_cursor[0]);
     const uint8_t  rn           = (uint8_t)extract_operand_value(instruction, &operand_cursor[1]);
-    const uint8_t  rm           = (uint8_t)extract_operand_value(instruction, &operand_cursor[2]);
-    const uint32_t shift_amount = extract_operand_value(instruction, &operand_cursor[3]);
+    const uint32_t shift_amount = extract_operand_value(instruction, &operand_cursor[2]);
+    const uint8_t  rm           = (uint8_t)extract_operand_value(instruction, &operand_cursor[3]);
 
     if (BAL_UNLIKELY(shift_amount != 0))
     {
