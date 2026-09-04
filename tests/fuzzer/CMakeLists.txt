@@ -11,7 +11,7 @@ add_strict_compiler_flags(bal_fuzzer_worker_ballistic)
 add_sanitizers(bal_fuzzer_worker_ballistic)
 
 add_executable(bal_fuzzer_worker_unicorn workers/unicorn/main.c)
-target_link_libraries(bal_fuzzer_worker_unicorn PRIVATE BallisticTestFuzzerCore)
+target_link_libraries(bal_fuzzer_worker_unicorn PRIVATE BallisticTestFuzzerCore Ballistic)
 add_strict_compiler_flags(bal_fuzzer_worker_unicorn)
 add_sanitizers(bal_fuzzer_worker_unicorn)
 
