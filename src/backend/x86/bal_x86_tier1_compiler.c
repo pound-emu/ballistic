@@ -24,7 +24,8 @@
 //
 // Note that R11 was intentionally excluded from this. See [`BAL_X86_REGISTER_DISCARD_RESULT`].
 static const bal_x86_register_t SCRATCH_REGISTERS[]
-    = { BAL_X86_RAX, BAL_X86_RCX, BAL_X86_RDX, BAL_X86_R8, BAL_X86_R9, BAL_X86_R10 };
+    = { BAL_X86_RAX, BAL_X86_RCX, BAL_X86_RDX, BAL_X86_R8, BAL_X86_R9,
+        BAL_X86_R10, BAL_X86_R12, BAL_X86_R14, BAL_X86_R15 };
 
 #define SCRATCH_REGISTERS_SIZE (sizeof(SCRATCH_REGISTERS) / sizeof(SCRATCH_REGISTERS[0]))
 
@@ -36,6 +37,8 @@ static void reset_register_allocator(bal_tier1_compiler_t *compiler);
 static bal_x86_register_t allocate_x86_register(bal_tier1_compiler_t *compiler,
                                                 uint8_t               arm_register,
                                                 bool                  skip_load_instruction);
+
+static void evict_x86_register(bal_tier1_compiler_t *compiler, bal_x86_register_t x86_register);
 
 static void flush_dirty_registers(bal_tier1_compiler_t *compiler);
 
@@ -204,6 +207,10 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
     // Setup block.
     //
     bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_RBP);
+    bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_R12);
+    bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_R13);
+    bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_R14);
+    bal_x86_emit_push_r64(&compiler->assembler, BAL_X86_R15);
     bal_x86_emit_mov_r64_r64(&compiler->assembler, BAL_X86_RBP, BAL_X86_ABI_ARG1);
 
     bool   is_block_terminated   = false;
@@ -514,15 +521,16 @@ reset_register_allocator(bal_tier1_compiler_t *compiler)
     }
 
     BAL_LOG_TRACE(&bal_thread_logger, "Resetting Register Allocator");
-    compiler->is_dirty = 0;
-    memset(compiler->arm_to_x86, -1, sizeof(compiler->arm_to_x86));
-    memset(compiler->x86_to_arm, -1, sizeof(compiler->x86_to_arm));
+    compiler->is_dirty        = 0U;
+    compiler->eviction_cursor = 0U;
+    (void)memset(compiler->arm_to_x86, -1, sizeof(compiler->arm_to_x86));
+    (void)memset(compiler->x86_to_arm, -1, sizeof(compiler->x86_to_arm));
 }
 
-bal_x86_register_t
-allocate_x86_register(bal_tier1_compiler_t *compiler,
-                      uint8_t               arm_register,
-                      const bool            skip_load_instruction)
+static bal_x86_register_t
+allocate_x86_register(bal_tier1_compiler_t *BAL_RESTRICT compiler,
+                      uint8_t                            arm_register,
+                      const bool                         skip_load_instruction)
 {
     if (BAL_UNLIKELY(NULL == compiler))
     {
@@ -530,33 +538,115 @@ allocate_x86_register(bal_tier1_compiler_t *compiler,
         return BAL_X86_INVALID;
     }
 
+    if (BAL_UNLIKELY(compiler->status != BAL_SUCCESS))
+    {
+        BAL_LOG_ERROR(&bal_thread_logger, "Aborting function, compiler->status != BAL_SUCCESS.");
+        return BAL_X86_INVALID;
+    }
+
+    if (BAL_UNLIKELY(compiler->assembler.status != BAL_SUCCESS))
+    {
+        BAL_LOG_ERROR(&bal_thread_logger, "Aborting function: assembler status != BAL_SUCCESS.");
+        return BAL_X86_INVALID;
+    }
+
+    if (BAL_UNLIKELY(arm_register >= 32U))
+    {
+        BAL_LOG_ERROR(&bal_thread_logger,
+                      "Aborting function: ARM register index %u is out of "
+                      "range (0-31).",
+                      arm_register);
+        compiler->status = BAL_ERROR_INVALID_ARGUMENT;
+        return BAL_X86_INVALID;
+    }
+
     if (compiler->arm_to_x86[arm_register] != -1)
     {
+        const int8_t cached_x86_register = compiler->arm_to_x86[arm_register];
+
+        if (BAL_UNLIKELY(cached_x86_register < 0 || cached_x86_register >= (int8_t)BAL_X86_R15))
+        {
+            BAL_LOG_ERROR(&bal_thread_logger,
+                          "RegAlloc: corrupted mapping ARM X%u -> x86 r%d. "
+                          "Valid range is 0-r%d. Resetting X%u.",
+                          arm_register,
+                          cached_x86_register,
+                          (int)BAL_X86_R15,
+                          arm_register);
+            compiler->arm_to_x86[arm_register] = -1;
+            compiler->status                   = BAL_ERROR_REGISTER_ALLOCATOR_CORRUPTED;
+            return BAL_X86_INVALID;
+        }
+
+        if (BAL_UNLIKELY(compiler->x86_to_arm[cached_x86_register] != (int8_t)arm_register))
+        {
+            BAL_LOG_ERROR(&bal_thread_logger,
+                          "RegAlloc: reverse x86 to ARM mapping inconsistency ARM X%u -> x86 r%d,"
+                          " resetting both X%u and r%d",
+                          arm_register,
+                          cached_x86_register);
+            compiler->arm_to_x86[arm_register]        = -1;
+            compiler->x86_to_arm[cached_x86_register] = -1;
+            compiler->status                          = BAL_ERROR_REGISTER_ALLOCATOR_CORRUPTED;
+            return BAL_X86_INVALID;
+        }
+
         BAL_LOG_DEBUG(&bal_thread_logger,
                       "RegAlloc: Hit - ARM X%u is already in x86 r%d",
                       arm_register,
-                      compiler->arm_to_x86[arm_register]);
-        const int8_t x86_register = compiler->arm_to_x86[arm_register];
-        return x86_register;
+                      cached_x86_register);
+        return (bal_x86_register_t)cached_x86_register;
     }
 
-    bal_x86_register_t free_register       = BAL_X86_RAX;
-    bool               free_register_found = false;
+    bal_x86_register_t                     free_register           = BAL_X86_INVALID;
+    int8_t *BAL_RESTRICT                   x86_to_arm_cursor       = compiler->x86_to_arm;
+    const bal_x86_register_t *BAL_RESTRICT scratch_register_cursor = SCRATCH_REGISTERS;
 
-    for (size_t i = 0; i < SCRATCH_REGISTERS_SIZE; ++i)
+    for (size_t i = 0U; i < SCRATCH_REGISTERS_SIZE; ++i)
     {
-        if (-1 == compiler->x86_to_arm[SCRATCH_REGISTERS[i]])
+        if (BAL_UNLIKELY(*scratch_register_cursor < 0
+                         || *scratch_register_cursor > (int8_t)BAL_X86_R15))
         {
-            free_register       = SCRATCH_REGISTERS[i];
-            free_register_found = true;
+            BAL_LOG_ERROR(&bal_thread_logger,
+                          "RegAlloc: scratch pool contains invalid entry %d "
+                          "at index %zu",
+                          *scratch_register_cursor,
+                          i);
+            compiler->status = BAL_ERROR_REGISTER_ALLOCATOR_CORRUPTED;
+            return BAL_X86_INVALID;
+        }
+
+        if (-1 == x86_to_arm_cursor[*scratch_register_cursor])
+        {
+            free_register = *scratch_register_cursor;
             break;
         }
+
+        ++scratch_register_cursor;
     }
 
-    if (false == free_register_found)
+    // Evict a clean register.
+    if (BAL_X86_INVALID == free_register)
     {
-        // TODO: add spilling
-        BAL_LOG_ERROR(&bal_thread_logger, "Greedy Allocator ran out of scratch registers!");
+        for (size_t i = 0U; i < SCRATCH_REGISTERS_SIZE; ++i)
+        {
+            const int8_t arm_victim_register = x86_to_arm_cursor[i];
+
+            if (arm_victim_register != -1 && !(compiler->is_dirty & (1U << arm_victim_register)))
+            {
+                free_register = (bal_x86_register_t)i;
+            }
+        }
+
+        // All registers are dirty, force an eviction.
+        if (BAL_X86_INVALID == free_register)
+        {
+            const uint8_t slot_index = compiler->eviction_cursor % SCRATCH_REGISTERS_SIZE;
+            free_register            = SCRATCH_REGISTERS[slot_index];
+            ++compiler->eviction_cursor;
+        }
+
+        evict_x86_register(compiler, free_register);
     }
 
     compiler->arm_to_x86[arm_register]  = (int8_t)free_register;
@@ -585,6 +675,36 @@ allocate_x86_register(bal_tier1_compiler_t *compiler,
                       arm_register);
     }
     return free_register;
+}
+
+static void
+evict_x86_register(bal_tier1_compiler_t *compiler, const bal_x86_register_t x86_register)
+{
+    const int8_t arm_victim = compiler->x86_to_arm[x86_register];
+
+    if (BAL_UNLIKELY(-1 == arm_victim))
+    {
+        return;
+    }
+
+    const uint32_t dirty_bit = 1U << arm_victim;
+
+    if (compiler->is_dirty & dirty_bit)
+    {
+        const uint64_t        offset      = offsetof(bal_cpu_t, x[arm_victim]);
+        const bal_x86_macro_t store_macro = {
+            .opcode              = BAL_X86_MACRO_STORE,
+            .source              = x86_register,
+            .immediate_or_offset = offset,
+        };
+        bal_sliding_window_push(&compiler->window, store_macro);
+        compiler->is_dirty &= ~dirty_bit;
+    }
+
+    compiler->arm_to_x86[arm_victim]   = -1;
+    compiler->x86_to_arm[x86_register] = -1;
+    BAL_LOG_DEBUG(
+        &bal_thread_logger, "RegAlloc: evicted ARM X%d from x86 r%d", arm_victim, x86_register);
 }
 
 void
@@ -656,7 +776,11 @@ terminate_block(bal_tier1_compiler_t     *compiler,
             &compiler->assembler, BAL_X86_RAX, offsetof(bal_cpu_t, pc));
     }
 
-    BAL_LOG_TRACE(&bal_thread_logger, "Restoring host frame pointer and emitting RET");
+    BAL_LOG_TRACE(&bal_thread_logger, "Restoring callee-saved registers and emitting RET");
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R15);
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R14);
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R13);
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R12);
     bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_RBP);
     bal_x86_emit_ret(&compiler->assembler);
 }
@@ -687,10 +811,11 @@ terminate_block_conditional(bal_tier1_compiler_t     *compiler,
     // STORE macro: 7 bytes (REX + Opcode + ModRM + Disp32)
     // MOV RAX, IMM64: 5 bytes if <= 32-bit, 10 bytes if > 32-bit
     // MOV [RBP+PC], RAX: 7 bytes (REX + Opcode + ModRM + Disp32)
+    // POP R15-R12: 8 bytes (4 registers x 2 bytes [REX.B + Opcode]
     // POP RBP: 1 byte
     // RET: 1 byte
     const size_t mov_fallthrough_size = (fallthrough_pc <= 0xFFFFFFFFULL) ? 5 : 10;
-    const size_t epilogue_size        = (dirty_count * 7) + mov_fallthrough_size + 7 + 1 + 1;
+    const size_t epilogue_size        = (dirty_count * 7) + mov_fallthrough_size + 7 + 8 + 1 + 1;
 
     bal_x86_assembler_t *BAL_RESTRICT assembler   = &compiler->assembler;
     const int32_t                     jump_offset = (int32_t)epilogue_size;
@@ -702,9 +827,12 @@ terminate_block_conditional(bal_tier1_compiler_t     *compiler,
     // Emit fallthrough epilogue.
     bal_x86_emit_mov_r64_imm64(&compiler->assembler, BAL_X86_RAX, fallthrough_pc);
     bal_x86_emit_store_r64_rbp_offset(&compiler->assembler, BAL_X86_RAX, offsetof(bal_cpu_t, pc));
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R15);
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R14);
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R13);
+    bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_R12);
     bal_x86_emit_pop_r64(&compiler->assembler, BAL_X86_RBP);
     bal_x86_emit_ret(&compiler->assembler);
-
     flush_dirty_registers(compiler);
     bal_sliding_window_flush_all(&compiler->window);
 
