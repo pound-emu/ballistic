@@ -114,7 +114,7 @@ bal_fuzzer_state_compare(const bal_fuzzer_cpu_snapshot_t *expected,
 }
 
 void
-bal_fuzzer_state_capture(bal_fuzzer_cpu_snapshot_t *snapshot, const bal_cpu_t *cpu)
+bal_fuzzer_state_capture_bal_cpu(bal_fuzzer_cpu_snapshot_t *snapshot, const bal_cpu_t *cpu)
 {
     (void)memcpy(snapshot, cpu->x, sizeof(snapshot->x));
     snapshot->pc                = cpu->pc;
