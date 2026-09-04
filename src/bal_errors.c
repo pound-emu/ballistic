@@ -45,7 +45,8 @@ bal_error_to_string(const bal_error_t error)
             return "relative branch offset exceeds displacement limit";
         case BAL_ERROR_CAPACITY_TOO_BIG:
             return "buffer capacity is too large and would cause integer overflow";
-
+        case BAL_ERROR_REGISTER_ALLOCATOR_CORRUPTED:
+            return "register allocator mapping tables are corrupted or inconsistent";
         default:
             return "unknown error code";
     }
