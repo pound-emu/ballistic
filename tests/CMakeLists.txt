@@ -81,9 +81,24 @@ set_tests_properties(doctest PROPERTIES
         ENVIRONMENT "LD_LIBRARY_PATH=${LUA_LD_PATH};DYLD_LIBRARY_PATH=${LUA_DYLD_LIBRARY_PATH};DOCTEST_CC=${DOCTEST_CC};DOCTEST_CFLAGS=${DOCTEST_CFLAGS};DOCTEST_LTO=${DOCTEST_LTO};DOCTEST_LIB_DIR=${BALLISTIC_LIBRARIES_DIRECTORY}"
 )
 
-message(STATUS "[Ballistic-Tests] Configuring Fuzzer...")
 
 # TODO (GloriousTaco): Support IPC on Windows.
 if (UNIX)
+    set(UNICORN_ROOT_LINUX "${CMAKE_SOURCE_DIR}/extern/Unicorn/linux")
+
+    if (NOT EXISTS "${UNICORN_ROOT_LINUX}/lib/libunicorn.so")
+        message(FATAL_ERROR "[Ballistic-Tests] Unicorn shared library not found at ${UNICORN_ROOT_LINUX}/lib/libunicorn
+        .so.")
+    endif ()
+
+    add_library(Unicorn SHARED IMPORTED GLOBAL)
+    set_target_properties(Unicorn PROPERTIES
+            IMPORTED_LOCATION "${UNICORN_ROOT_LINUX}/lib/libunicorn.so"
+            IMPORTED_SONAME "libunicorn.so.2"
+            INTERFACE_INCLUDE_DIRECTORIES "${UNICORN_ROOT_LINUX}/include"
+    )
+
+    message(STATUS "[Ballistic-Tests] Found Unicorn at ${UNICORN_ROOT_LINUX}.")
+    message(STATUS "[Ballistic-Tests] Configuring Fuzzer...")
     add_subdirectory(fuzzer)
 endif ()

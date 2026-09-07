@@ -79,12 +79,20 @@ main(void)
 
         status = bal_engine_run_thread(&engine);
 
-        if (status != BAL_SUCCESS)
+        if (BAL_ERROR_UNKNOWN_INSTRUCTION == status)
+        {
+            response.status = BAL_FUZZER_WORKER_ERROR_UNKNOWN_INSTRUCTION;
+        }
+        else if (status != BAL_SUCCESS)
         {
             response.status = BAL_FUZZER_WORKER_ERROR_EXECUTION_FAILED;
         }
+        else
+        {
+            response.status = BAL_FUZZER_WORKER_OK;
+        }
 
-        bal_fuzzer_state_capture(&response.final_state, &cpu);
+        bal_fuzzer_state_capture_bal_cpu(&response.final_state, &cpu);
         bal_engine_destroy(&engine);
         (void)bal_flat_translation_interface_destroy(&allocator, &memory_interface);
 

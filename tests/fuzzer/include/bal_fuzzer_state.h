@@ -2,6 +2,7 @@
 #define BALLISTIC_BAL_FUZZER_STATE_H
 
 #include "bal_fuzzer_protocol.h"
+#include "unicorn/unicorn.h"
 #include <stdbool.h>
 
 #define BAL_FUZZER_MAX_DIVERGENCES 40U
@@ -48,8 +49,10 @@ bal_fuzzer_comparison_result_t bal_fuzzer_state_compare(
     const bal_fuzzer_cpu_snapshot_t *BAL_RESTRICT expected,
     const bal_fuzzer_cpu_snapshot_t *BAL_RESTRICT actual);
 
-void bal_fuzzer_state_capture(bal_fuzzer_cpu_snapshot_t *BAL_RESTRICT snapshot,
-                              const bal_cpu_t *BAL_RESTRICT           cpu);
+void bal_fuzzer_state_capture_bal_cpu(bal_fuzzer_cpu_snapshot_t *BAL_RESTRICT snapshot,
+                                      const bal_cpu_t *BAL_RESTRICT           cpu);
+void bal_fuzzer_state_capture_unicorn_cpu(bal_fuzzer_cpu_snapshot_t *BAL_RESTRICT snapshot,
+                                          uc_engine                              *cpu);
 
 #endif // BALLISTIC_BAL_FUZZER_STATE_H
 
