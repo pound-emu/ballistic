@@ -1237,24 +1237,14 @@ translate_and(bal_tier1_compiler_t *BAL_RESTRICT                     compiler,
     const uint8_t  rn           = (uint8_t)extract_operand_value(instruction, &operands[1]);
     const uint32_t shift_amount = extract_operand_value(instruction, &operands[2]);
     const uint8_t  rm           = (uint8_t)extract_operand_value(instruction, &operands[3]);
+    const uint8_t  shift_op     = (uint8_t)extract_operand_value(instruction, &operands[4]);
 
-    if (BAL_UNLIKELY('S' == metadata->name[3]))
+    // AND targeting the zero register don't alter the state
+    if (31 == rd && 'S' != metadata->name[3])
     {
-        BAL_LOG_ERROR(&bal_thread_logger,
-                      "Aborting function: Tier 1 does not support ANDS yet: %s",
-                      metadata->name);
-        compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
         return;
     }
 
-    if (BAL_UNLIKELY(shift_amount != 0))
-    {
-        BAL_LOG_ERROR(&bal_thread_logger,
-                      "Aborting function: Tier 1 does not support shift amounts != 0 yet: %s",
-                      metadata->name);
-        compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
-        return;
-    }
 
     const bool               skip_load_rn = false;
     const bal_x86_register_t x86_rn       = allocate_x86_register(compiler, rn, skip_load_rn);
@@ -1270,29 +1260,121 @@ translate_and(bal_tier1_compiler_t *BAL_RESTRICT                     compiler,
         return;
     }
 
+    bal_x86_macro_opcode_t shift_op_code = BAL_X86_MACRO_SHL_REGISTER_IMMEDIATE;
+    if (0 < shift_amount)
+    {
+        if (0b01 == shift_op)
+        {
+            shift_op_code = BAL_X86_MACRO_SHR_REGISTER_IMMEDIATE;
+        } else if (0b10 == shift_op)
+        {
+            shift_op_code = BAL_X86_MACRO_SAR_REGISTER_IMMEDIATE;
+        }
+        else if (0b11 == shift_op)
+        {
+            shift_op_code = BAL_X86_MACRO_ROR_REGISTER_IMMEDIATE;
+        }
+    }
+
     bal_x86_register_t x86_and_source = x86_rm;
 
     if (31 == rd)
     {
-        const bal_x86_macro_t mov_macro = {
-            .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
-            .destination         = x86_rd,
-            .immediate_or_offset = 0,
-        };
-        bal_sliding_window_push(&compiler->window, mov_macro);
+        if (0 < shift_amount)
+        {
+            x86_and_source = BAL_X86_REGISTER_DISCARD_RESULT;
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+                .source      = x86_rm,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+            const bal_x86_macro_t shift_macro = {
+                .opcode      = shift_op_code,
+                .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+                .immediate_or_offset = shift_amount
+            };
+            bal_sliding_window_push(&compiler->window, shift_macro);
+        }
+
+        const bal_x86_macro_t test_macro = {
+                    .opcode      = BAL_X86_MACRO_TEST_REGISTER_REGISTER,
+                    .destination = x86_rn,
+                    .source      = x86_and_source,
+                };
+        bal_sliding_window_push(&compiler->window, test_macro);
+        return;
     }
-    else if (x86_rd == x86_rm)
+
+    bool need_scratch_pad = false;
+
+    if (0 == shift_amount)
     {
+        if (x86_rd == x86_rm)
+        {
+            x86_and_source = x86_rn;
+        }
+        else if (x86_rd != x86_rn)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rn,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+    } else {
         x86_and_source = x86_rn;
+
+        if (x86_rd == x86_rm)
+        {
+            if (x86_rd != x86_rn )
+            {
+                const bal_x86_macro_t shift_macro = {
+                    .opcode      = shift_op_code,
+                    .destination = x86_rd,
+                    .immediate_or_offset = shift_amount
+                };
+                bal_sliding_window_push(&compiler->window, shift_macro);
+            } else
+            {
+                need_scratch_pad = true;
+            }
+        }
+        else if (x86_rd != x86_rn)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rm,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+            const bal_x86_macro_t shift_macro = {
+                .opcode      = shift_op_code,
+                .destination = x86_rd,
+                .immediate_or_offset = shift_amount
+            };
+            bal_sliding_window_push(&compiler->window, shift_macro);
+        } else
+        {
+            need_scratch_pad = true;
+        }
     }
-    else if (x86_rd != x86_rn)
-    {
+
+    if (need_scratch_pad) {
+        x86_and_source = BAL_X86_REGISTER_DISCARD_RESULT;
         const bal_x86_macro_t mov_macro = {
             .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
-            .destination = x86_rd,
-            .source      = x86_rn,
+            .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+            .source      = x86_rm,
         };
         bal_sliding_window_push(&compiler->window, mov_macro);
+        const bal_x86_macro_t shift_macro = {
+            .opcode      = shift_op_code,
+            .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+            .immediate_or_offset = shift_amount
+        };
+        bal_sliding_window_push(&compiler->window, shift_macro);
     }
 
     const bal_x86_macro_t and_macro = {
