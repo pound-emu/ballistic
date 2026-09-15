@@ -237,6 +237,7 @@ bal_default_protect_rx(bal_allocator_handle_t handle, bal_executable_buffer_t bu
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
+#include <errno.h>
 
 bal_executable_buffer_t
 bal_default_allocate_executable(bal_allocator_handle_t handle, size_t alignment, size_t size)
@@ -244,25 +245,47 @@ bal_default_allocate_executable(bal_allocator_handle_t handle, size_t alignment,
     (void)handle;
     (void)alignment;
 
-    if (0 == size)
+    const bal_executable_buffer_t invalid_buffer = { NULL, NULL };
+
+    if (0 == size || size > (size_t)LONG_MAX)
     {
-        return (bal_executable_buffer_t){ NULL, NULL };
+        return invalid_buffer;
     }
 
-    const bal_executable_buffer_t invalid_buffer = { NULL, NULL };
-    int fd = shm_open("/ballistic_jit_compiler_shm", O_RDWR | O_CREAT | O_EXCL, 0600);
+    const char *const shm_name = "/ballistic_jit_compiler_shm";
+    const int max_attempts = 2;
+    int fd = -1;
+
+    for (int attempt = 0; attempt < max_attempts; ++attempt)
+    {
+        fd = shm_open(shm_name, O_RDWR | O_CREAT | O_EXCL, 0600);
+
+        if (-1 != fd)
+        {
+            break;
+        }
+
+        if (EEXIST == errno)
+        {
+            BAL_LOG_ERROR(&bal_thread_logger,
+                                      "Stale shared memory object detected. Retrying shm_open "
+                                      "(Allocator: %p, Alignment: %zu, Size: %zu).",
+                                      (void*)handle,
+                                      alignment,
+                                      size);
+            shm_unlink(shm_name);
+            continue;
+        }
+
+        return invalid_buffer;
+    }
 
     if (-1 == fd)
     {
         return invalid_buffer;
     }
 
-    shm_unlink("/ballistic_jit_compiler_shm");
-
-    if (size > LONG_MAX)
-    {
-        return invalid_buffer;
-    }
+    shm_unlink(shm_name);
 
     if (ftruncate(fd, (off_t)size) != 0)
     {
@@ -276,14 +299,18 @@ bal_default_allocate_executable(bal_allocator_handle_t handle, size_t alignment,
     if (MAP_FAILED == rw_ptr)
     {
         munmap(rw_ptr, size);
+        close(fd);
         return invalid_buffer;
     }
 
     if (MAP_FAILED == rx_ptr)
     {
         munmap(rw_ptr, size);
+        close(fd);
         return invalid_buffer;
     }
+
+    close(fd);
 
     return (bal_executable_buffer_t){ rw_ptr, rx_ptr };
 }
