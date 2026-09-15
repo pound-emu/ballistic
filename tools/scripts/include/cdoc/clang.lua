@@ -318,27 +318,48 @@ function M.resource_directory(context)
             candidates[#candidates + 1] = string.format("/usr/lib/llvm-%d/lib/clang/%d/include", ver, ver)
             candidates[#candidates + 1] = string.format("/usr/local/lib/clang/%d/include", ver)
         end
+    elseif os_name == "Windows" then
+        local llvm_roots = {
+            "C:\\Program Files\\LLVM\\lib\\clang",
+            "C:\\Program Files (x86)\\LLVM\\lib\\clang",
+        }
+        local visual_studio_years = { "2022", "2019", "2017" }
+        local visual_studio_editions = { "Community", "Professional", "Enterprise", "BuildTools" }
+        local visual_studio_roots = {
+            "C:\\Program Files\\Microsoft Visual Studio",
+            "C:\\Program Files (x86)\\Microsoft Visual Studio",
+        }
+        for ver = 22, 10, -1 do
+            for _, root in ipairs(llvm_roots) do
+                candidates[#candidates + 1] = string.format("%s\\%d\\include",root, ver)
+            end
+
+            for _, root in ipairs(visual_studio_roots) do
+                for _, year in ipairs(visual_studio_years) do
+                    for _, edition in ipairs(visual_studio_editions) do
+                        local base = root .. "\\" .. year .. "\\" .. edition .. "\\VC\\Tools\\Llvm" .. "\\x86"
+                        candidates[#candidates + 1] = string.format("%s\\lib\\clang\\%d\\include",base, ver)
+                    end
+                end
+            end
+        end
+
     end
 
     for _, path in ipairs(candidates) do
-        local d = ffi.C.opendir(path)
+        local filepath = path
+        if os_name == "Windows" then
+            filepath = filepath .. "\\stdarg.h"
+        else
+            filepath = filepath .. "/stdarg.h"
+        end
 
-        if d ~= nil then
-            while true do
-                local ent = ffi.C.readdir(d)
+        local f = io.open(filepath, "r")
 
-                if ent == nil then
-                    break
-                end
-
-                if ffi.string(ent.d_name) == "stdarg.h" then
-                    ffi.C.closedir(d)
-                    log.info("Found clang resource dir: %s", path)
-                    return path
-                end
-            end
-
-            ffi.C.closedir(d)
+        if f then
+            f:close()
+            log.info("Found clang resource dir: %s", path)
+            return path
         end
     end
 
