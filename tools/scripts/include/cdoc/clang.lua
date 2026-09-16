@@ -209,7 +209,7 @@ local function get_common_paths()
         table.insert(paths, "C:\\Program Files\\LLVM\\bin\\libclang.dll")
         table.insert(paths, "C:\\Program Files (x86)\\LLVM\\bin\\libclang.dll")
 
-        local visual_studio_years = { "2022", "2019", "2017" }
+        local visual_studio_years = { "2022", "2019", "2017", "18"}
         local visual_studio_editions = { "Community", "Professional", "Enterprise", "BuildTools" }
         local visual_studio_roots = {
             "C:\\Program Files\\Microsoft Visual Studio",
@@ -219,7 +219,7 @@ local function get_common_paths()
         for _, root in ipairs(visual_studio_roots) do
             for _, year in ipairs(visual_studio_years) do
                 for _, edition in ipairs(visual_studio_editions) do
-                    local base = root .. "\\" .. year .. "\\" .. edition .. "\\VC\\Tools\\Llvm" .. "\\x86"
+                    local base = root .. "\\" .. year .. "\\" .. edition .. "\\VC\\Tools\\Llvm" .. "\\x64"
                     table.insert(paths, base .. "\\bin\\libclang.dll")
                 end
             end
