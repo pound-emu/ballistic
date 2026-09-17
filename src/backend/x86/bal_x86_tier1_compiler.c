@@ -81,9 +81,9 @@ static void translate_jump(const bal_tier1_compiler_t               *compiler,
                            const bal_guest_address_t                 guest_address,
                            bal_guest_address_t                      *target_pc);
 
-static void translate_and(bal_tier1_compiler_t                     *compiler,
-                          const bal_decoder_instruction_metadata_t *metadata,
-                          uint32_t                                  instruction);
+static void translate_and_reg(bal_tier1_compiler_t                     *compiler,
+                              const bal_decoder_instruction_metadata_t *metadata,
+                              uint32_t                                  instruction);
 
 static void translate_mov_immediate(bal_tier1_compiler_t                     *compiler,
                                     const bal_decoder_instruction_metadata_t *metadata,
@@ -449,7 +449,7 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
                     is_block_terminated = true;
                     break;
                 case OPCODE_AND:
-                    translate_and(compiler, metadata, instruction);
+                    translate_and_reg(compiler, metadata, instruction);
                     break;
                 default:
                     BAL_LOG_ERROR(&bal_thread_logger,
@@ -1293,9 +1293,9 @@ translate_jump(const bal_tier1_compiler_t *BAL_RESTRICT               compiler,
 }
 
 void
-translate_and(bal_tier1_compiler_t *BAL_RESTRICT                     compiler,
-              const bal_decoder_instruction_metadata_t *BAL_RESTRICT metadata,
-              const uint32_t                                         instruction)
+translate_and_reg(bal_tier1_compiler_t *BAL_RESTRICT                     compiler,
+                  const bal_decoder_instruction_metadata_t *BAL_RESTRICT metadata,
+                  const uint32_t                                         instruction)
 {
     const bal_decoder_operand_t *BAL_RESTRICT operands = metadata->operands;
     const uint8_t  rd           = (uint8_t)extract_operand_value(instruction, &operands[0]);
