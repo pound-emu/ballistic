@@ -77,15 +77,18 @@ local function main(...)
 
     log.info("Parsing %d header file(s)...", #headers)
     local parse_start = os.clock()
+    local clang_index = clang_context.library.clang_createIndex(0, 0)
 
     for _, header_path in ipairs(headers) do
-        local mod = parser.parse_header(clang_context, header_path, clang_arguments, project.registry)
+        local mod = parser.parse_header(clang_context, header_path, clang_arguments, project.registry, clang_index)
         if mod then
             table.insert(project.modules, mod)
         else
             log.warn("Failed to parse %s, skipping.", header_path)
         end
     end
+
+    clang_context.library.clang_disposeIndex(clang_index)
 
     local parse_duration = os.clock() - parse_start
     log.info("Finished parsing %d module(s) in %.3fs.", #project.modules, parse_duration)
