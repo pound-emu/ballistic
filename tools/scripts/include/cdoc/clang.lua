@@ -433,13 +433,40 @@ M.CHILD_VISIT = {
 }
 
 local function cstring_to_string(context, cx_string)
-    if context == nil or context.library == nil then
+    if context == nil then
+        log.info("Aborting function: context is NULL.")
         return ""
     end
-    local ptr = context.library.clang_getCString(cx_string)
-    local s = (ptr ~= nil) and ffi.string(ptr) or ""
+
+    if context.library == nil then
+        log.error("Aborting function: context.library is NULL.")
+        return ""
+    end
+
+    local ok, ptr = pcall(context.library.clang_getCString, cx_string)
+
+    if not ok then
+        log.error("Aborting function: clang_getCString() failed on CXString %s.", cx_string)
+        context.library.clang_disposeString(cx_string)
+        return ""
+    end
+
+    if ptr == nil then
+        log.error("Aborting function: clang_getCString returned a NULL pointer. CXString has no data.")
+        context.library.clang_disposeString(cx_string)
+        return ""
+    end
+
+    local read_ok, string = pcall(ffi.string, ptr)
+
+    if not read_ok then
+       log.error("Aborting function: failed to read CXString pointer %s.", tostring(string))
+       context.library.clang_disposeString(cx_string)
+       return ""
+    end
+
     context.library.clang_disposeString(cx_string)
-    return s
+    return string
 end
 
 function M.cursor_spelling(context, cursor)
