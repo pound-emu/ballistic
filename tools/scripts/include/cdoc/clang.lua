@@ -247,10 +247,13 @@ end
 local function load_library(path)
     if jit and jit.os == "Windows" then
         local handle = ffi.C.LoadLibraryA(path)
+
         if handle == nil then
+            log.error("Failed to load Clang library with LoadLibraryA().")
             return false, nil
         end
     end
+
     return pcall(ffi.load, path)
 end
 
@@ -515,16 +518,16 @@ function M.is_skippable(context, cursor)
     return not name or #name == 0 or name:find("%(unnamed") ~= nil
 end
 
-local loc_line_buf = ffi.new("unsigned[1]")
-local loc_col_buf = ffi.new("unsigned[1]")
+local cursor_line_number_buffer = ffi.new("unsigned[1]")
+local cursor_column_number_buffer = ffi.new("unsigned[1]")
 
 function M.cursor_location(context, cursor, filepath)
     local loc = context.library.clang_getCursorLocation(cursor)
-    context.library.clang_getSpellingLocation(loc, nil, loc_line_buf, loc_col_buf, nil)
+    context.library.clang_getSpellingLocation(loc, nil, cursor_line_number_buffer, cursor_column_number_buffer, nil)
     return {
         filepath = filepath or "",
-        line_number = tonumber(loc_line_buf[0]),
-        column_number = tonumber(loc_col_buf[0]),
+        line_number = tonumber(cursor_line_number_buffer[0]),
+        column_number = tonumber(cursor_column_number_buffer[0]),
     }
 end
 
