@@ -917,7 +917,8 @@ local function generate_files(instructions, arch, out_directory, header_name, so
     sf:write(string.format("const bal_decoder_instruction_metadata_t %s[BAL_DECODER_%s_INSTRUCTIONS_SIZE] = {\n", INSTRUCTIONS_ARRAY_NAME, arch:upper()))
 
     for i, inst in ipairs(instructions) do
-        local ir_opcode = derive_opcode(inst.mnemonic)
+        -- remove inst.opcode_override once SVE/SME instructions are supported in the compiler.
+        local ir_opcode = inst.opcode_override or derive_opcode(inst.mnemonic)
         local operands_str = ""
 
         for j = 1, 5 do
@@ -1048,6 +1049,17 @@ local function main(...)
     local clean_out_dir = out_directory:gsub("[/\\]+$", "")
     local full_header_path = clean_out_dir .. "/" .. header_name
     local full_source_path = clean_out_dir .. "/" .. source_name
+
+    -- Remove this code block once SVE/SME is supported in the compiler.
+    local filtered = {}
+    for _, inst in ipairs(all_instructions) do
+        local top_bits = bit.band(bit.rshift(inst.value, 25), 0xF)
+        if top_bits <= 0x3 then
+            inst.opcode_override = "OPCODE_TRAP"
+        end
+        table.insert(filtered, inst)
+    end
+    all_instructions = filtered
 
     generate_files(all_instructions, arch, clean_out_dir, header_name, source_name)
     format_generated_files(full_header_path, full_source_path)
