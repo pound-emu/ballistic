@@ -159,6 +159,18 @@ main(const int argc, const char **argv)
             continue;
         }
 
+        if (unicorn_response.status != BAL_FUZZER_WORKER_OK)
+        {
+            BAL_LOG_WARN(&bal_thread_logger,
+                         "Unicorn worker reported execution error for seed 0x%08X and "
+                         "returned status code %d, skipping...",
+                         *seed_cursor,
+                         unicorn_response.status);
+            ++seeds_skipped;
+            ++seed_cursor;
+            continue;
+        }
+
         const bal_fuzzer_comparison_result_t comparison_result = bal_fuzzer_state_compare(
             &unicorn_response.final_state, &ballistic_response.final_state);
 
