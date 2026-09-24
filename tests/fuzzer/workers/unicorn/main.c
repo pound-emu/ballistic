@@ -147,6 +147,10 @@ main(void)
         {
             response.status = BAL_FUZZER_WORKER_ERROR_COMPILE_FAILED;
         }
+        else
+        {
+            response.status = BAL_FUZZER_WORKER_OK;
+        }
 
         bal_fuzzer_state_capture_unicorn_cpu(&response.final_state, engine);
         (void)uc_mem_unmap(engine, GUEST_BASE_ADDRESS, GUEST_MEMORY_SIZE);
