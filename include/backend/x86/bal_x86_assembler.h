@@ -184,6 +184,22 @@ extern "C"
                                   bal_x86_register_t   destination,
                                   bal_x86_register_t   source);
 
+    /// Emits an add 32-bit register to another 32-bit register. The result is zero extended
+    /// into the full 64-bit register.
+    ///
+    /// Assembly equivalent: `add destination32, source32`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_add_r32_r32(bal_x86_assembler_t *assembler,
+                                  bal_x86_register_t   destination,
+                                  bal_x86_register_t   source);
+
     /// Emits a compare byte instruction between a memory location pointed to by RBP + offset and
     /// an 8-bit immediate.
     ///
