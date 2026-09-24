@@ -169,6 +169,22 @@ extern "C"
                                     bal_x86_register_t   destination,
                                     int32_t              immediate);
 
+    /// Emits an add 32-bit immediate value to a 32-bit register. The result is zero extended into
+    /// the full 64-bit register.
+    ///
+    /// Assembly equivalent: `add destination32, immediate`
+    ///
+    /// # Warning
+    ///
+    /// This function fails if:
+    ///
+    /// - `assembler` is `NULL`
+    /// - `assembler->status` != [`BAL_SUCCESS`]
+    /// - `assembler->buffer` is full.
+    void bal_x86_emit_add_r32_imm32(bal_x86_assembler_t *assembler,
+                                    bal_x86_register_t   destination,
+                                    int32_t              immediate);
+
     /// Emits an add 64-bit register to another 64-bit register.
     ///
     /// Assembly equivalent: `add destination, source`
