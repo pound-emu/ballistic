@@ -23,6 +23,14 @@ main(void)
         return 1;
     }
 
+    unicorn_error = uc_ctl_set_cpu_model(engine, UC_CPU_ARM64_MAX);
+
+    if (unicorn_error != UC_ERR_OK)
+    {
+        (void)fprintf(stderr, "uc_ctl_set_cpu_model failed: %s\n", uc_strerror(unicorn_error));
+        return 1;
+    }
+
     while (true)
     {
         if (bal_fuzzer_ipc_receive(STDIN_FILENO, &input, sizeof(input)) != BAL_SUCCESS)
@@ -142,7 +150,6 @@ main(void)
         }
 
         unicorn_error = uc_emu_start(engine, GUEST_BASE_ADDRESS, x30, 0U, input.instruction_count);
-
         if (unicorn_error != UC_ERR_OK)
         {
             response.status = BAL_FUZZER_WORKER_ERROR_COMPILE_FAILED;
