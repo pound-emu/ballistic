@@ -243,9 +243,9 @@ extern "C"
     /// - `assembler` is `NULL`
     /// - `assembler->status` != [`BAL_SUCCESS`]
     /// - `assembler->buffer` is full.
-    void bal_x86_emit_sub_r64_imm32(bal_x86_assembler_t     *assembler,
-                                    const bal_x86_register_t destination,
-                                    const int32_t            immediate);
+    void bal_x86_emit_sub_r64_imm32(bal_x86_assembler_t *assembler,
+                                    bal_x86_register_t   destination,
+                                    int32_t              immediate);
 
     /// Emits a subtract 64-bit register from another 64-bit register.
     ///
