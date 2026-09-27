@@ -924,37 +924,26 @@ translate_add_sub_imm(bal_tier1_compiler_t *BAL_RESTRICT                     com
             bal_sliding_window_push(&compiler->window, mov_macro);
         }
     }
+    const bool             is_32bit = BAL_OPERAND_TYPE_REGISTER_32 == operand_cursor[0].type;
+    bal_x86_macro_opcode_t arithmetic_opcode;
 
     if (true == is_sub)
     {
-        const bal_x86_macro_t sub_macro = {
-            .opcode              = BAL_X86_MACRO_SUB_REGISTER_IMMEDIATE,
-            .destination         = x86_rd,
-            .immediate_or_offset = value,
-        };
-        bal_sliding_window_push(&compiler->window, sub_macro);
+        arithmetic_opcode = true == is_32bit ? BAL_X86_MACRO_SUB_REGISTER_IMMEDIATE_32
+                                             : BAL_X86_MACRO_SUB_REGISTER_IMMEDIATE;
     }
     else
     {
-        const bal_x86_macro_t add_macro = {
-            .opcode              = BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE,
-            .destination         = x86_rd,
-            .immediate_or_offset = value,
-        };
-        bal_sliding_window_push(&compiler->window, add_macro);
+        arithmetic_opcode = true == is_32bit ? BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE_32
+                                             : BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE;
     }
 
-    const bool is_32bit = BAL_OPERAND_TYPE_REGISTER_32 == operand_cursor[0].type;
-
-    if (true == is_32bit)
-    {
-        const bal_x86_macro_t mask_macro = {
-            .opcode              = BAL_X86_MACRO_AND_REGISTER_IMMEDIATE,
-            .destination         = x86_rd,
-            .immediate_or_offset = 0xFFFFFFFFULL,
-        };
-        bal_sliding_window_push(&compiler->window, mask_macro);
-    }
+    const bal_x86_macro_t arithmetic_macro = {
+        .opcode              = arithmetic_opcode,
+        .destination         = x86_rd,
+        .immediate_or_offset = value,
+    };
+    bal_sliding_window_push(&compiler->window, arithmetic_macro);
 
     if (true == is_setting_flags)
     {
@@ -1094,36 +1083,26 @@ translate_add_sub_reg(bal_tier1_compiler_t *BAL_RESTRICT                     com
         }
     }
 
+    const bool             is_32bit = BAL_OPERAND_TYPE_REGISTER_32 == operand_cursor[0].type;
+    bal_x86_macro_opcode_t arithmetic_opcode;
+
     if (true == is_sub)
     {
-        const bal_x86_macro_t sub_macro = {
-            .opcode      = BAL_X86_MACRO_SUB_REGISTER_REGISTER,
-            .destination = x86_rd,
-            .source      = x86_rm,
-        };
-        bal_sliding_window_push(&compiler->window, sub_macro);
+        arithmetic_opcode = true == is_32bit ? BAL_X86_MACRO_SUB_REGISTER_REGISTER_32
+                                             : BAL_X86_MACRO_SUB_REGISTER_REGISTER;
     }
     else
     {
-        const bal_x86_macro_t add_macro = {
-            .opcode      = BAL_X86_MACRO_ADD_REGISTER_REGISTER,
-            .destination = x86_rd,
-            .source      = x86_rm,
-        };
-        bal_sliding_window_push(&compiler->window, add_macro);
+        arithmetic_opcode = true == is_32bit ? BAL_X86_MACRO_ADD_REGISTER_REGISTER_32
+                                             : BAL_X86_MACRO_ADD_REGISTER_REGISTER;
     }
 
-    const bool is_32bit = BAL_OPERAND_TYPE_REGISTER_32 == operand_cursor[0].type;
-
-    if (true == is_32bit)
-    {
-        const bal_x86_macro_t mask_macro = {
-            .opcode              = BAL_X86_MACRO_AND_REGISTER_IMMEDIATE,
-            .destination         = x86_rd,
-            .immediate_or_offset = 0xFFFFFFFFULL,
-        };
-        bal_sliding_window_push(&compiler->window, mask_macro);
-    }
+    const bal_x86_macro_t arithmetic_macro = {
+        .opcode      = arithmetic_opcode,
+        .destination = x86_rd,
+        .source      = x86_rm,
+    };
+    bal_sliding_window_push(&compiler->window, arithmetic_macro);
 
     if (true == is_setting_flags)
     {
