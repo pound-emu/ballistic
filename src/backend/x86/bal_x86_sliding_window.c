@@ -1,5 +1,6 @@
 #include "backend/x86/bal_x86_sliding_window.h"
 #include "backend/bal_cpu.h"
+#include "bal_assert.h"
 #include <string.h>
 
 #ifndef NDEBUG
@@ -226,6 +227,8 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
             bal_x86_emit_add_r32_r32(assembler, destination, source);
             break;
         case BAL_X86_MACRO_AND_REGISTER_IMMEDIATE:
+            BAL_ASSERT_MSG(destination != ASSEMBLER_TEMPORARY_REGISTER,
+                           "AND immediate destination collides with the scratch register.");
             bal_x86_emit_mov_r64_imm64(
                 assembler, ASSEMBLER_TEMPORARY_REGISTER, immediate_or_offset);
             bal_x86_emit_and_r64_r64(assembler, destination, ASSEMBLER_TEMPORARY_REGISTER);
@@ -279,6 +282,8 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
             bal_x86_emit_mov_r64_r64(assembler, destination, source);
             break;
         case BAL_X86_MACRO_OR_REGISTER_IMMEDIATE:
+            BAL_ASSERT_MSG(destination != ASSEMBLER_TEMPORARY_REGISTER,
+                           "AND immediate destination collides with the scratch register.");
             bal_x86_emit_mov_r64_imm64(
                 assembler, ASSEMBLER_TEMPORARY_REGISTER, immediate_or_offset);
             bal_x86_emit_or_r64_r64(assembler, destination, ASSEMBLER_TEMPORARY_REGISTER);
