@@ -155,6 +155,10 @@ local function derive_operand_type(text, hover)
         return "BAL_OPERAND_TYPE_REGISTER_32"
     end
 
+    if h:find("128%-bit") or h:find("simd") or h:find("vector") or h:find("scalable") then
+        return "BAL_OPERAND_TYPE_REGISTER_128"
+    end
+
     if h:find("64%-bit") and (h:find("general%-purpose") or h:find("register")) then
         return "BAL_OPERAND_TYPE_REGISTER_64"
     end
@@ -162,11 +166,6 @@ local function derive_operand_type(text, hover)
     if h:find("general%-purpose") or (h:find("register") and (h:find("source") or h:find("destination"))) then
         return "BAL_OPERAND_TYPE_REGISTER_64"
     end
-
--- TODO: Uncomment this when SIMD register allocation has been implemented.
---     if h:find("128%-bit") or h:find("simd") or h:find("vector") or h:find("scalable") then
---         return "BAL_OPERAND_TYPE_REGISTER_128"
---     end
 
     if h:find("condition") or h:find("cond") then
         return "BAL_OPERAND_TYPE_CONDITION"

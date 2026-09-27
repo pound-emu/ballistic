@@ -282,6 +282,16 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
                 break;
             }
 
+            if (BAL_OPERAND_TYPE_REGISTER_128 == metadata->operands[0].type)
+            {
+                BAL_LOG_DEBUG(&bal_thread_logger,
+                              "Aborting function: Unsupported SIMD instruction: %s",
+                              metadata->name);
+                is_block_terminated = true;
+                compiler->status    = BAL_ERROR_UNKNOWN_INSTRUCTION;
+                break;
+            }
+
             BAL_LOG_TRACE(&bal_thread_logger,
                           "[0X%016llX] %08x : %s",
                           (unsigned long long)guest_address,
@@ -449,6 +459,7 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
                     is_block_terminated = true;
                     break;
                 case OPCODE_AND:
+
                     translate_and_reg(compiler, metadata, instruction);
                     break;
                 default:
