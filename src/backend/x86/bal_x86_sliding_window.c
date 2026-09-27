@@ -216,8 +216,14 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
             // WARNING: The immediate is at most 24-bits.
             bal_x86_emit_add_r64_imm32(assembler, destination, (int32_t)immediate_or_offset);
             break;
+        case BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE_32:
+            bal_x86_emit_add_r32_imm32(assembler, destination, (int32_t)immediate_or_offset);
+            break;
         case BAL_X86_MACRO_ADD_REGISTER_REGISTER:
             bal_x86_emit_add_r64_r64(assembler, destination, source);
+            break;
+        case BAL_X86_MACRO_ADD_REGISTER_REGISTER_32:
+            bal_x86_emit_add_r32_r32(assembler, destination, source);
             break;
         case BAL_X86_MACRO_AND_REGISTER_IMMEDIATE:
             bal_x86_emit_mov_r64_imm64(
@@ -305,8 +311,14 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
         case BAL_X86_MACRO_SUB_REGISTER_IMMEDIATE:
             bal_x86_emit_sub_r64_imm32(assembler, destination, (int32_t)immediate_or_offset);
             break;
+        case BAL_X86_MACRO_SUB_REGISTER_IMMEDIATE_32:
+            bal_x86_emit_sub_r32_imm32(assembler, destination, (int32_t)immediate_or_offset);
+            break;
         case BAL_X86_MACRO_SUB_REGISTER_REGISTER:
             bal_x86_emit_sub_r64_r64(assembler, destination, source);
+            break;
+        case BAL_X86_MACRO_SUB_REGISTER_REGISTER_32:
+            bal_x86_emit_sub_r32_r32(assembler, destination, source);
             break;
         case BAL_X86_MACRO_UD2:
             bal_x86_emit_ud2(assembler);
