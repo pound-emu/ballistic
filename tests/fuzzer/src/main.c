@@ -152,8 +152,9 @@ main(const int argc, const char **argv)
         {
             BAL_LOG_ERROR(&bal_thread_logger,
                           "Ballistic worker reported execution error and "
-                          "returned status code %d.",
-                          ballistic_response.status);
+                          "returned status code %d for seed 0x%08X.",
+                          ballistic_response.status,
+                          *seed_cursor);
             ++errors;
             ++seed_cursor;
             continue;
