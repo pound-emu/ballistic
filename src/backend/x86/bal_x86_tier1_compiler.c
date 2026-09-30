@@ -459,8 +459,19 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
                     is_block_terminated = true;
                     break;
                 case OPCODE_AND:
+                    if (BAL_OPERAND_TYPE_REGISTER_64 == metadata->operands[3].type
+                        || BAL_OPERAND_TYPE_REGISTER_32 == metadata->operands[3].type)
+                    {
+                        translate_and_reg(compiler, metadata, instruction);
+                        break;
+                    }
 
-                    translate_and_reg(compiler, metadata, instruction);
+                    BAL_LOG_ERROR(&bal_thread_logger,
+                                  "Aborting function: Tier 1 does not support AND (immediate) "
+                                  "at GVA 0x%016llX.",
+                                  (unsigned long long)guest_address);
+                    compiler->status    = BAL_ERROR_UNKNOWN_INSTRUCTION;
+                    is_block_terminated = true;
                     break;
                 default:
                     BAL_LOG_ERROR(&bal_thread_logger,
