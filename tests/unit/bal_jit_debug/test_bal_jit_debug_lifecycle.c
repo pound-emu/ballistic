@@ -112,6 +112,62 @@ test_BalJitDebugInit_Success(void)
     bal_jit_debug_destroy(&mock_allocator, &context);
 }
 
+static void
+test_BalJitDebugDestroy_NullContextDoesNotCrash(void)
+{
+    bal_jit_debug_destroy(&mock_allocator, NULL);
+    TEST_PASS();
+}
+
+static void
+test_BalJitDebugDestroy_NullAllocatorDoesNotCrash(void)
+{
+    bal_jit_debug_context_t context = {};
+    bal_jit_debug_destroy(NULL, &context);
+    TEST_ASSERT_EQUAL_size_t(0, free_count);
+}
+
+static void
+test_BalJitDebugDestroy_NullEntriesSkipsEntry(void)
+{
+    bal_jit_debug_context_t context = {};
+    const bal_error_t       error   = bal_jit_debug_init(&mock_allocator, &context);
+    TEST_ASSERT_EQUAL(BAL_SUCCESS, error);
+    void *leaked_entries = context.entries;
+    context.entries      = NULL;
+    bal_jit_debug_destroy(&mock_allocator, &context);
+    TEST_ASSERT_EQUAL_size_t(1, free_count);
+    TEST_ASSERT_EQUAL_UINT32(BAL_JIT_DEBUG_MAGIC_DEAD, context.magic);
+    real_allocator.free(real_allocator.context,
+                        leaked_entries,
+                        BAL_JIT_DEBUG_ENTRY_CAPACITY * sizeof(bal_jit_block_entry_t));
+}
+
+static void
+test_BalJitDebugDestroy_NullArenaSkipsArena(void)
+{
+    bal_jit_debug_context_t context = {};
+    const bal_error_t       error   = bal_jit_debug_init(&mock_allocator, &context);
+    TEST_ASSERT_EQUAL(BAL_SUCCESS, error);
+    void *leaked_arena     = context.metadata_arena;
+    context.metadata_arena = NULL;
+    bal_jit_debug_destroy(&mock_allocator, &context);
+    TEST_ASSERT_EQUAL_size_t(1, free_count);
+    TEST_ASSERT_EQUAL_size_t(BAL_JIT_DEBUG_ENTRY_CAPACITY * sizeof(bal_jit_block_entry_t),
+                             last_freed_size);
+    TEST_ASSERT_EQUAL_UINT32(BAL_JIT_DEBUG_MAGIC_DEAD, context.magic);
+    real_allocator.free(real_allocator.context, leaked_arena, BAL_JIT_DEBUG_ARENA_CAPACITY_BYTES);
+}
+
+static void
+test_BalJitDebugDestroy_ZeroedContextSetsDeadMagicWithoutFreeing(void)
+{
+    bal_jit_debug_context_t context = {};
+    bal_jit_debug_destroy(&mock_allocator, &context);
+    TEST_ASSERT_EQUAL_size_t(0, free_count);
+    TEST_ASSERT_EQUAL_UINT32(BAL_JIT_DEBUG_MAGIC_DEAD, context.magic);
+}
+
 int
 main(void)
 {
@@ -121,5 +177,10 @@ main(void)
     RUN_TEST(test_BalJitDebugInit_EntriesAllocationFailsReturnsErrorAllocationFailed);
     RUN_TEST(test_BalJitDebugInit_ArenaAllocationFailsReturnsErrorAllocationFailed);
     RUN_TEST(test_BalJitDebugInit_Success);
+    RUN_TEST(test_BalJitDebugDestroy_NullContextDoesNotCrash);
+    RUN_TEST(test_BalJitDebugDestroy_NullAllocatorDoesNotCrash);
+    RUN_TEST(test_BalJitDebugDestroy_NullEntriesSkipsEntry);
+    RUN_TEST(test_BalJitDebugDestroy_NullArenaSkipsArena);
+    RUN_TEST(test_BalJitDebugDestroy_ZeroedContextSetsDeadMagicWithoutFreeing);
     return UNITY_END();
 }
