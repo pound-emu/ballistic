@@ -46,6 +46,8 @@ target_link_libraries(test_bal_assembler_sub PUBLIC BallisticTestAssemblerFixtur
 
 add_ballistic_test(test_bal_decoder_integrity unit/bal_decoder/test_bal_decoder_integrity.c)
 
+add_ballistic_test(test_bal_jit_debug unit/bal_jit_debug/test_bal_jit_debug_lifecycle.c)
+
 add_test(
         NAME doctest
         COMMAND $<TARGET_FILE:luajit_exe> ${CMAKE_SOURCE_DIR}/tools/scripts/doctest.lua
