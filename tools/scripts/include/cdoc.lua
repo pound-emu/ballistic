@@ -8,6 +8,9 @@ package.path = package.path .. ";" .. script_dir .. "/?.lua"
 local log = require("log")
 local clang_api = require("cdoc.clang")
 local parser = require("cdoc.parser")
+local color_picker = require("cdoc.color_picker")
+local syntax_picker = require("cdoc.syntax_picker")
+local html_generator = require("cdoc.html_generator")
 
 local function main(...)
     log.set_level("info")
@@ -51,7 +54,7 @@ local function main(...)
     end
 
     if #headers == 0 then
-        print("Usage: luajit cdoc.lua --out-directory <dir> [--theme <dark|light|ayu>] [--clang-library <path>] [--clang-arg <arg>] [--log-level <trace|debug|info|warn|error|none>] <header1.h> ...")
+        print("Usage: luajit cdoc.lua --out-directory <dir> [--theme <dark|light>] [--clang-library <path>] [--clang-arg <arg>] [--log-level <trace|debug|info|warn|error|none>] <header1.h> ...")
         return 1
     end
 
@@ -77,10 +80,9 @@ local function main(...)
 
     log.info("Parsing %d header file(s)...", #headers)
     local parse_start = os.clock()
-    local clang_index = clang_context.library.clang_createIndex(0, 0)
 
     for _, header_path in ipairs(headers) do
-        local mod = parser.parse_header(clang_context, header_path, clang_arguments, project.registry, clang_index)
+        local mod = parser.parse_header(clang_context, header_path, clang_arguments, project.registry)
         if mod then
             table.insert(project.modules, mod)
         else
@@ -88,16 +90,16 @@ local function main(...)
         end
     end
 
-    clang_context.library.clang_disposeIndex(clang_index)
-
     local parse_duration = os.clock() - parse_start
     log.info("Finished parsing %d module(s) in %.3fs.", #project.modules, parse_duration)
 
-    -- Rendering pipeline
     log.info("Rendering documentation using theme '%s'...", theme_name)
     local render_start = os.clock()
 
-    -- TODO: render process here
+    local colors = color_picker.create(theme_name)
+    local syntax = syntax_picker.create()
+    local generator = html_generator.create(colors, syntax)
+    html_generator.generate_all(generator, project, out_directory)
 
     local render_duration = os.clock() - render_start
     local total_duration = os.clock() - start_time
