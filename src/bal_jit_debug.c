@@ -114,6 +114,9 @@ bal_jit_debug_add_block(bal_jit_debug_context_t *BAL_RESTRICT         context,
         return context->status;
     }
 
+    BAL_CHECK_MAGIC(
+        context, BAL_JIT_DEBUG_MAGIC_ALIVE, BAL_JIT_DEBUG_MAGIC_DEAD, "bal_jit_debug_context_t");
+
     context->status = invalid_argument;
 
     if (BAL_UNLIKELY(NULL == rx_start))
@@ -141,9 +144,6 @@ bal_jit_debug_add_block(bal_jit_debug_context_t *BAL_RESTRICT         context,
         context->status = BAL_ERROR_BUFFER_OVERFLOW;
         return BAL_ERROR_BUFFER_OVERFLOW;
     }
-
-    BAL_CHECK_MAGIC(
-        context, BAL_JIT_DEBUG_MAGIC_ALIVE, BAL_JIT_DEBUG_MAGIC_DEAD, "bal_jit_debug_context_t");
 
     const size_t total_mapping_size    = instruction_count * sizeof(bal_jit_instruction_map_t);
     const size_t total_memory_required = total_mapping_size + sizeof(bal_jit_block_metadata_t);
