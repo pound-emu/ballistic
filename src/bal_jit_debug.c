@@ -22,9 +22,9 @@ bal_jit_debug_init(const bal_allocator_t *BAL_RESTRICT   allocator,
     bal_jit_debug_context_t c       = { 0 };
     c.entry_capacity                = BAL_JIT_DEBUG_ENTRY_CAPACITY;
     const size_t total_entries_size = c.entry_capacity * sizeof(bal_jit_block_entry_t);
-    const size_t memory_alignment   = 64;
-    c.entries                       = (bal_jit_block_entry_t *)allocator->allocate(
-        allocator->context, memory_alignment, total_entries_size);
+    const size_t memory_alignment   = 64U;
+    void *entries = allocator->allocate(allocator->context, memory_alignment, total_entries_size);
+    (void)memcpy(&c.entries, &entries, sizeof(entries));
 
     if (BAL_UNLIKELY(NULL == c.entries))
     {
@@ -35,8 +35,8 @@ bal_jit_debug_init(const bal_allocator_t *BAL_RESTRICT   allocator,
     }
 
     c.arena_capacity = BAL_JIT_DEBUG_ARENA_CAPACITY_BYTES;
-    c.metadata_arena
-        = (uint8_t *)allocator->allocate(allocator->context, memory_alignment, c.arena_capacity);
+    void *arena      = allocator->allocate(allocator->context, memory_alignment, c.arena_capacity);
+    (void)memcpy(&c.metadata_arena, &arena, sizeof(arena));
 
     if (BAL_UNLIKELY(NULL == c.metadata_arena))
     {
@@ -46,7 +46,7 @@ bal_jit_debug_init(const bal_allocator_t *BAL_RESTRICT   allocator,
         return BAL_ERROR_ALLOCATION_FAILED;
     }
 
-    memset(context, 0, sizeof(bal_jit_debug_context_t));
+    (void)memset(context, 0, sizeof(bal_jit_debug_context_t));
     context->entries        = c.entries;
     context->metadata_arena = c.metadata_arena;
     context->entry_capacity = c.entry_capacity;
@@ -89,7 +89,7 @@ bal_jit_debug_destroy(const bal_allocator_t *BAL_RESTRICT   allocator,
         context->metadata_arena = NULL;
     }
 
-    memset(context, 0, sizeof(bal_jit_debug_context_t));
+    (void)memset(context, 0, sizeof(bal_jit_debug_context_t));
     context->magic = BAL_JIT_DEBUG_MAGIC_DEAD;
 }
 
@@ -156,20 +156,23 @@ bal_jit_debug_add_block(bal_jit_debug_context_t *BAL_RESTRICT         context,
         return BAL_ERROR_BUFFER_OVERFLOW;
     }
 
-    uint8_t *arena_cursor = context->metadata_arena + context->arena_offset;
-    bal_jit_block_metadata_t *BAL_RESTRICT metadata = (bal_jit_block_metadata_t *)arena_cursor;
-    metadata->base_guest_pc                         = base_guest_pc;
-    metadata->instruction_count                     = instruction_count;
-    bal_jit_instruction_map_t *arena_mapping
-        = (bal_jit_instruction_map_t *)(arena_cursor + sizeof(bal_jit_block_metadata_t));
-    metadata->mappings = arena_mapping;
-    memcpy(arena_mapping, mapping, total_mapping_size);
+    uint8_t *arena_cursor     = &context->metadata_arena[context->arena_offset];
+    void    *metadata_address = arena_cursor;
+    void    *mapping_address  = &arena_cursor[sizeof(bal_jit_block_metadata_t)];
+
+    bal_jit_block_metadata_t metadata_local = {};
+    metadata_local.base_guest_pc            = base_guest_pc;
+    metadata_local.instruction_count        = instruction_count;
+
+    (void)memcpy(&metadata_local.mappings, &mapping_address, sizeof(mapping_address));
+    (void)memcpy(arena_cursor, &metadata_local, sizeof(metadata_local));
+    (void)memcpy(mapping_address, mapping, total_mapping_size);
     context->arena_offset += total_memory_required;
 
     bal_jit_block_entry_t *BAL_RESTRICT entry = &context->entries[context->entry_count];
     entry->rx_start                           = rx_start;
     entry->rx_size                            = rx_size;
-    entry->metadata                           = metadata;
+    (void)memcpy(&entry->metadata, &metadata_address, sizeof(metadata_address));
     context->entry_count++;
     context->status = BAL_SUCCESS;
     return BAL_SUCCESS;
