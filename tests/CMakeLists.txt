@@ -49,6 +49,8 @@ add_ballistic_test(test_bal_decoder_integrity unit/bal_decoder/test_bal_decoder_
 add_ballistic_test(test_bal_jit_debug_lifecycle unit/bal_jit_debug/test_bal_jit_debug_lifecycle.c)
 add_ballistic_test(test_bal_jit_debug_add_block unit/bal_jit_debug/test_bal_jit_debug_add_block.c)
 
+add_ballistic_test(test_bal_log_lifecycle unit/bal_log/test_bal_log_lifecycle.c)
+
 add_test(
         NAME doctest
         COMMAND $<TARGET_FILE:luajit_exe> ${CMAKE_SOURCE_DIR}/tools/scripts/doctest.lua
