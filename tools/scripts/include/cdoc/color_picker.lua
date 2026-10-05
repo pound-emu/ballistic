@@ -65,9 +65,11 @@ end
 
 function M.get_css_variables(theme_state)
     local lines = { ":root {" }
+
     for k, v in pairs(theme_state.colors) do
         table.insert(lines, string.format("    %s: %s;", k, v))
     end
+
     table.insert(lines, "}")
     return table.concat(lines, "\n")
 end
