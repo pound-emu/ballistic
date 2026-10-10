@@ -325,6 +325,9 @@ flush_single_macro(bal_x86_assembler_t *BAL_RESTRICT   assembler,
         case BAL_X86_MACRO_SUB_REGISTER_REGISTER_32:
             bal_x86_emit_sub_r32_r32(assembler, destination, source);
             break;
+        case BAL_X86_MACRO_TEST_REGISTER_REGISTER:
+            bal_x86_emit_test_r64_r64(assembler, destination, source);
+            break;
         case BAL_X86_MACRO_UD2:
             bal_x86_emit_ud2(assembler);
             break;

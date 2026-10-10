@@ -1305,25 +1305,16 @@ translate_and_reg(bal_tier1_compiler_t *BAL_RESTRICT                     compile
     const uint8_t  rm           = (uint8_t)extract_operand_value(instruction, &operands[3]);
     const uint32_t shift_type   = extract_operand_value(instruction, &operands[4]);
 
-    if (BAL_UNLIKELY('S' == metadata->name[3]))
+    const bool is_setting_flags = 'S' == metadata->name[3];
+    const bool is_zero_register = 31 == rd;
+
+    // AND targeting the zero register doesn't alter the state.
+    if (is_zero_register && !is_setting_flags)
     {
-        BAL_LOG_ERROR(&bal_thread_logger,
-                      "Aborting function: Tier 1 does not support ANDS yet: %s",
-                      metadata->name);
-        compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
         return;
     }
 
-    if (BAL_UNLIKELY(shift_amount != 0))
-    {
-        BAL_LOG_ERROR(&bal_thread_logger,
-                      "Aborting function: Tier 1 does not support shift amounts != 0 yet: %s",
-                      metadata->name);
-        compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
-        return;
-    }
-
-    if (BAL_UNLIKELY(shift_type > 2U))
+    if (BAL_UNLIKELY(shift_type > 3U))
     {
         BAL_LOG_ERROR(
             &bal_thread_logger, "Aborting function: unsupported shift type %u", shift_type);
@@ -1335,48 +1326,129 @@ translate_and_reg(bal_tier1_compiler_t *BAL_RESTRICT                     compile
     const bal_x86_register_t x86_rn       = allocate_x86_register(compiler, rn, skip_load_rn);
     const bool               skip_load_rm = false;
     const bal_x86_register_t x86_rm       = allocate_x86_register(compiler, rm, skip_load_rm);
-    const bool               skip_load_rd = true;
-    const bal_x86_register_t x86_rd       = allocate_x86_register(compiler, rd, skip_load_rd);
 
-    if (BAL_UNLIKELY(BAL_X86_INVALID == x86_rd) || BAL_UNLIKELY(BAL_X86_INVALID == x86_rn)
-        || BAL_UNLIKELY(BAL_X86_INVALID == x86_rm))
+    bal_x86_register_t x86_rd = BAL_X86_INVALID;
+
+    if (!is_zero_register)
+    {
+        const bool skip_load_rd = true;
+        x86_rd                  = allocate_x86_register(compiler, rd, skip_load_rd);
+    }
+
+    if (BAL_UNLIKELY(BAL_X86_INVALID == x86_rn) || BAL_UNLIKELY(BAL_X86_INVALID == x86_rm)
+        || (!is_zero_register && BAL_UNLIKELY(BAL_X86_INVALID == x86_rd)))
     {
         compiler->status = BAL_ERROR_INCORRECT_REGISTER_TYPE;
         return;
     }
 
-    bal_x86_register_t x86_and_source = x86_rm;
+    bal_x86_register_t x86_operand2 = x86_rm;
 
-    if (31 == rd)
+    if (shift_amount > 0)
     {
-        const bal_x86_macro_t mov_macro = {
-            .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
-            .destination         = x86_rd,
-            .immediate_or_offset = 0,
+        bal_x86_macro_opcode_t shift_opcode = BAL_X86_MACRO_SHL_REGISTER_IMMEDIATE;
+
+        if (0b01 == shift_type)
+        {
+            shift_opcode = BAL_X86_MACRO_SHR_REGISTER_IMMEDIATE;
+        }
+        else if (0b10 == shift_type)
+        {
+            shift_opcode = BAL_X86_MACRO_SAR_REGISTER_IMMEDIATE;
+        }
+        else if (0b11 == shift_type)
+        {
+            shift_opcode = BAL_X86_MACRO_ROR_REGISTER_IMMEDIATE;
+        }
+        if (rd!=rm || is_zero_register)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+                .source      = x86_rm,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+            x86_operand2 = BAL_X86_REGISTER_DISCARD_RESULT;
+        }
+
+
+        const bal_x86_macro_t shift_macro = {
+            .opcode              = shift_opcode,
+            .destination         = x86_operand2,
+            .immediate_or_offset = shift_amount,
         };
-        bal_sliding_window_push(&compiler->window, mov_macro);
+        bal_sliding_window_push(&compiler->window, shift_macro);
+
     }
-    else if (x86_rd == x86_rm)
+
+    if (is_zero_register)
     {
-        x86_and_source = x86_rn;
+        // ANDS XZR (TST): only the flags matter, the result is discarded.
+        const bal_x86_macro_t test_macro = {
+            .opcode      = BAL_X86_MACRO_TEST_REGISTER_REGISTER,
+            .destination = x86_rn,
+            .source      = x86_operand2,
+        };
+        bal_sliding_window_push(&compiler->window, test_macro);
     }
-    else if (x86_rd != x86_rn)
+    else
     {
-        const bal_x86_macro_t mov_macro = {
-            .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+        // AND is commutative: if rd already holds operand2, AND it with rn instead.
+        bal_x86_register_t x86_and_source = x86_operand2;
+
+        if (x86_rd == x86_operand2)
+        {
+            x86_and_source = x86_rn;
+        }
+        else if (x86_rd != x86_rn)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rn,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+
+        const bal_x86_macro_t and_macro = {
+            .opcode      = BAL_X86_MACRO_AND_REGISTER_REGISTER,
             .destination = x86_rd,
-            .source      = x86_rn,
+            .source      = x86_and_source,
         };
-        bal_sliding_window_push(&compiler->window, mov_macro);
+        bal_sliding_window_push(&compiler->window, and_macro);
+        compiler->is_dirty |= 1U << rd;
     }
 
-    const bal_x86_macro_t and_macro = {
-        .opcode      = BAL_X86_MACRO_AND_REGISTER_REGISTER,
-        .destination = x86_rd,
-        .source      = x86_and_source,
-    };
-    bal_sliding_window_push(&compiler->window, and_macro);
-    compiler->is_dirty |= 1U << rd;
+    if (is_setting_flags)
+    {
+        const bal_x86_macro_t set_n_macro = {
+            .opcode              = BAL_X86_MACRO_SETCC,
+            .condition           = BAL_X86_COND_S,
+            .immediate_or_offset = offsetof(bal_cpu_t, flag_n),
+        };
+        bal_sliding_window_push(&compiler->window, set_n_macro);
+
+        const bal_x86_macro_t set_z_macro = {
+            .opcode              = BAL_X86_MACRO_SETCC,
+            .condition           = BAL_X86_COND_E,
+            .immediate_or_offset = offsetof(bal_cpu_t, flag_z),
+        };
+        bal_sliding_window_push(&compiler->window, set_z_macro);
+
+        const bal_x86_macro_t set_v_macro = {
+            .opcode              = BAL_X86_MACRO_SETCC,
+            .condition           = BAL_X86_COND_O,
+            .immediate_or_offset = offsetof(bal_cpu_t, flag_v),
+        };
+        bal_sliding_window_push(&compiler->window, set_v_macro);
+
+        const bal_x86_macro_t     set_c_macro = {
+                .opcode              = BAL_X86_MACRO_SETCC,
+                .condition           = BAL_X86_COND_B,
+                .immediate_or_offset = offsetof(bal_cpu_t, flag_c),
+        };
+        bal_sliding_window_push(&compiler->window, set_c_macro);
+    }
 }
 
 void
