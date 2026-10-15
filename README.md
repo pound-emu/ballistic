@@ -120,7 +120,7 @@ bal_cpu_t cpu = {0};
 bal_engine_t engine = {0};
 bal_engine_init(&engine, &cpu, &allocator, &memory_interface, logger);
 
-guest_memory[0] = 0xD2800054; // MOVZ X0, #42
+guest_memory[0] = 0xD2800540; // MOVZ X0, #42
 guest_memory[1] = 0xD65F03C0; // RET
 
 cpu.pc = 0;
