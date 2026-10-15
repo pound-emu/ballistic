@@ -113,12 +113,12 @@ memset(guest_memory, 0, guest_memory_size);
 
 bal_memory_interface_t memory_interface = {0};
 bal_flat_translation_interface_init(&allocator, &memory_interface, guest_memory,
-guest_memory_size, logger);
+guest_memory_size);
 
 // Initialize CPU and Engine.
 bal_cpu_t cpu = {0};
 bal_engine_t engine = {0};
-bal_engine_init(&engine, &cpu, &allocator, &memory_interface, logger);
+bal_engine_init(&engine, &cpu, &allocator, &memory_interface);
 
 guest_memory[0] = 0xD2800540; // MOVZ X0, #42
 guest_memory[1] = 0xD65F03C0; // RET
