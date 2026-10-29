@@ -46,6 +46,8 @@ target_link_libraries(test_bal_assembler_sub PUBLIC BallisticTestAssemblerFixtur
 
 add_ballistic_test(test_bal_decoder_integrity unit/bal_decoder/test_bal_decoder_integrity.c)
 
+add_ballistic_test(test_bal_tier1_add_sub unit/bal_tier1/test_bal_tier1_add_sub.c)
+
 add_ballistic_test(test_bal_jit_debug_lifecycle unit/bal_jit_debug/test_bal_jit_debug_lifecycle.c)
 add_ballistic_test(test_bal_jit_debug_add_block unit/bal_jit_debug/test_bal_jit_debug_add_block.c)
 
@@ -92,7 +94,6 @@ set(DOCTEST_LTO "$<BOOL:${BALLISTIC_ENABLE_LINK_TIME_OPTIMIZATION}>")
 set_tests_properties(doctest PROPERTIES
         ENVIRONMENT "LD_LIBRARY_PATH=${LUA_LD_PATH};DYLD_LIBRARY_PATH=${LUA_DYLD_LIBRARY_PATH};DOCTEST_CC=${DOCTEST_CC};DOCTEST_CFLAGS=${DOCTEST_CFLAGS};DOCTEST_LTO=${DOCTEST_LTO};DOCTEST_LIB_DIR=${BALLISTIC_LIBRARIES_DIRECTORY}"
 )
-
 
 # TODO (GloriousTaco): Support IPC on Windows.
 if (UNIX)

@@ -1045,10 +1045,12 @@ translate_add_sub_reg(bal_tier1_compiler_t *BAL_RESTRICT                     com
     const uint8_t  rm           = (uint8_t)extract_operand_value(instruction, &operand_cursor[3]);
     const uint32_t shift_type   = extract_operand_value(instruction, &operand_cursor[4]);
 
-    if (BAL_UNLIKELY(shift_amount != 0))
+    const bool is_32bit = BAL_OPERAND_TYPE_REGISTER_32 == operand_cursor[0].type;
+
+    if (BAL_UNLIKELY(is_32bit && 0 != shift_amount))
     {
         BAL_LOG_ERROR(&bal_thread_logger,
-                      "Aborting function: Tier 1 does not support shift amounts != 0 yet: %s",
+                      "Aborting function: Tier 1 does not support 32-bit shifted operands: %s",
                       metadata->name);
         compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
         return;
@@ -1072,15 +1074,51 @@ translate_add_sub_reg(bal_tier1_compiler_t *BAL_RESTRICT                     com
     bal_x86_register_t       x86_rm       = allocate_x86_register(compiler, rm, skip_load_rm);
     bal_x86_register_t       x86_rd;
 
+    if (0 != shift_amount)
+    {
+        const bal_x86_macro_t copy_macro = {
+            .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+            .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+            .source      = x86_rm,
+        };
+        bal_sliding_window_push(&compiler->window, copy_macro);
+
+        bal_x86_macro_opcode_t shift_opcode = BAL_X86_MACRO_SHL_REGISTER_IMMEDIATE;
+
+        if (0b01 == shift_type)
+        {
+            shift_opcode = BAL_X86_MACRO_SHR_REGISTER_IMMEDIATE;
+        }
+        else if (0b10 == shift_type)
+        {
+            shift_opcode = BAL_X86_MACRO_SAR_REGISTER_IMMEDIATE;
+        }
+
+        const bal_x86_macro_t shift_macro = {
+            .opcode              = shift_opcode,
+            .destination         = BAL_X86_REGISTER_DISCARD_RESULT,
+            .immediate_or_offset = shift_amount,
+        };
+        bal_sliding_window_push(&compiler->window, shift_macro);
+        x86_rm = BAL_X86_REGISTER_DISCARD_RESULT;
+    }
+
     if (true == is_discarded_result)
     {
-        x86_rd                          = BAL_X86_REGISTER_DISCARD_RESULT;
-        const bal_x86_macro_t mov_macro = {
-            .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
-            .destination = x86_rd,
-            .source      = x86_rn,
-        };
-        bal_sliding_window_push(&compiler->window, mov_macro);
+        if (0 != shift_amount)
+        {
+            x86_rd = x86_rn;
+        }
+        else
+        {
+            x86_rd                          = BAL_X86_REGISTER_DISCARD_RESULT;
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rn,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
     }
     else
     {
@@ -1131,7 +1169,6 @@ translate_add_sub_reg(bal_tier1_compiler_t *BAL_RESTRICT                     com
         }
     }
 
-    const bool             is_32bit = BAL_OPERAND_TYPE_REGISTER_32 == operand_cursor[0].type;
     bal_x86_macro_opcode_t arithmetic_opcode;
 
     if (true == is_sub)
@@ -1151,6 +1188,12 @@ translate_add_sub_reg(bal_tier1_compiler_t *BAL_RESTRICT                     com
         .source      = x86_rm,
     };
     bal_sliding_window_push(&compiler->window, arithmetic_macro);
+
+    if (true == is_discarded_result && 0 != shift_amount)
+    {
+        compiler->arm_to_x86[rn]     = -1;
+        compiler->x86_to_arm[x86_rn] = -1;
+    }
 
     if (true == is_setting_flags)
     {
