@@ -106,7 +106,6 @@ bal_x86_assembler_reset(bal_x86_assembler_t *assembler)
     assembler->offset = 0;
     assembler->status = BAL_SUCCESS;
     (void)memset(assembler->buffer, 0, assembler->capacity);
-    (void)memset(assembler->rx_buffer, 0, assembler->capacity);
 }
 
 void

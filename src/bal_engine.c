@@ -25,7 +25,7 @@
 #define MEMORY_ALIGNMENT        64U
 #define TIER1_BUFFER_SIZE_BYTES (1024 * 1024 * 16) // 16 MiB
 
-#define BLOCK_CACHE_SETS 4096 // 256 KB total footprint.
+#define BLOCK_CACHE_SETS 128 // 8 KB total footprint.
 #define BLOCK_CACHE_WAYS 4
 #define BLOCK_CACHE_MASK (BLOCK_CACHE_SETS - 1)
 
@@ -49,6 +49,8 @@ typedef struct
 } block_cache_set_t;
 
 static_assert(64 == sizeof(block_cache_set_t), "Block cache set size mismatch");
+static_assert(8192 == BLOCK_CACHE_SETS * sizeof(block_cache_set_t),
+              "Block cache footprint must be exactly 8 KB");
 
 typedef struct
 {
@@ -67,7 +69,13 @@ typedef struct
     } thread_state;
 
     BAL_ALIGNED(64) block_cache_set_t block_cache[BLOCK_CACHE_SETS];
+
+    /// Two-bit FIFO way-eviction counter per set, packed four sets per byte.
+    uint8_t block_cache_fifo[BLOCK_CACHE_SETS / 4U];
 } internal_engine_state_t;
+
+static_assert(2U * BLOCK_CACHE_SETS == 8U * sizeof(((internal_engine_state_t *)0)->block_cache_fifo),
+              "Block cache FIFO counters must be exactly 2 bits per set");
 
 // Disable address sanitizers when executing jit code because it introduces very subtle but
 // dangerous bugs.
@@ -81,8 +89,13 @@ static void *block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache,
 
 /// Inserts a newly compiled JIT block into cache.
 static void block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
+                               uint8_t *BAL_RESTRICT           fifo,
                                bal_guest_address_t             pc,
                                void                           *host_code);
+
+/// Zeroes every block cache entry and FIFO counter. Must be called whenever the Tier 1
+/// layout is reset: cached host code pointers go stale.
+static void block_cache_reset(internal_engine_state_t *BAL_RESTRICT internal_engine_state);
 
 /// Helper function which gets called by LDR instructions.
 static uint64_t guest_read(void *context, uint64_t guest_address);
@@ -292,8 +305,7 @@ bal_engine_run_thread(bal_engine_t *engine)
             BAL_LOG_INFO(&bal_thread_logger,
                          "Clear cache requested. Resetting JIT layout and block cache.");
             bal_tier1_compiler_reset(&internal_engine_state->tier1_compiler);
-            (void)memset(
-                internal_engine_state->block_cache, 0, sizeof(internal_engine_state->block_cache));
+            block_cache_reset(internal_engine_state);
             atomic_store_explicit(&internal_engine_state->thread_state.clear_cache_requested,
                                   false,
                                   memory_order_release);
@@ -355,7 +367,7 @@ bal_engine_run_thread(bal_engine_t *engine)
                                  "Tier 1 executable buffer full. Resetting JIT layout cache");
                     bal_tier1_compiler_reset(&internal_engine_state->tier1_compiler);
 
-                    // TODO: When the block cache is implemented, it must be cleared here.
+                    block_cache_reset(internal_engine_state);
                     entry_point
                         = bal_tier1_compiler_translate(&internal_engine_state->tier1_compiler,
                                                        engine->memory_interface,
@@ -392,7 +404,10 @@ bal_engine_run_thread(bal_engine_t *engine)
 
         if (BAL_LIKELY(!(engine->flags & BAL_ENGINE_FLAG_DISABLE_BLOCK_CACHE)))
         {
-            block_cache_insert(internal_engine_state->block_cache, pc, entry_point);
+            block_cache_insert(internal_engine_state->block_cache,
+                               internal_engine_state->block_cache_fifo,
+                               pc,
+                               entry_point);
         }
 
         const bal_jit_block_t compiled_block = (bal_jit_block_t)entry_point;
@@ -459,6 +474,7 @@ bal_engine_reset(bal_engine_t *BAL_RESTRICT engine)
         (void)memset(engine_state->tier1_buffer.rw_pointer, 0, engine_state->tier1_buffer_size);
     }
     bal_tier1_compiler_reset(&engine_state->tier1_compiler);
+    block_cache_reset(engine_state);
     return engine->status;
 }
 
@@ -583,6 +599,7 @@ block_cache_lookup(const block_cache_set_t *BAL_RESTRICT cache, const bal_guest_
 
 BAL_HOT void
 block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
+                   uint8_t *BAL_RESTRICT           fifo,
                    const bal_guest_address_t       pc,
                    void *BAL_RESTRICT              host_code)
 {
@@ -608,10 +625,22 @@ block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
         }
     }
 
-    // All 4 ways are full. Use the lower bits of the PC as a cheap starting index.
-    const uint32_t evict_way      = (pc >> 4) & (BLOCK_CACHE_WAYS - 1);
+    uint8_t *const BAL_RESTRICT fifo_byte  = &fifo[set_index >> 2];
+    const uint32_t              fifo_shift = (set_index & 3) * 2;
+    const uint32_t              evict_way  = (*fifo_byte >> fifo_shift) & (BLOCK_CACHE_WAYS - 1);
+    const uint32_t              next_way   = (evict_way + 1) & (BLOCK_CACHE_WAYS - 1);
+
     ways[evict_way].guest_address = pc;
     ways[evict_way].host_code     = host_code;
+}
+
+static void
+block_cache_reset(internal_engine_state_t *BAL_RESTRICT internal_engine_state)
+{
+    (void)memset(internal_engine_state->block_cache, 0, sizeof(internal_engine_state->block_cache));
+    (void)memset(internal_engine_state->block_cache_fifo,
+                 0,
+                 sizeof(internal_engine_state->block_cache_fifo));
 }
 
 static uint64_t
