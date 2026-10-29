@@ -90,6 +90,10 @@ static void translate_and_reg(bal_tier1_compiler_t                     *compiler
                               const bal_decoder_instruction_metadata_t *metadata,
                               uint32_t                                  instruction);
 
+static void translate_or_reg(bal_tier1_compiler_t                     *compiler,
+                             const bal_decoder_instruction_metadata_t *metadata,
+                             uint32_t                                  instruction);
+
 static void translate_ldr(bal_tier1_compiler_t                     *compiler,
                           const bal_decoder_instruction_metadata_t *metadata,
                           uint32_t                                  instruction);
@@ -355,6 +359,27 @@ bal_tier1_compiler_translate(bal_tier1_compiler_t         *compiler,
                         || BAL_LIKELY(variant == 'Z'))
                     {
                         translate_mov_immediate(compiler, metadata, instruction);
+                        break;
+                    }
+
+                    if (0 == strcmp(metadata->name, "ORR")
+                        && 5U == metadata->operands[1].bit_position
+                        && (BAL_OPERAND_TYPE_REGISTER_64 == metadata->operands[1].type
+                            || BAL_OPERAND_TYPE_REGISTER_32 == metadata->operands[1].type))
+                    {
+                        if (BAL_OPERAND_TYPE_REGISTER_64 == metadata->operands[3].type
+                            || BAL_OPERAND_TYPE_REGISTER_32 == metadata->operands[3].type)
+                        {
+                            translate_or_reg(compiler, metadata, instruction);
+                            break;
+                        }
+
+                        BAL_LOG_ERROR(&bal_thread_logger,
+                                      "Aborting function: Tier 1 does not support ORR "
+                                      "(immediate) at GVA 0x%016llX.",
+                                      (unsigned long long)guest_address);
+                        compiler->status    = BAL_ERROR_UNKNOWN_INSTRUCTION;
+                        is_block_terminated = true;
                         break;
                     }
 
@@ -1478,6 +1503,212 @@ translate_and_reg(bal_tier1_compiler_t *BAL_RESTRICT                     compile
         };
         bal_sliding_window_push(&compiler->window, set_c_macro);
     }
+}
+
+static void
+push_shift_macro(bal_tier1_compiler_t *compiler,
+                 bal_x86_register_t    x86_register,
+                 uint32_t              shift_amount,
+                 uint32_t              shift_type)
+{
+    bal_x86_macro_opcode_t shift_opcode = BAL_X86_MACRO_SHL_REGISTER_IMMEDIATE;
+
+    if (0b01 == shift_type)
+    {
+        shift_opcode = BAL_X86_MACRO_SHR_REGISTER_IMMEDIATE;
+    }
+    else if (0b10 == shift_type)
+    {
+        shift_opcode = BAL_X86_MACRO_SAR_REGISTER_IMMEDIATE;
+    }
+    else if (0b11 == shift_type)
+    {
+        shift_opcode = BAL_X86_MACRO_ROR_REGISTER_IMMEDIATE;
+    }
+
+    const bal_x86_macro_t shift_macro = {
+        .opcode              = shift_opcode,
+        .destination         = x86_register,
+        .immediate_or_offset = shift_amount,
+    };
+    bal_sliding_window_push(&compiler->window, shift_macro);
+}
+
+void
+translate_or_reg(bal_tier1_compiler_t *BAL_RESTRICT                     compiler,
+                 const bal_decoder_instruction_metadata_t *BAL_RESTRICT metadata,
+                 const uint32_t                                         instruction)
+{
+    const bal_decoder_operand_t *BAL_RESTRICT operands = metadata->operands;
+    const uint8_t  rd           = (uint8_t)extract_operand_value(instruction, &operands[0]);
+    const uint8_t  rn           = (uint8_t)extract_operand_value(instruction, &operands[1]);
+    const uint32_t shift_amount = extract_operand_value(instruction, &operands[2]);
+    const uint8_t  rm           = (uint8_t)extract_operand_value(instruction, &operands[3]);
+    const uint32_t shift_type   = extract_operand_value(instruction, &operands[4]);
+
+    if (31U == rd)
+    {
+        return;
+    }
+
+    if (BAL_UNLIKELY(shift_type > 3U))
+    {
+        BAL_LOG_ERROR(
+            &bal_thread_logger, "Aborting function: unsupported shift type %u", shift_type);
+        compiler->status = BAL_ERROR_UNKNOWN_INSTRUCTION;
+        return;
+    }
+
+    const bool rn_is_zero = 31U == rn;
+    const bool rm_is_zero = 31U == rm;
+
+    bal_x86_register_t x86_rn = BAL_X86_INVALID;
+
+    if (!rn_is_zero)
+    {
+        const bool skip_load_rn = false;
+        x86_rn                  = allocate_x86_register(compiler, rn, skip_load_rn);
+
+        if (BAL_UNLIKELY(BAL_X86_INVALID == x86_rn))
+        {
+            compiler->status = BAL_ERROR_INCORRECT_REGISTER_TYPE;
+            return;
+        }
+    }
+
+    bal_x86_register_t x86_rm = BAL_X86_INVALID;
+
+    if (!rm_is_zero)
+    {
+        const bool skip_load_rm = false;
+        x86_rm                  = allocate_x86_register(compiler, rm, skip_load_rm);
+
+        if (BAL_UNLIKELY(BAL_X86_INVALID == x86_rm))
+        {
+            compiler->status = BAL_ERROR_INCORRECT_REGISTER_TYPE;
+            return;
+        }
+    }
+
+    const bool               skip_load_rd = true;
+    const bal_x86_register_t x86_rd       = allocate_x86_register(compiler, rd, skip_load_rd);
+
+    if (BAL_UNLIKELY(BAL_X86_INVALID == x86_rd))
+    {
+        compiler->status = BAL_ERROR_INCORRECT_REGISTER_TYPE;
+        return;
+    }
+
+    if (rn_is_zero && rm_is_zero)
+    {
+        const bal_x86_macro_t mov_macro = {
+            .opcode              = BAL_X86_MACRO_MOV_REGISTER_IMMEDIATE,
+            .destination         = x86_rd,
+            .immediate_or_offset = 0ULL,
+        };
+        bal_sliding_window_push(&compiler->window, mov_macro);
+        compiler->is_dirty |= 1U << rd;
+        return;
+    }
+
+    if (rm_is_zero)
+    {
+        if (x86_rd != x86_rn)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rn,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+
+        compiler->is_dirty |= 1U << rd;
+        return;
+    }
+
+    if (rn_is_zero)
+    {
+        if (shift_amount > 0)
+        {
+            if (x86_rd != x86_rm)
+            {
+                const bal_x86_macro_t copy_macro = {
+                    .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                    .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+                    .source      = x86_rm,
+                };
+                bal_sliding_window_push(&compiler->window, copy_macro);
+                push_shift_macro(compiler, BAL_X86_REGISTER_DISCARD_RESULT, shift_amount,
+                                 shift_type);
+
+                const bal_x86_macro_t result_macro = {
+                    .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                    .destination = x86_rd,
+                    .source      = BAL_X86_REGISTER_DISCARD_RESULT,
+                };
+                bal_sliding_window_push(&compiler->window, result_macro);
+            }
+            else
+            {
+                push_shift_macro(compiler, x86_rm, shift_amount, shift_type);
+            }
+        }
+        else if (x86_rd != x86_rm)
+        {
+            const bal_x86_macro_t mov_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = x86_rd,
+                .source      = x86_rm,
+            };
+            bal_sliding_window_push(&compiler->window, mov_macro);
+        }
+
+        compiler->is_dirty |= 1U << rd;
+        return;
+    }
+
+    bal_x86_register_t x86_operand2 = x86_rm;
+
+    if (shift_amount > 0)
+    {
+        if (x86_rd != x86_rm)
+        {
+            const bal_x86_macro_t copy_macro = {
+                .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+                .destination = BAL_X86_REGISTER_DISCARD_RESULT,
+                .source      = x86_rm,
+            };
+            bal_sliding_window_push(&compiler->window, copy_macro);
+            x86_operand2 = BAL_X86_REGISTER_DISCARD_RESULT;
+        }
+
+        push_shift_macro(compiler, x86_operand2, shift_amount, shift_type);
+    }
+
+    bal_x86_register_t x86_or_source = x86_operand2;
+
+    if (x86_rd == x86_operand2)
+    {
+        x86_or_source = x86_rn;
+    }
+    else if (x86_rd != x86_rn)
+    {
+        const bal_x86_macro_t mov_macro = {
+            .opcode      = BAL_X86_MACRO_MOV_REGISTER_REGISTER,
+            .destination = x86_rd,
+            .source      = x86_rn,
+        };
+        bal_sliding_window_push(&compiler->window, mov_macro);
+    }
+
+    const bal_x86_macro_t or_macro = {
+        .opcode      = BAL_X86_MACRO_OR_REGISTER_REGISTER,
+        .destination = x86_rd,
+        .source      = x86_or_source,
+    };
+    bal_sliding_window_push(&compiler->window, or_macro);
+    compiler->is_dirty |= 1U << rd;
 }
 
 void
