@@ -1533,21 +1533,86 @@ translate_ldr(bal_tier1_compiler_t                     *compiler,
     };
     bal_sliding_window_push(&compiler->window, load_rn_macro);
 
+    uint64_t update_offset = 0ULL;
+    bool     write_back    = false;
+
     if (true == is_immediate_offset)
     {
-        // imm12 is scaled by the access size (8  for 64-bit, 4 for 32-bit).
         const uint32_t raw_immediate = extract_operand_value(instruction, &operands[2]);
-        const uint32_t scale         = is_64bit ? 8U : 4U;
-        const uint64_t byte_offset   = raw_immediate * scale;
 
-        if (byte_offset != 0U)
+        if (12U == operands[2].bit_position && 9U == operands[2].bit_width)
         {
-            const bal_x86_macro_t add_offset_macro = {
-                .opcode              = BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE,
-                .destination         = ASSEMBLER_TEMPORARY_REGISTER,
-                .immediate_or_offset = byte_offset,
-            };
-            bal_sliding_window_push(&compiler->window, add_offset_macro);
+            const uint32_t index_bits = (instruction >> 10) & 0x3U;
+            const bool     is_ldra
+                = 'L' == metadata->name[0] && 'D' == metadata->name[1] && 'R' == metadata->name[2]
+                  && 'A' == metadata->name[3];
+
+            uint64_t byte_offset = 0ULL;
+
+            if (true == is_ldra)
+            {
+                byte_offset = (uint64_t)raw_immediate * 8ULL;
+
+                if (3U == index_bits)
+                {
+                    update_offset = byte_offset;
+                    write_back    = true;
+                }
+            }
+            else
+            {
+                const uint64_t offset
+                    = (uint64_t)(int64_t)(int32_t)((raw_immediate ^ 0x100U) - 0x100U);
+
+                byte_offset = (3U == index_bits) ? offset : 0ULL;
+
+                if (1U == index_bits || 3U == index_bits)
+                {
+                    update_offset = offset;
+                    write_back    = true;
+                }
+            }
+
+            if (byte_offset != 0ULL)
+            {
+                const bal_x86_macro_t add_offset_macro = {
+                    .opcode              = BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE,
+                    .destination         = ASSEMBLER_TEMPORARY_REGISTER,
+                    .immediate_or_offset = byte_offset,
+                };
+                bal_sliding_window_push(&compiler->window, add_offset_macro);
+            }
+        }
+        else if (10U == operands[2].bit_position && 12U == operands[2].bit_width)
+        {
+            const uint32_t scale = 1U << ((instruction >> 30) & 0x3U);
+
+            const uint64_t byte_offset = (uint64_t)raw_immediate * (uint64_t)scale;
+
+            if (byte_offset != 0ULL)
+            {
+                const bal_x86_macro_t add_offset_macro = {
+                    .opcode              = BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE,
+                    .destination         = ASSEMBLER_TEMPORARY_REGISTER,
+                    .immediate_or_offset = byte_offset,
+                };
+                bal_sliding_window_push(&compiler->window, add_offset_macro);
+            }
+        }
+        else
+        {
+            const uint32_t scale       = true == is_64bit ? 8U : 4U;
+            const uint64_t byte_offset = (uint64_t)raw_immediate * (uint64_t)scale;
+
+            if (byte_offset != 0ULL)
+            {
+                const bal_x86_macro_t add_offset_macro = {
+                    .opcode              = BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE,
+                    .destination         = ASSEMBLER_TEMPORARY_REGISTER,
+                    .immediate_or_offset = byte_offset,
+                };
+                bal_sliding_window_push(&compiler->window, add_offset_macro);
+            }
         }
     }
     else
@@ -1630,6 +1695,26 @@ translate_ldr(bal_tier1_compiler_t                     *compiler,
 
 #endif
 
+    if (true == write_back)
+    {
+        const bal_x86_macro_t reload_rn_macro = {
+            .opcode              = BAL_X86_MACRO_LOAD,
+            .destination         = BAL_X86_R10,
+            .immediate_or_offset = rn_offset,
+        };
+        bal_sliding_window_push(&compiler->window, reload_rn_macro);
+
+        if (update_offset != 0ULL)
+        {
+            const bal_x86_macro_t add_update_macro = {
+                .opcode              = BAL_X86_MACRO_ADD_REGISTER_IMMEDIATE,
+                .destination         = BAL_X86_R10,
+                .immediate_or_offset = update_offset,
+            };
+            bal_sliding_window_push(&compiler->window, add_update_macro);
+        }
+    }
+
     // Store the result RAX into x[Rt].
 
     if (rt != 31U)
@@ -1679,6 +1764,17 @@ translate_ldr(bal_tier1_compiler_t                     *compiler,
         };
         bal_sliding_window_push(&compiler->window, store_rt_macro);
     }
+
+    if (true == write_back)
+    {
+        const bal_x86_macro_t store_rn_macro = {
+            .opcode              = BAL_X86_MACRO_STORE,
+            .source              = BAL_X86_R10,
+            .immediate_or_offset = rn_offset,
+        };
+        bal_sliding_window_push(&compiler->window, store_rn_macro);
+    }
+
     reset_register_allocator(compiler);
 
     BAL_LOG_DEBUG(&bal_thread_logger,

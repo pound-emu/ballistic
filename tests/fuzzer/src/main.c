@@ -148,18 +148,6 @@ main(const int argc, const char **argv)
             ++seeds_skipped;
             continue;
         }
-        if (ballistic_response.status != BAL_FUZZER_WORKER_OK)
-        {
-            BAL_LOG_ERROR(&bal_thread_logger,
-                          "Ballistic worker reported execution error and "
-                          "returned status code %d for seed 0x%08X.",
-                          ballistic_response.status,
-                          *seed_cursor);
-            ++errors;
-            ++seed_cursor;
-            continue;
-        }
-
         if (unicorn_response.status != BAL_FUZZER_WORKER_OK)
         {
             BAL_LOG_WARN(&bal_thread_logger,
@@ -168,6 +156,17 @@ main(const int argc, const char **argv)
                          *seed_cursor,
                          unicorn_response.status);
             ++seeds_skipped;
+            ++seed_cursor;
+            continue;
+        }
+        if (ballistic_response.status != BAL_FUZZER_WORKER_OK)
+        {
+            BAL_LOG_ERROR(&bal_thread_logger,
+                          "Ballistic worker reported execution error and "
+                          "returned status code %d for seed 0x%08X.",
+                          ballistic_response.status,
+                          *seed_cursor);
+            ++errors;
             ++seed_cursor;
             continue;
         }
