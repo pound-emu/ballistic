@@ -243,6 +243,13 @@ extern "C"
                                                 const bal_jit_instruction_map_t *mapping,
                                                 uint32_t                         instruction_count);
 
+    /// Clears all recorded JIT block metadata and resets the error state.
+    ///
+    /// # Safety
+    ///
+    /// * `context` must be a valid pointer.
+    BAL_HOT void bal_jit_debug_clear_all_blocks(bal_jit_debug_context_t *BAL_RESTRICT context);
+
     /// Registers the OS-level signal/exception handler to intercept faults inside the JIT buffer.
     ///
     /// If `context.crash_callback` is not NULL, Ballistic will call it when the compiled JIT code

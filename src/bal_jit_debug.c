@@ -177,3 +177,21 @@ bal_jit_debug_add_block(bal_jit_debug_context_t *BAL_RESTRICT         context,
     context->status = BAL_SUCCESS;
     return BAL_SUCCESS;
 }
+
+void
+bal_jit_debug_clear_all_blocks(bal_jit_debug_context_t *BAL_RESTRICT context)
+{
+    if (BAL_UNLIKELY(NULL == context))
+    {
+        BAL_LOG_ERROR(&bal_thread_logger, "Aborting function: context is NULL.");
+        return;
+    }
+
+    BAL_CHECK_MAGIC_VOID(
+        context, BAL_JIT_DEBUG_MAGIC_ALIVE, BAL_JIT_DEBUG_MAGIC_DEAD, "bal_jit_debug_context_t");
+
+    context->entry_count  = 0U;
+    context->arena_offset = 0U;
+    context->status       = BAL_SUCCESS;
+    BAL_LOG_INFO(&bal_thread_logger, "JIT debug context cleared.");
+}
