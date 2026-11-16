@@ -84,6 +84,8 @@ static void block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
                                bal_guest_address_t             pc,
                                void                           *host_code);
 
+static void clear_all_caches(internal_engine_state_t *BAL_RESTRICT engine);
+
 /// Helper function which gets called by LDR instructions.
 static uint64_t guest_read(void *context, uint64_t guest_address);
 
@@ -291,9 +293,7 @@ bal_engine_run_thread(bal_engine_t *engine)
         {
             BAL_LOG_INFO(&bal_thread_logger,
                          "Clear cache requested. Resetting JIT layout and block cache.");
-            bal_tier1_compiler_reset(&internal_engine_state->tier1_compiler);
-            (void)memset(
-                internal_engine_state->block_cache, 0, sizeof(internal_engine_state->block_cache));
+            clear_all_caches(internal_engine_state);
             atomic_store_explicit(&internal_engine_state->thread_state.clear_cache_requested,
                                   false,
                                   memory_order_release);
@@ -612,6 +612,14 @@ block_cache_insert(block_cache_set_t *BAL_RESTRICT cache,
     const uint32_t evict_way      = (pc >> 4) & (BLOCK_CACHE_WAYS - 1);
     ways[evict_way].guest_address = pc;
     ways[evict_way].host_code     = host_code;
+}
+
+static void
+clear_all_caches(internal_engine_state_t *BAL_RESTRICT engine)
+{
+    bal_jit_debug_clear_all_blocks(&engine->debug_context);
+    bal_tier1_compiler_reset(&engine->tier1_compiler);
+    (void)memset(engine->block_cache, 0, sizeof(engine->block_cache));
 }
 
 static uint64_t
